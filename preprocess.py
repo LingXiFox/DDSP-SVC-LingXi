@@ -36,7 +36,7 @@ def parse_args(args=None, namespace=None):
         type=int,
         default=2,
         required=False,
-        help="number of worker processes (default: cpu_count)")
+        help="number of worker processes (default: 2)")
     return parser.parse_args(args=args, namespace=namespace)
 
 
@@ -271,9 +271,6 @@ if __name__ == '__main__':
     
     # get number of workers
     workers = cmd.workers
-    if workers is None:
-        import multiprocessing
-        workers = multiprocessing.cpu_count()
     print(f'Using {workers} worker processes')   
 
     # parallel processing
