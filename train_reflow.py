@@ -48,7 +48,8 @@ if __name__ == '__main__':
                     args.model.n_aux_layers,
                     args.model.n_aux_chans,
                     args.model.n_layers,
-                    args.model.n_chans) 
+                    args.model.n_chans,
+                    realism_config=args.model.realism) 
                     
     else:
         raise ValueError(f" [x] Unknown Model: {args.model.type}")

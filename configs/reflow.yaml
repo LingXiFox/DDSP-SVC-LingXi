@@ -27,6 +27,14 @@ model:
   use_norm: true
   use_attention: false
   use_pitch_aug: true 
+  # Vocal Realism R0. Keep disabled to preserve upstream 6.3 behavior.
+  realism:
+    enabled: false
+    strength: 1.0
+    hidden_channels: 128
+    num_layers: 2
+    max_f0_cents: 35.0
+    max_volume_db: 3.0
   n_spk: 1 # max number of different speakers
 device: cuda # training device
 vocoder:

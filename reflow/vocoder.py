@@ -9,7 +9,7 @@ from nsf_hifigan.models import load_model,load_config
 from torchaudio.transforms import Resample
 from .reflow import RectifiedFlow
 from .lynxnet2 import LYNXNet2
-from ddsp.vocoder import CombSubSuperFast
+from ddsp.realism_vocoder import CombSubSuperFastRealism
 
 class DotDict(dict):
     def __getattr__(*args):         
@@ -28,8 +28,7 @@ def load_model_vocoder(
         args = yaml.safe_load(config)
     args = DotDict(args)
     
-    # load vocoder
-    vocoder = Vocoder(args.vocoder.type, args.vocoder.ckpt, device=device)
+    # load vocoder = Vocoder(args.vocoder.type, args.vocoder.ckpt, device=device)
     
     # load model
     if args.model.type == 'RectifiedFlow':
@@ -46,7 +45,8 @@ def load_model_vocoder(
                     args.model.n_aux_layers,
                     args.model.n_aux_chans,
                     args.model.n_layers,
-                    args.model.n_chans)
+                    args.model.n_chans,
+                    realism_config=args.model.realism)
                    
     else:
         raise ValueError(f" [x] Unknown Model: {args.model.type}")
@@ -165,11 +165,12 @@ class Unit2Wav(nn.Module):
             n_aux_layers=3,
             n_aux_chans=256,
             n_layers=6, 
-            n_chans=512):
+            n_chans=512,
+            realism_config=None):
         super().__init__()
         self.sampling_rate = sampling_rate
         self.block_size = block_size
-        self.ddsp_model = CombSubSuperFast(
+        self.ddsp_model = CombSubSuperFastRealism(
                             sampling_rate, 
                             block_size, 
                             win_length, 
@@ -179,7 +180,8 @@ class Unit2Wav(nn.Module):
                             n_aux_chans if n_aux_chans is not None else 256,
                             use_norm,
                             use_attention, 
-                            use_pitch_aug)
+                            use_pitch_aug,
+                            realism_config=realism_config)
         self.reflow_model = RectifiedFlow(LYNXNet2(in_dims=out_dims, dim_cond=out_dims, n_layers=n_layers, n_chans=n_chans), out_dims=out_dims)
 
     def forward(self, units, f0, volume, spk_id=None, spk_mix_dict=None, aug_shift=None, vocoder=None,
