@@ -28,7 +28,8 @@ def load_model_vocoder(
         args = yaml.safe_load(config)
     args = DotDict(args)
     
-    # load vocoder = Vocoder(args.vocoder.type, args.vocoder.ckpt, device=device)
+    # load vocoder
+    vocoder = Vocoder(args.vocoder.type, args.vocoder.ckpt, device=device)
     
     # load model
     if args.model.type == 'RectifiedFlow':
