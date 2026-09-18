@@ -132,7 +132,10 @@ def main():
         ckpt = torch.load(path, map_location=device)
         missing, unexpected = model2.load_state_dict(ckpt["model"], strict=True), None
         del missing
-        optimizer2 = torch.optim.AdamW(model2.parameters(), lr=3e-4)
+        optimizer2 = torch.optim.AdamW(
+            [p for p in split_realism_parameters(model2)[1] if p.requires_grad],
+            lr=3e-4,
+        )
         optimizer2.load_state_dict(ckpt["optimizer"])
         assert any("ddsp_model.realism." in k for k in ckpt["model"]), \
             "full checkpoint lacks realism params"
