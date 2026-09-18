@@ -107,3 +107,19 @@ def test_loss_ignores_global_octave_shift_but_detects_shape_change():
         warped_loss.item()
         > invariant_loss.item() + 1e-2
     )
+
+
+def test_constant_volume_is_not_distorted_at_sequence_edges():
+    f0, _ = _controls(batch=1, frames=32)
+    volume = torch.full_like(f0, 0.5)
+    _, robot_volume = robotize_controls(
+        f0,
+        volume,
+        smoothing_kernel=9,
+    )
+    assert torch.allclose(
+        robot_volume,
+        volume,
+        atol=1e-6,
+        rtol=1e-6,
+    )

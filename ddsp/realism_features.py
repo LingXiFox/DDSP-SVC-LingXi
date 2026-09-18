@@ -41,8 +41,11 @@ def _masked_local_mean(
 def _local_mean(value: torch.Tensor, kernel_size: int) -> torch.Tensor:
     kernel_size = _odd_kernel(kernel_size)
     pad = kernel_size // 2
+    value_ch = value.transpose(1, 2)
+    if pad > 0:
+        value_ch = F.pad(value_ch, (pad, pad), mode="replicate")
     return F.avg_pool1d(
-        value.transpose(1, 2), kernel_size, stride=1, padding=pad
+        value_ch, kernel_size, stride=1, padding=0
     ).transpose(1, 2)
 
 

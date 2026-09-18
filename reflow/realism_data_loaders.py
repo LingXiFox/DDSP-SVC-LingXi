@@ -129,7 +129,7 @@ def get_realism_data_loaders(args):
         num_workers=cfg.num_workers,
         persistent_workers=cfg.num_workers > 0,
         pin_memory=True,
-        drop_last=True,
+        drop_last=False,
     )
     valid_loader = DataLoader(
         valid_data,
