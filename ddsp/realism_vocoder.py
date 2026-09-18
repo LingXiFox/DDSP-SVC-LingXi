@@ -1,3 +1,5 @@
+import torch
+
 from .realism import VocalRealismAdapter
 from .vocoder import CombSubSuperFast
 
@@ -29,6 +31,12 @@ class CombSubSuperFastRealism(CombSubSuperFast):
                 max_f0_cents=float(realism_config.get("max_f0_cents", 35.0)),
                 max_volume_db=float(realism_config.get("max_volume_db", 3.0)),
             )
+            checkpoint = realism_config.get("checkpoint")
+            if checkpoint:
+                state = torch.load(checkpoint, map_location="cpu")
+                if isinstance(state, dict) and "model" in state:
+                    state = state["model"]
+                self.realism.load_state_dict(state, strict=True)
 
     def forward(
         self,

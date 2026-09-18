@@ -60,21 +60,43 @@ class VocalRealismAdapter(nn.Module):
         if f0.shape[-1] != 1 or volume.shape[-1] != 1:
             raise ValueError("f0 and volume must have a singleton feature dimension")
 
-        # Speaker-weak control features. Absolute pitch/loudness are compressed so
-        # the adapter is encouraged to model dynamics rather than identity/timbre.
+        # Speaker-weak control inputs. Remove per-utterance pitch register and
+        # loudness level before predicting residual performance dynamics.
         voiced = f0 > 0
-        log_f0 = torch.where(voiced, torch.log2(torch.clamp(f0, min=1e-5)), torch.zeros_like(f0))
+        log_f0 = torch.where(
+            voiced,
+            torch.log2(torch.clamp(f0, min=1e-5)),
+            torch.zeros_like(f0),
+        )
+        voiced_f = voiced.to(log_f0.dtype)
+        f0_center = (
+            (log_f0 * voiced_f).sum(dim=1, keepdim=True)
+            / voiced_f.sum(dim=1, keepdim=True).clamp_min(1.0)
+        )
+        relative_log_f0 = torch.where(
+            voiced, log_f0 - f0_center, torch.zeros_like(log_f0)
+        )
+
         log_volume = torch.log1p(torch.clamp(volume, min=0.0))
-        x = torch.cat((self.unit_norm(units), log_f0, log_volume), dim=-1)
+        relative_log_volume = log_volume - log_volume.mean(dim=1, keepdim=True)
+        x = torch.cat(
+            (self.unit_norm(units), relative_log_f0, relative_log_volume), dim=-1
+        )
 
         h = torch.nn.functional.silu(self.input_proj(x)).transpose(1, 2)
         for block in self.temporal:
             h = h + block(h)
         raw = self.output_proj(h.transpose(1, 2))
 
-        strength_t = torch.as_tensor(strength, dtype=raw.dtype, device=raw.device)
-        delta_cents = torch.tanh(raw[..., 0:1]) * self.max_f0_cents * strength_t
-        delta_volume_db = torch.tanh(raw[..., 1:2]) * self.max_volume_db * strength_t
+        strength_t = torch.as_tensor(
+            strength, dtype=raw.dtype, device=raw.device
+        )
+        delta_cents = (
+            torch.tanh(raw[..., 0:1]) * self.max_f0_cents * strength_t
+        )
+        delta_volume_db = (
+            torch.tanh(raw[..., 1:2]) * self.max_volume_db * strength_t
+        )
 
         pitch_ratio = torch.pow(2.0, delta_cents / 1200.0)
         f0_out = torch.where(voiced, f0 * pitch_ratio, f0)
