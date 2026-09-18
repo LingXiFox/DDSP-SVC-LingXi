@@ -3,6 +3,7 @@ import yaml
 import pickle
 import torch
 
+
 def traverse_dir(
         root_dir,
         extensions,
@@ -18,22 +19,19 @@ def traverse_dir(
     for root, _, files in os.walk(root_dir):
         for file in files:
             if any([file.endswith(f".{ext}") for ext in extensions]):
-                # path
                 mix_path = os.path.join(root, file)
                 pure_path = mix_path[len(root_dir)+1:] if is_pure else mix_path
 
-                # amount
                 if (amount is not None) and (cnt == amount):
                     if is_sort:
                         file_list.sort()
                     return file_list
-                
-                # check string
+
                 if (str_include is not None) and (str_include not in pure_path):
                     continue
                 if (str_exclude is not None) and (str_exclude in pure_path):
                     continue
-                
+
                 if not is_ext:
                     ext = pure_path.split('.')[-1]
                     pure_path = pure_path[:-(len(ext)+1)]
@@ -44,22 +42,21 @@ def traverse_dir(
     return file_list
 
 
-    
 class DotDict(dict):
-    def __getattr__(*args):         
-        val = dict.get(*args)         
-        return DotDict(val) if type(val) is dict else val   
+    def __getattr__(*args):
+        val = dict.get(*args)
+        return DotDict(val) if type(val) is dict else val
 
-    __setattr__ = dict.__setitem__    
+    __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
 
 def get_network_paras_amount(model_dict):
     info = dict()
     for model_name, model in model_dict.items():
-        # all_params = sum(p.numel() for p in model.parameters())
-        trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-
+        trainable_params = sum(
+            p.numel() for p in model.parameters() if p.requires_grad
+        )
         info[model_name] = trainable_params
     return info
 
@@ -68,7 +65,6 @@ def load_config(path_config):
     with open(path_config, "r") as config:
         args = yaml.safe_load(config)
     args = DotDict(args)
-    # print(args)
     return args
 
 
@@ -81,14 +77,15 @@ def convert_tensor_to_numpy(tensor, is_squeeze=True):
         tensor = tensor.cpu()
     return tensor.numpy()
 
-           
+
 def load_model(
-        expdir, 
+        expdir,
         model,
         optimizer,
         name='model',
         postfix='',
-        device='cpu'):
+        device='cpu',
+        load_optimizer=True):
     if postfix == '':
         postfix = '_' + postfix
     path = os.path.join(expdir, name+postfix)
@@ -105,6 +102,6 @@ def load_model(
         ckpt = torch.load(path_pt, map_location=torch.device(device))
         global_step = ckpt['global_step']
         model.load_state_dict(ckpt['model'], strict=False)
-        if ckpt.get('optimizer') != None:
+        if load_optimizer and ckpt.get('optimizer') != None:
             optimizer.load_state_dict(ckpt['optimizer'])
     return global_step, model, optimizer
