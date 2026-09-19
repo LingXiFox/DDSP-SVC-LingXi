@@ -10,35 +10,48 @@ best@405). J50/J100 are experimental and are never used here.
 
 ```bash
 ./app/install.sh
-source environment/.venv/bin/activate
 ```
 
-This creates `environment/.venv` (Python 3.14) and installs the pinned
-runtime (`app/pyproject.toml`: torch 2.14.0, MPS enabled). Nothing is
-installed into system Python.
+This creates `environment/.venv` (Python 3.14), installs the pinned
+runtime (`app/pyproject.toml`: torch 2.14.0, MPS enabled), and places
+`lingxi-svc` / `lingxi-selfcheck` launchers in `~/.local/bin` (added to
+PATH once). Nothing is installed into system Python. Open a new shell
+after install.
 
 ## Use
 
-```bash
-lingxi-svc vocal.wav
-lingxi-svc vocal.wav -o converted.wav --realism 0.85 --transpose 0
-lingxi-svc vocal.wav --compare  # (Phase 5, not yet implemented)
-```
-
-Full options: `lingxi-svc --help`.
-
-Defaults: output `<input>_lingxi.wav` next to the input; realism from
-`production.yaml` (1.0); transpose 0 semitones; device auto (MPS, else CPU);
-seed 1234. Existing outputs are never overwritten without `--force`.
-
-## Self-check
+Self-check:
 
 ```bash
 lingxi-selfcheck
 ```
 
-Verifies bundle files + SHA256, torch/MPS status, and a full model load.
-Ends with `SELFCHECK=PASS` or a concrete failure.
+Convert:
+
+```bash
+lingxi-svc vocal.wav
+lingxi-svc vocal.wav -o vocal_lingxi.wav
+lingxi-svc vocal.wav --realism 0.85 --transpose 0
+```
+
+Full options: `lingxi-svc --help`. No `cd`, no `source activate` needed;
+both commands work from any directory.
+
+Defaults: output `<input>_lingxi.wav` next to the input; realism from
+`production.yaml` (1.0); transpose 0 semitones; device auto (MPS, else CPU);
+seed 1234. Existing outputs are never overwritten without `--force`.
+
+## Development / debugging
+
+```bash
+source environment/.venv/bin/activate
+lingxi-svc --help
+environment/.venv/bin/python app/tests/test_phase3_reference.py
+```
+
+Normal users never need this; the launchers already target the venv.
+Direct `main_reflow.py` / `batch_infer.py` entry points remain for
+low-level work but are not part of the supported UX.
 
 ## Layout (workspace root = this repo)
 
