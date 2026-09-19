@@ -34,6 +34,8 @@ def _save_checkpoint(
     epoch,
     global_step,
     config_path,
+    best_val=None,
+    best_step=None,
 ):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     torch.save(
@@ -44,6 +46,8 @@ def _save_checkpoint(
             "global_step": global_step,
             "config": config_path,
             "format": "lingxi-vocal-realism-v1",
+            "best_val": best_val,
+            "best_step": best_step,
         },
         path,
     )
@@ -51,12 +55,17 @@ def _save_checkpoint(
 
 def _load_checkpoint(path, model, optimizer, device):
     if not path or not os.path.exists(path):
-        return 0, 0
+        return 0, 0, None, None
     ckpt = torch.load(path, map_location=device)
     model.load_state_dict(ckpt["model"], strict=True)
     if ckpt.get("optimizer") is not None:
         optimizer.load_state_dict(ckpt["optimizer"])
-    return int(ckpt.get("epoch", 0)), int(ckpt.get("global_step", 0))
+    return (
+        int(ckpt.get("epoch", 0)),
+        int(ckpt.get("global_step", 0)),
+        ckpt.get("best_val"),
+        ckpt.get("best_step"),
+    )
 
 
 def _weights(cfg):
@@ -147,12 +156,15 @@ def main():
     save_dir = Path(cfg.expdir)
     save_dir.mkdir(parents=True, exist_ok=True)
     latest_path = save_dir / "realism_latest.pt"
-    start_epoch, global_step = _load_checkpoint(
+    best_path = save_dir / "realism_best.pt"
+    start_epoch, global_step, best_val, best_step = _load_checkpoint(
         str(latest_path) if bool(cfg.resume) else "",
         model,
         optimizer,
         device,
     )
+    if best_val is None:
+        best_val, best_step = float("inf"), 0
 
     print("[Vocal Realism] control-only public prior training")
     print(
@@ -218,6 +230,23 @@ def main():
                         for k, v in metrics.items()
                     ),
                 )
+                val_total = float(metrics["total"])
+                if val_total < best_val:
+                    best_val, best_step = val_total, global_step
+                    _save_checkpoint(
+                        best_path,
+                        model,
+                        optimizer,
+                        epoch,
+                        global_step,
+                        cli.config,
+                        best_val,
+                        best_step,
+                    )
+                    print(
+                        f"new best realism prior: "
+                        f"step={global_step} val={val_total:.5f}"
+                    )
 
             if global_step % int(cfg.save_every) == 0:
                 _save_checkpoint(
@@ -227,6 +256,8 @@ def main():
                     epoch,
                     global_step,
                     cli.config,
+                    best_val,
+                    best_step,
                 )
 
         _save_checkpoint(
@@ -236,6 +267,8 @@ def main():
             epoch + 1,
             global_step,
             cli.config,
+            best_val,
+            best_step,
         )
 
     final_path = save_dir / "realism_final.pt"
@@ -246,8 +279,11 @@ def main():
         int(cfg.epochs),
         global_step,
         cli.config,
+        best_val,
+        best_step,
     )
     print(f"saved {final_path}")
+    print(f"best realism prior: step={best_step} val={best_val}")
 
 
 if __name__ == "__main__":
