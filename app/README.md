@@ -73,9 +73,10 @@ rm -rf environment/.venv          # regenerable via ./app/install.sh
 rm -rf outputs/* cache/*          # generated audio and caches
 ```
 
-Keep `production/` (the model) and `~/Downloads/DDSP-SVC-LingXi-Production-v1.tar.zst`
-(archive backup). To remove everything LingXi-related, delete this repo
-checkout too — no files are installed outside of it.
+Keep `production/` (the model) and `archive/DDSP-SVC-LingXi-Production-v1.tar.zst`
+(local archive backup with its `.sha256`). To remove everything
+LingXi-related, delete this repo checkout too — no files are installed
+outside of it except the two `~/.local/bin` launchers.
 
 ## Notes
 

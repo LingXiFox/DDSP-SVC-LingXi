@@ -50,7 +50,11 @@ GUI, realtime, plugins.
 
 - production 980M / environment 1.4G / app 140K / outputs 6.2M /
   inputs 1.6M / logs 48K / reports 8K / cache 0B / archive 15M
-- Total LingXi footprint ≈ 2.4 GB; volume free 663 GB.
+- Total LingXi footprint ≈ 3.2 GB (adds `archive/` 822 MB incl. the
+  production tarball backup); volume free 663 GB.
+- Local archive backup now lives at
+  `archive/DDSP-SVC-LingXi-Production-v1.tar.zst` (+ `.sha256`, re-verified
+  OK after the move); nothing LingXi-related remains in `~/Downloads`.
 
 ## Seal status
 
