@@ -3,3 +3,16 @@ __pycache__/
 venv/
 results/
 cache/
+
+# LingXiSVC local workspace (generated / large / private; never commit)
+production/
+environment/
+outputs/
+inputs/
+logs/
+cache/
+archive/
+
+# python build residue
+build/
+*.egg-info/
