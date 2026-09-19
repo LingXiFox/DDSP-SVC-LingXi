@@ -1,0 +1,43 @@
+data:
+  sampling_rate: 44100
+  block_size: 512
+  encoder_out_channels: 768
+  extensions:
+    - wav
+
+model:
+  realism:
+    hidden_channels: 128
+    num_layers: 2
+    max_f0_cents: 35.0
+    max_volume_db: 3.0
+
+realism_train:
+  # Uses the normal DDSP-SVC preprocessing layout, but this trainer reads only
+  # units/, f0/ and volume/. Public audio/mel never enters the loss.
+  train_path: data/realism-public/train
+  valid_path: data/realism-public/val
+  duration: 2.0
+  batch_size: 16
+  num_workers: 2
+  device: cuda
+  epochs: 100
+  lr: 0.0003
+  weight_decay: 0.01
+  grad_clip_norm: 5.0
+  trend_kernel: 31
+  robotize:
+    smoothing_kernel: 9
+    pitch_quantization_cents: 0.0
+    volume_quantization_db: 0.0
+  loss:
+    pitch_contour: 1.0
+    pitch_velocity: 0.35
+    pitch_acceleration: 0.15
+    energy_contour: 0.5
+    energy_velocity: 0.2
+  expdir: exp/vocal-realism-prior
+  resume: true
+  log_every: 20
+  validate_every: 500
+  save_every: 500
