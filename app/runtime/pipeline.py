@@ -192,16 +192,19 @@ class LingXiSVCPipeline:
         if output_path.exists():
             raise FileExistsError(f"Refusing to overwrite existing {output_path}.")
 
+        # load_audio normalizes to the model rate, so every extractor below runs
+        # on the target-rate frame grid; hop_size is block_size, not a scaled
+        # source-rate hop (upstream keeps the source rate and scales instead).
         loaded = load_audio(input_path, self.sample_rate)
         audio = loaded.samples
-        source_sr = loaded.source_sample_rate
-        hop_size = self.block_size * source_sr / self.sample_rate
-        win_size = self.args.data.volume_smooth_size * source_sr / self.sample_rate
+        work_sr = self.sample_rate
+        hop_size = self.block_size
+        win_size = int(self.args.data.volume_smooth_size)
 
         feature_start = time.perf_counter()
         with _bundle_workdir(self.bundle_root):
             pitch_extractor = F0_Extractor(
-                self.args.data.f0_extractor, source_sr, hop_size,
+                self.args.data.f0_extractor, work_sr, hop_size,
                 float(self.args.data.f0_min), float(self.args.data.f0_max))
             f0 = pitch_extractor.extract(audio, uv_interp=True, device=self.device)
             volume_extractor = Volume_Extractor(hop_size, win_size)
@@ -213,7 +216,7 @@ class LingXiSVCPipeline:
             f0_t = torch.from_numpy(f0).float().to(self.device).unsqueeze(-1).unsqueeze(0)
             units = self.units_encoder.encode(
                 torch.from_numpy(audio).float().unsqueeze(0).to(self.device),
-                source_sr, hop_size)
+                work_sr, hop_size)
             units, f0_t, volume_t, frame_count = align_frames(units, f0_t, volume_t)
             units = check_finite("units", units)
             f0_t = check_finite("f0", f0_t)
@@ -235,7 +238,7 @@ class LingXiSVCPipeline:
             torch.mps.manual_seed(int(seed))
 
         synthesis_start = time.perf_counter()
-        segments = _split(audio, source_sr, hop_size)
+        segments = _split(audio, work_sr, hop_size)
         if not segments:
             raise RuntimeError("Slicer produced no voiced segments.")
         result = np.zeros(0)
@@ -243,7 +246,7 @@ class LingXiSVCPipeline:
         with torch.no_grad(), _bundle_workdir(self.bundle_root):
             for start_frame, segment in segments:
                 seg_input = torch.from_numpy(segment).float().unsqueeze(0).to(self.device)
-                seg_units = self.units_encoder.encode(seg_input, source_sr, hop_size)
+                seg_units = self.units_encoder.encode(seg_input, work_sr, hop_size)
                 width = seg_units.size(1)
                 seg_f0 = transposed_f0[:, start_frame: start_frame + width, :]
                 seg_volume = features.volume[:, start_frame: start_frame + width, :]
