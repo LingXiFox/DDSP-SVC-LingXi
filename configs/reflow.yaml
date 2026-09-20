@@ -75,4 +75,6 @@ train:
   backbone_lr: 0.00005
   realism_lr: 0.0003
   resume_optimizer: true
+  max_incremental_steps: 0
+  grad_clip_norm: 0.0
   save_opt: false

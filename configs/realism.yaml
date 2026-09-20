@@ -38,6 +38,12 @@ realism_train:
     energy_velocity: 0.2
   expdir: exp/vocal-realism-prior
   resume: true
+  resume_optimizer: true
+  initial_checkpoint: null
+  max_steps: 0
+  early_stop_patience: 0
+  early_stop_min_steps: 0
+  early_stop_min_delta: 0.0
   log_every: 20
   validate_every: 500
   save_every: 500

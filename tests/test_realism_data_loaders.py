@@ -50,3 +50,27 @@ def test_control_dataset_never_requires_mel_or_augmented_targets(
     assert item["units"].shape == (2, 8)
     assert item["f0"].shape == (2, 1)
     assert item["volume"].shape == (2, 1)
+
+
+def test_validation_crop_is_deterministic_and_centered(tmp_path: Path):
+    root = tmp_path / "valid"
+    for sub in ("audio", "units", "f0", "volume"):
+        (root / sub).mkdir(parents=True, exist_ok=True)
+
+    name = "sample.wav"
+    (root / "audio" / name).write_bytes(b"")
+    frames = 10
+    np.save(root / "units" / f"{name}.npy", np.zeros((frames, 2)))
+    np.save(root / "f0" / f"{name}.npy", np.arange(frames))
+    np.save(root / "volume" / f"{name}.npy", np.arange(frames))
+
+    ds = RealismControlDataset(
+        str(root),
+        waveform_sec=0.4,
+        hop_size=100,
+        sample_rate=1000,
+        random_crop=False,
+    )
+
+    assert ds[0]["f0"].squeeze().tolist() == [3.0, 4.0, 5.0, 6.0]
+    assert ds[0]["f0"].squeeze().tolist() == [3.0, 4.0, 5.0, 6.0]

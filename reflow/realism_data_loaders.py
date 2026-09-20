@@ -24,11 +24,13 @@ class RealismControlDataset(Dataset):
         sample_rate: int,
         extensions=("wav",),
         whole_audio: bool = False,
+        random_crop: bool = True,
     ):
         super().__init__()
         self.path_root = path_root
         self.crop_len = int(waveform_sec * sample_rate / hop_size)
         self.whole_audio = whole_audio
+        self.random_crop = random_crop
         candidates = traverse_dir(
             os.path.join(path_root, "audio"),
             extensions=extensions,
@@ -74,11 +76,12 @@ class RealismControlDataset(Dataset):
         item = self.items[index]
         frame_len = int(item["frame_len"])
         length = frame_len if self.whole_audio else self.crop_len
-        start = (
-            0
-            if self.whole_audio
-            else random.randint(0, frame_len - length)
-        )
+        if self.whole_audio:
+            start = 0
+        elif self.random_crop:
+            start = random.randint(0, frame_len - length)
+        else:
+            start = (frame_len - length) // 2
         end = start + length
 
         units = np.load(
@@ -121,6 +124,7 @@ def get_realism_data_loaders(args):
         sample_rate=args.data.sampling_rate,
         extensions=args.data.extensions,
         whole_audio=False,
+        random_crop=False,
     )
     train_loader = DataLoader(
         train_data,

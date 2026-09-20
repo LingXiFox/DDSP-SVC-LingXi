@@ -36,6 +36,7 @@ def _save_checkpoint(
     config_path,
     best_val=None,
     best_step=None,
+    initialized_from=None,
 ):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     torch.save(
@@ -48,17 +49,24 @@ def _save_checkpoint(
             "format": "lingxi-vocal-realism-v1",
             "best_val": best_val,
             "best_step": best_step,
+            "initialized_from": initialized_from,
         },
         path,
     )
 
 
-def _load_checkpoint(path, model, optimizer, device):
+def _load_checkpoint(
+    path,
+    model,
+    optimizer,
+    device,
+    load_optimizer=True,
+):
     if not path or not os.path.exists(path):
         return 0, 0, None, None
     ckpt = torch.load(path, map_location=device)
     model.load_state_dict(ckpt["model"], strict=True)
-    if ckpt.get("optimizer") is not None:
+    if load_optimizer and ckpt.get("optimizer") is not None:
         optimizer.load_state_dict(ckpt["optimizer"])
     return (
         int(ckpt.get("epoch", 0)),
@@ -157,16 +165,33 @@ def main():
     save_dir.mkdir(parents=True, exist_ok=True)
     latest_path = save_dir / "realism_latest.pt"
     best_path = save_dir / "realism_best.pt"
+    resume = bool(cfg.resume)
+    initialized_from = cfg.get("initial_checkpoint")
     start_epoch, global_step, best_val, best_step = _load_checkpoint(
-        str(latest_path) if bool(cfg.resume) else "",
+        str(latest_path) if resume else "",
         model,
         optimizer,
         device,
+        load_optimizer=bool(cfg.get("resume_optimizer", True)),
     )
+    if not resume and initialized_from:
+        initial_state = torch.load(initialized_from, map_location=device)
+        model.load_state_dict(initial_state["model"], strict=True)
+        print(f"  initialized_from={initialized_from}")
     if best_val is None:
         best_val, best_step = float("inf"), 0
 
-    print("[Vocal Realism] control-only public prior training")
+    max_steps = int(cfg.get("max_steps", 0))
+    early_stop_patience = int(cfg.get("early_stop_patience", 0))
+    early_stop_min_steps = int(cfg.get("early_stop_min_steps", 0))
+    early_stop_min_delta = float(cfg.get("early_stop_min_delta", 0.0))
+    validations_without_improvement = 0
+    stop_training = False
+
+    print(
+        "[Vocal Realism] control-only "
+        f"{cfg.get('run_name', 'public prior')} training"
+    )
     print(
         f"  device={device} "
         f"train_items={len(train_loader.dataset)} "
@@ -231,8 +256,9 @@ def main():
                     ),
                 )
                 val_total = float(metrics["total"])
-                if val_total < best_val:
+                if val_total < best_val - early_stop_min_delta:
                     best_val, best_step = val_total, global_step
+                    validations_without_improvement = 0
                     _save_checkpoint(
                         best_path,
                         model,
@@ -242,11 +268,27 @@ def main():
                         cli.config,
                         best_val,
                         best_step,
+                        initialized_from,
                     )
                     print(
-                        f"new best realism prior: "
+                        f"new best realism checkpoint: "
                         f"step={global_step} val={val_total:.5f}"
                     )
+                else:
+                    validations_without_improvement += 1
+
+                if (
+                    early_stop_patience > 0
+                    and global_step >= early_stop_min_steps
+                    and validations_without_improvement
+                    >= early_stop_patience
+                ):
+                    print(
+                        "early stop: "
+                        f"step={global_step} best_step={best_step} "
+                        f"best_val={best_val:.5f}"
+                    )
+                    stop_training = True
 
             if global_step % int(cfg.save_every) == 0:
                 _save_checkpoint(
@@ -258,7 +300,15 @@ def main():
                     cli.config,
                     best_val,
                     best_step,
+                    initialized_from,
                 )
+
+            if max_steps > 0 and global_step >= max_steps:
+                print(f"max steps reached: {global_step}")
+                stop_training = True
+
+            if stop_training:
+                break
 
         _save_checkpoint(
             latest_path,
@@ -269,7 +319,10 @@ def main():
             cli.config,
             best_val,
             best_step,
+            initialized_from,
         )
+        if stop_training:
+            break
 
     final_path = save_dir / "realism_final.pt"
     _save_checkpoint(
@@ -281,9 +334,10 @@ def main():
         cli.config,
         best_val,
         best_step,
+        initialized_from,
     )
     print(f"saved {final_path}")
-    print(f"best realism prior: step={best_step} val={best_val}")
+    print(f"best realism checkpoint: step={best_step} val={best_val}")
 
 
 if __name__ == "__main__":

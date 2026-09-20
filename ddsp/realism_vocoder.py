@@ -38,6 +38,16 @@ class CombSubSuperFastRealism(CombSubSuperFast):
                     state = state["model"]
                 self.realism.load_state_dict(state, strict=True)
 
+    def adapt_controls(self, units_frames, f0_frames, volume_frames):
+        if self.realism is not None:
+            f0_frames, volume_frames, _ = self.realism(
+                units_frames,
+                f0_frames,
+                volume_frames,
+                strength=self.realism_strength,
+            )
+        return f0_frames, volume_frames
+
     def forward(
         self,
         units_frames,
@@ -50,13 +60,9 @@ class CombSubSuperFastRealism(CombSubSuperFast):
         infer=True,
         **kwargs,
     ):
-        if self.realism is not None:
-            f0_frames, volume_frames, _ = self.realism(
-                units_frames,
-                f0_frames,
-                volume_frames,
-                strength=self.realism_strength,
-            )
+        f0_frames, volume_frames = self.adapt_controls(
+            units_frames, f0_frames, volume_frames
+        )
         return super().forward(
             units_frames,
             f0_frames,
@@ -68,3 +74,31 @@ class CombSubSuperFastRealism(CombSubSuperFast):
             infer=infer,
             **kwargs,
         )
+
+    def forward_with_adapted_controls(
+        self,
+        units_frames,
+        f0_frames,
+        volume_frames,
+        spk_id=None,
+        spk_mix_dict=None,
+        aug_shift=None,
+        initial_phase=None,
+        infer=True,
+        **kwargs,
+    ):
+        f0_frames, volume_frames = self.adapt_controls(
+            units_frames, f0_frames, volume_frames
+        )
+        output = super().forward(
+            units_frames,
+            f0_frames,
+            volume_frames,
+            spk_id=spk_id,
+            spk_mix_dict=spk_mix_dict,
+            aug_shift=aug_shift,
+            initial_phase=initial_phase,
+            infer=infer,
+            **kwargs,
+        )
+        return (*output, f0_frames, volume_frames)

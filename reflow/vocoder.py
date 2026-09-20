@@ -185,6 +185,9 @@ class Unit2Wav(nn.Module):
                             realism_config=realism_config)
         self.reflow_model = RectifiedFlow(LYNXNet2(in_dims=out_dims, dim_cond=out_dims, n_layers=n_layers, n_chans=n_chans), out_dims=out_dims)
 
+    def adapt_controls(self, units, f0, volume):
+        return self.ddsp_model.adapt_controls(units, f0, volume)
+
     def forward(self, units, f0, volume, spk_id=None, spk_mix_dict=None, aug_shift=None, vocoder=None,
                 gt_spec=None, infer=True, return_wav=False, infer_step=10, method='euler', t_start=0.0, 
                 silence_front=0, use_tqdm=True):
@@ -195,7 +198,17 @@ class Unit2Wav(nn.Module):
         return: 
             dict of B x n_frames x feat
         '''
-        ddsp_wav, hidden = self.ddsp_model(units, f0, volume, spk_id=spk_id, spk_mix_dict=spk_mix_dict, aug_shift=aug_shift, infer=infer)
+        ddsp_wav, hidden, adapted_f0, _ = (
+            self.ddsp_model.forward_with_adapted_controls(
+                units,
+                f0,
+                volume,
+                spk_id=spk_id,
+                spk_mix_dict=spk_mix_dict,
+                aug_shift=aug_shift,
+                infer=infer,
+            )
+        )
         start_frame = int(silence_front * self.sampling_rate / self.block_size)
         if vocoder is not None:
             ddsp_mel = vocoder.extract(ddsp_wav[:, start_frame * self.block_size:])
@@ -217,6 +230,9 @@ class Unit2Wav(nn.Module):
             else:
                 mel = ddsp_mel
             if return_wav:
-                return vocoder.infer(mel, f0[:, -mel.shape[1]:])
+                return vocoder.infer(
+                    mel,
+                    adapted_f0[:, -mel.shape[1]:],
+                )
             else:
                 return mel
