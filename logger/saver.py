@@ -42,11 +42,11 @@ class Saver(object):
         # writer (optional: training must not depend on tensorboard)
         self.writer = (
             SummaryWriter(os.path.join(self.expdir, 'logs'))
-            if SummaryWriter is not None
+            if SummaryWriter is not None and not args.train.get('disable_tensorboard', False)
             else None
         )
         if self.writer is None:
-            print(' [!] tensorboard unavailable, continuing without TB logs')
+            print(' [!] tensorboard disabled or unavailable, continuing without TB logs')
         
         # save config
         path_config = os.path.join(self.expdir, 'config.yaml')

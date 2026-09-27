@@ -114,6 +114,14 @@ def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
         for bidx, data in enumerate(loader_test):
             if val_max_batches > 0 and bidx >= val_max_batches:
                 break
+            # The masked path skips stochastic Reflow work and optionally
+            # adds a diagnostic forward. Reset per sample so neither path
+            # changes the RNG seen by the NEXT sample (A/B comparable).
+            if args.train.get('val_seed') is not None:
+                sample_seed = int(args.train.val_seed) + bidx
+                random.seed(sample_seed)
+                np.random.seed(sample_seed)
+                torch.manual_seed(sample_seed)
             processed_batches += 1
             fn = data['name'][0]
             print('--------')

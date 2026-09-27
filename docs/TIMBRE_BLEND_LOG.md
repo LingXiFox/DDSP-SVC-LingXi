@@ -649,3 +649,23 @@ OpenSinger download runs. No GPU training started; download untouched.
 - 虚拟歌手（34 切片、2 首新歌）：ddsp_loss **6.497708446839276**、reflow_loss **0**（按 B 掩码排除）、reflow_loss_excluded_diagnostic **3.3281879800620335**（不参与优化）、mel_val_mse **6.95990044930402**、mel_val_snr **32.53868439618279**、mel_val_psnr **31.358286072226132**、mel_val_sisnr **32.57868643367992**。
 - 权威基线 JSON：`exp/timbre_blend_stage2_masked/baseline.json`（可再生运行产物；关卡 3 固化到报告）。
 - 补齐**真正未见歌手**输入 [10,29,47]：`~/Downloads/timbre_blend_stage1_samples/holdout_unseen_singers/` 含 3 输入 + 3 输出 + records.tsv。旧 #41 是已训练歌手，其旧跨说话人样本只测了已见歌手间转换，不能替代这 3 条未见歌手测试。
+
+### Stage 2 B（Masked/Frozen）实跑：已按虚拟曲线提前停机
+- 18:43:58 → 18:53:25（约 9m27s），3k steps，EXIT 0；计划上限 10k，但预先规定的「虚拟 ddsp 先降后连续两次上升」优先触发。1k / 2k / 3k checkpoint 全留，`model_0.pt` 起点全留。
+- 虚拟 ddsp：**6.497708 (step0) → 0.862014 (1k，最低) → 0.863978 (2k，回升 #1) → 0.866100 (3k，回升 #2)**；停机日志 `STAGE2_STOP_REASON=VIRTUAL_TWO_RISES best_step=1000`。B 候选 `exp/timbre_blend_stage2_masked/model_1000.pt`；虚拟 mel MSE 1k=0.916251、3k=0.915953（轻微改善，听感仍需盲听）。
+- 公开 ddsp：基线 0.250463 → 1k 0.257112 (+2.655%) → 2k 0.258037 (+3.024%) → 3k 0.260430 (+3.979%)，**均未触发 0.275509 遗忘线**。公开 mel MSE 0.321775→0.328231（+2.007%）；SNR 45.5745→45.4695（-0.105 dB）、PSNR 44.7599→44.6679（-0.092 dB）、SI-SNR 45.5708→45.4663（-0.104 dB），这些退化均已单独记录。
+- 实际虚拟采样比例：1k 50.18%、2k 49.78%、3k 50.10%；完全落在约 50% 的预定范围。
+- 冻结真实性：`model_0.pt` 与 `model_3000.pt` **全部 72 个 Reflow 张量逐个 exact equality**；DDSP 权重确实变化，冻结不是仅靠梯度标志声称。
+- 与原计划第 24 节「至少 5 个有意义中间 checkpoint」不同：用户新增明确停训规则在 3k 抢先触发，仅产出 3 个训练中间点。**不为凑数量继续训练已转升的虚拟验证损失**。对照 A 设相同实际总步数 3k（配置中的计划上限由 10k 改为 3k），其余数据/seed/初始权重一致；163 个起始模型张量全等。A 从 18:54:03 开始，运行中。
+
+### 验证 RNG 路径不一致：A/B 旧结果暂停作为结论（19:01）
+- A 的 step-0 公开指标与 B **完全一致**，虚拟 ddsp 却不同（B=6.497708，A=6.471634；虚拟 mel MSE 也不同）。虽然 163 个模型起始权重全等、train/val seed 一致，但两条路径在每条虚拟验证样本之间执行不同次数的随机 Reflow forward（B 为排除后的额外诊断，A 为正常 included 计算），推进了下一条样本的 RNG 状态。**A/B 旧虚拟验证曲线不可直接比较，B 的 3k 早停/1k 最优结论也待重验。**
+- 19:01:21 用 SIGTERM 暂停 A（保留 step0 + 1k ckpt，EXIT=143），无任何并行 GPU 训练。已在 `test()` 的验证循环中固定每条样本 RNG = val_seed + index，顶层 RNG fork 仍在验证结束时还原训练 RNG，避免验证分支改变训练数据流；若同权重/同输入真实 A/B step-0 探针全部 ddsp/mel 完全一致，再从 step0 重跑两组并保留旧 exp 目录作审计，不复用有争议的旧早停判定。
+- 修正期间一次 pytest 在 `transformers` 模块导入时触发 WSL2 宿主段错误（尚未执行测试体），不当作通过；需探针、重试单测后才重启训练。
+
+### Stage 2 验证随机流修复确认（19:25）
+- 改为每条验证样本独立 seed = val_seed + 样本序号（验证结束仍恢复训练 RNG），解决 A/B 前向分支消耗不同随机数导致的后续样本不公平。
+- 两组初始 163 权重张量全等，read-only/无 TensorBoard 探针在实际 GPU、全部 558 公开 + 34 虚拟切片上验证：A/B **公开和虚拟 ddsp_loss、mel_val_mse、mel_val_snr、mel_val_psnr、mel_val_sisnr 10/10 数值 exact equality**。Reflow 不需一致（A 正式 included，B excluded 仅诊断）。探针日志 `.tmp/stage2_rng_probe2.log`（PASS）。
+- **修正后 step-0 基线**：公开 ddsp_loss 0.25033053218997936，reflow_loss 0.029853311794676315，mel MSE/SNR/PSNR/SI-SNR = 0.32234610595797125 / 45.57268249347646 / 44.754996644980594 / 45.568840860893225；遗忘阈值 = 0.2753635854089773。虚拟 ddsp_loss 6.515204850365134，mel MSE/SNR/PSNR/SI-SNR = 7.006810258416569 / 32.496908748851105 / 31.32902431488037 / 32.536703278036676。旧 step0 基线及旧 B 3k 停止结论**作废**，不得作为后续阈值或候选选择。
+- 一次含 CUDA 的全套 pytest 挂住 180 秒（GPU 0%，孤儿进程 100% CPU），TERM 终止；CPU 相关测试 25 PASS / 3 CUDA deselected，真实 GPU A/B 探针通过。先前两个 probe/pytest 段错误分别在 TensorBoard writer CRC 和 Transformers 导入期；为绕开宿主不稳，Stage 2 正式训练禁用 TensorBoard 事件及媒体写入（`train.disable_tensorboard=true`, `val_log_samples=0`），**仍完整写 `validation_history.jsonl` 的两条全量曲线**。Stage 1 TB 服务保持原状。
+- 旧 B/A exp 目录均**移动保留**到 `exp/timbre_blend_stage2_{masked,baseline}_invalid_valrng_20260927/`（含 `INVALID_VALIDATION_RNG.txt`），不覆盖/删除原始证据；新运行从 MD5 已核验的 20k 权重 step0 重新启动。A 步数上限先恢复 10k，B 实际停机后再设同实际步数。
