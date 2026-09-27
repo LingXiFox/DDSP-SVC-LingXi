@@ -69,6 +69,13 @@ train:
   gamma: 0.9
   weight_decay: 0.1
   lambda_ddsp: 1
+  # Timbre-blend Stage 2 knobs. Defaults preserve the legacy behavior exactly.
+  # reflow_exclude_spk: 1-based speaker ids masked out of the reflow loss in
+  #   training AND validation ([] = unmasked legacy path).
+  # freeze_reflow: freeze all reflow_model weights (requires_grad=False) and
+  #   keep them out of the optimizer; forward still runs.
+  reflow_exclude_spk: []
+  freeze_reflow: false
   # R2 staged training: timbre | realism_personalize | joint.
   # Public control-only prior training uses train_realism.py instead.
   realism_stage: timbre

@@ -7,6 +7,25 @@ from logger.saver import Saver
 from logger import utils
 from torch.amp import autocast, GradScaler
 
+def build_reflow_mask(spk_id, reflow_exclude_spk):
+    '''
+    Build the [B] bool reflow participation mask for a batch.
+
+    True  = sample takes part in the reflow loss
+    False = speaker id listed in reflow_exclude_spk (1-based ids)
+
+    Returns None when reflow_exclude_spk is empty so callers take the
+    legacy unmasked code path unchanged (backward compatibility).
+    spk_id may be [B] or [B, 1] (data loader layout).
+    '''
+    if not reflow_exclude_spk:
+        return None
+    excluded = torch.tensor(
+        sorted({int(s) for s in reflow_exclude_spk}),
+        device=spk_id.device,
+        dtype=spk_id.dtype)
+    return ~torch.isin(spk_id.reshape(-1), excluded)
+
 def calculate_mel_snr(gt_mel, pred_mel):
     # 计算误差图像
     error_image = gt_mel - pred_mel
@@ -52,6 +71,16 @@ def test(args, model, vocoder, loader_test, saver):
     # losses
     test_ddsp_loss = 0.
     test_reflow_loss = 0.
+
+    # reflow accounting under train.reflow_exclude_spk:
+    #   included  - official masked metric, same rule as training; equals the
+    #               legacy validation/reflow_loss meaning when nothing is excluded
+    #   excluded  - diagnostic only, computed under no_grad on excluded-speaker
+    #               batches; never part of any optimization objective
+    reflow_exclude_spk = list(args.train.get('reflow_exclude_spk') or [])
+    test_reflow_loss_excluded = 0.
+    num_reflow_included_batches = 0
+    num_reflow_excluded_batches = 0
 
     # mel mse val
     mel_val_mse_all = 0
@@ -103,7 +132,8 @@ def test(args, model, vocoder, loader_test, saver):
             print('RTF: {}  | {} / {}'.format(rtf, run_time, song_time))
             rtf_all.append(rtf)
            
-            # loss
+            # loss (same mask rule as training; see build_reflow_mask)
+            reflow_mask = build_reflow_mask(data['spk_id'], reflow_exclude_spk)
             ddsp_loss, reflow_loss = model(
                 data['units'], 
                 data['f0'], 
@@ -112,9 +142,27 @@ def test(args, model, vocoder, loader_test, saver):
                 vocoder=vocoder,
                 gt_spec=data['mel'],
                 infer=False,
-                t_start=args.model.t_start)
+                t_start=args.model.t_start,
+                reflow_mask=reflow_mask)
             test_ddsp_loss += ddsp_loss.item()
-            test_reflow_loss += reflow_loss.item()
+            if reflow_mask is None or bool(reflow_mask.any()):
+                test_reflow_loss += reflow_loss.item()
+                num_reflow_included_batches += 1
+            if reflow_mask is not None and bool((~reflow_mask).any()):
+                # diagnostic reflow loss on the excluded samples of this batch,
+                # under the enclosing torch.no_grad(); never optimized/backprop'd
+                _, reflow_loss_excluded = model(
+                    data['units'], 
+                    data['f0'], 
+                    data['volume'], 
+                    data['spk_id'],
+                    vocoder=vocoder,
+                    gt_spec=data['mel'],
+                    infer=False,
+                    t_start=args.model.t_start,
+                    reflow_mask=~reflow_mask)
+                test_reflow_loss_excluded += reflow_loss_excluded.item()
+                num_reflow_excluded_batches += 1
             
             # log mel
             saver.log_spec(data['name'][0], data['mel'], mel)
@@ -140,7 +188,15 @@ def test(args, model, vocoder, loader_test, saver):
             
     # report
     test_ddsp_loss /= num_batches
-    test_reflow_loss /= num_batches 
+    if num_reflow_included_batches > 0:
+        test_reflow_loss /= num_reflow_included_batches
+    else:
+        # every validation batch was excluded from the reflow loss
+        test_reflow_loss = 0.
+        print(' [!] reflow_exclude_spk covers all validation batches; '
+              'validation/reflow_loss reported as 0.0')
+    if num_reflow_excluded_batches > 0:
+        test_reflow_loss_excluded /= num_reflow_excluded_batches
     mel_val_mse_all /= mel_val_mse_all_num
     mel_val_snr_all /= mel_val_mse_all_num
     mel_val_psnr_all /= mel_val_mse_all_num
@@ -149,6 +205,18 @@ def test(args, model, vocoder, loader_test, saver):
     # check
     print(' [test_ddsp_loss] test_ddsp_loss:', test_ddsp_loss)
     print(' [test_reflow_loss] test_reflow_loss:', test_reflow_loss)
+    if reflow_exclude_spk:
+        # split metrics (plan 15.1): included is the official masked metric;
+        # excluded is diagnostic-only and must never enter the objective
+        print(' [test_reflow_loss_included]', test_reflow_loss)
+        saver.log_value({
+            'validation/reflow_loss_included': test_reflow_loss
+        })
+        if num_reflow_excluded_batches > 0:
+            print(' [test_reflow_loss_excluded_diagnostic]', test_reflow_loss_excluded)
+            saver.log_value({
+                'validation/reflow_loss_excluded_diagnostic': test_reflow_loss_excluded
+            })
     print(' Real Time Factor', np.mean(rtf_all))
     print(' Mel Val MSE', mel_val_mse_all)
     saver.log_value({
@@ -178,6 +246,13 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
     saver.log_info('--- model size ---')
     saver.log_info(params_count)
     
+    # reflow exclusion config (plan 15); empty -> legacy unmasked path (None mask)
+    reflow_exclude_spk = list(args.train.get('reflow_exclude_spk') or [])
+    if reflow_exclude_spk:
+        saver.log_info(
+            f' > reflow_exclude_spk: {reflow_exclude_spk} '
+            '(masked out of the reflow loss in both training and validation)')
+
     # run
     num_batches = len(loader_train)
     start_epoch = initial_global_step // num_batches
@@ -203,13 +278,16 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
                     data[k] = data[k].to(args.device)
             
             # forward
+            reflow_mask = build_reflow_mask(data['spk_id'], reflow_exclude_spk)
             if dtype == torch.float32:
                 ddsp_loss, reflow_loss = model(data['units'].float(), data['f0'], data['volume'], data['spk_id'], 
-                                aug_shift=data['aug_shift'], vocoder=vocoder, gt_spec=data['mel'].float(), infer=False, t_start=args.model.t_start)
+                                aug_shift=data['aug_shift'], vocoder=vocoder, gt_spec=data['mel'].float(), infer=False, t_start=args.model.t_start,
+                                reflow_mask=reflow_mask)
             else:
                 with autocast(device_type=args.device, dtype=dtype):
                     ddsp_loss, reflow_loss=model(data['units'], data['f0'], data['volume'], data['spk_id'], 
-                                    aug_shift=data['aug_shift'], vocoder=vocoder, gt_spec=data['mel'].float(), infer=False, t_start=args.model.t_start)
+                                    aug_shift=data['aug_shift'], vocoder=vocoder, gt_spec=data['mel'].float(), infer=False, t_start=args.model.t_start,
+                                    reflow_mask=reflow_mask)
             
             # handle nan loss
             if torch.isnan(ddsp_loss):
