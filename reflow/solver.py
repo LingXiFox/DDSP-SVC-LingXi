@@ -338,6 +338,7 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
         if os.path.exists(history_path):
             with open(history_path) as f:
                 history = [json.loads(line) for line in f if line.strip()]
+        rise_threshold = float(args.train.get('virtual_rise_threshold') or 0)
         virtual_base = baseline['virtual']['ddsp_loss']
         virtual_best = min([virtual_base] + [r['virtual']['ddsp_loss'] for r in history])
         best_step = next((r['step'] for r in history
@@ -347,7 +348,7 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
         values = [virtual_base] + [r['virtual']['ddsp_loss'] for r in history]
         rises = 0
         for before, after in zip(values[-2::-1], values[:0:-1]):
-            if after <= before:
+            if after <= before * (1 + rise_threshold):
                 break
             rises += 1
         virtual_seen_drop = virtual_best < virtual_base
@@ -477,7 +478,7 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
                     if virt < virtual_best:
                         virtual_best, best_step = virt, saver.global_step
                     virtual_seen_drop |= virt < virtual_base
-                    rises = rises + 1 if virt > prev_virtual else 0
+                    rises = rises + 1 if virt > prev_virtual * (1 + rise_threshold) else 0
                     prev_virtual = virt
                     saver.log_info(f' [validation] virtual best: step={best_step} '
                                    f'loss={virtual_best:.8f}; consecutive rises={rises}')
