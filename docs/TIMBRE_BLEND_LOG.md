@@ -136,3 +136,37 @@ Stage 0 items 10-12 (bucket recon, locating virtual-singer data) and Stage 1a
 `LingXiFox/ddsp-svc-lingxi` and `LingXiFox/opensinger-womanraw`.
 Anonymous access via mirror returns 401 for both (model and dataset types).
 Stopped per plan section 3.2. No token handling was attempted.
+
+## 2026-09-27 10:42-10:55 | HF login done; bucket recon; OpenSinger download started
+
+- User completed `hf auth login` on WSL2. Verified via mirror: whoami -> LingXiFox
+  (token never printed). All HF commands carry `HF_ENDPOINT=https://hf-mirror.com`
+  (user does not export it globally).
+- `LingXiFox/opensinger-womanraw` [dataset]: ACCESSIBLE. 79,866 files, 9.44 GiB.
+  Layout: `<spk>_<song>/<spk>_<song>_<seg>.{wav,lab,txt}` (OpenSinger naming, first
+  number = singer id).
+- `LingXiFox/ddsp-svc-lingxi`: **404 for both model and dataset types while logged
+  in**. `list_models/list_datasets/list_spaces(author=LingXiFox)` shows only
+  `opensinger-womanraw`. The ~14GB bucket named in the plan does not exist under
+  this account.
+- Local filesystem search found `/mnt/d/AI/voice-lab` (40 GiB) - a previous virtual
+  singer workspace for 泠溪小狐狸:
+  - `dataset_final/`: 75 wav slices, 111 MB, **21.8 min total**, manifest.csv +
+    speaker_report.csv (per-file cosine/cluster). Sources: 8 cover songs
+    (圣贤书 solo; 7 duets credited 泠溪小狐狸+若溪（虚拟歌手）).
+  - `separated_vocals/`: 16 wav, 1.1 GiB (full separated vocal tracks).
+  - `validation_results/`: 185 wav incl. `target_svc_44k/` (19), blind/, blind_map.csv
+    (previous blind-listening artifacts).
+  - `test_sources/`: 8 wav, 535 MB (能伴此梦无 / 让我做你的眼睛).
+  - `dereverb_vocals/`, `references/`: empty. `raw_mix*`: mixes, not clean vocals.
+  - Also contains seed-vc / separator project checkouts (not DDSP-SVC).
+- OpenSinger download started 10:45 in tmux `opensinger_dl`:
+  `hf download LingXiFox/opensinger-womanraw --repo-type dataset
+  --local-dir ~/datasets/opensinger-womanraw` (resumable), log `.tmp/opensinger_download.log`.
+
+### STOPPED - asked user (plan 10.5 / 20.1: multiple candidates, bucket missing)
+
+Questions: (1) where is the real ddsp-svc-lingxi bucket / is it gone;
+(2) is `dataset_final` (21.8 min) the authoritative target-singer training set,
+noting duet sources may contain a second voice (若溪) and one low-cosine outlier
+(track01_005.wav, 0.147).
