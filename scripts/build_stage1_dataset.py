@@ -15,15 +15,22 @@ Steps
    shuffle usable files, accumulate until the 60 min pool cap, then split
    the pool 95/5 train/val AT SOURCE-FILE LEVEL (plan §11: stable,
    reproducible per original performance segment).
-4. Loudness-normalize with ffmpeg two-pass loudnorm (linear=true =>
-   static gain, dynamics preserved, true-peak limited, no clipping):
-   I=-23 LUFS, TP=-1.5 dBTP, LRA=11; output 44100 Hz mono pcm_s16le wav.
-   The pass-2 "Normalization Type" is parsed and counted per singer
-   (norm_type_* stats); any non-linear (dynamic) fallback aborts the
-   build immediately (user directive 2026-09-27: static gain only).
-   NOTE: the first full run (2026-09-27) predates this capture; its
-   acceptance evidence is scripts/verify_loudnorm.py (deterministic
-   two-pass reproduction + on-disk dynamics check over all 6041 files).
+4. Loudness-normalize with the production static-gain scheme (user
+   decision 2026-09-27, A+): MEASURE with ffmpeg loudnorm pass 1 only
+   (integrated loudness + true peak), compute
+       gain = min(TARGET_I - measured_I, TARGET_TP - measured_TP)
+   and apply it as ONE constant multiplication (ffmpeg volume filter).
+   TARGET_I=-23 LUFS, TARGET_TP=-1.5 dBTP; output 44100 Hz mono
+   pcm_s16le wav. Compressor / limiter / dynamic loudnorm are FORBIDDEN
+   anywhere in the pipeline. When the true-peak constraint binds
+   (tp_limited), TP safety wins: final loudness stays below target and
+   the file is recorded in the per-singer norm_tp_limited list.
+   History: the first full run (2026-09-27) used two-pass loudnorm
+   linear=true; 50/6041 files fell back to Dynamic normalization and
+   were remediated with this scheme (scripts/remediate_static_gain.py,
+   reports/timbre_blend_stage1_remediation.json). Acceptance evidence:
+   scripts/verify_loudnorm.py v2 (static-normalization verifier, full
+   tree).
 5. Slice with the repo Slicer (slicer.py reused per plan §12.3):
    threshold=-40 dB, min_length=2000 ms (== model min training duration,
    configs data.duration=2 s), min_interval=300 ms, hop=20 ms,
@@ -52,7 +59,7 @@ Steps
 Outputs
 -------
 <out_root>/{train,val}/audio/<dir>/*.wav   consumed by preprocess.py
-<out_root>/normalized/<dir>/*.wav          loudnorm intermediate (audit)
+<out_root>/normalized/<dir>/*.wav          static-gain normalized sources (audit)
 <out_root>/manifest.json                   per-singer pool/train/val file lists
 <out_root>/slice_metrics.jsonl             per-slice recheck cache (resumable)
 <out_root>/rejected.jsonl                  every rejection with reason
@@ -104,9 +111,12 @@ from scripts.select_opensinger import (  # stage-1a metric logic, reused per §1
 )
 
 # ---- fixed processing parameters (mirrored into the build report) ----
-LOUDNORM_I = -23.0     # target integrated loudness, LUFS (EBU R128)
-LOUDNORM_TP = -1.5     # true-peak ceiling, dBTP
-LOUDNORM_LRA = 11.0    # loudness-range hint
+# Production normalization (user decision 2026-09-27, A+): loudnorm pass 1
+# is a MEASUREMENT tool only; the applied gain is one explicit static
+# multiplication (ffmpeg volume filter). No dynamic processing anywhere.
+TARGET_I = -23.0       # target integrated loudness, LUFS (EBU R128)
+TARGET_TP = -1.5       # true-peak ceiling, dBTP
+MEASURE_LRA = 11.0     # loudnorm pass-1 filter hint (measurement only)
 SLICER_KWARGS = dict(
     threshold=-40.0,
     min_length=2000,   # ms; == model min training duration (data.duration=2 s)
@@ -140,12 +150,17 @@ def parse_args(args=None, namespace=None):
     return ap.parse_args(args=args, namespace=namespace)
 
 
-# ---------------- loudness normalization (ffmpeg two-pass) ----------------
+# --------- loudness normalization (measure + explicit static gain) ---------
 
 def measure_loudness(src):
-    """Pass 1: measure input loudness. Returns measurement dict or None."""
+    """Measure input loudness (loudnorm pass 1, MEASUREMENT ONLY).
+
+    Deterministic; returns the measurement dict or None. The filter string
+    is byte-identical to the original build's pass 1, so measurements stay
+    comparable across the whole verification history.
+    """
     cmd = ["ffmpeg", "-hide_banner", "-nostats", "-i", str(src),
-           "-af", f"loudnorm=I={LOUDNORM_I}:TP={LOUDNORM_TP}:LRA={LOUDNORM_LRA}:print_format=json",
+           "-af", f"loudnorm=I={TARGET_I}:TP={TARGET_TP}:LRA={MEASURE_LRA}:print_format=json",
            "-f", "null", "-"]
     p = subprocess.run(cmd, capture_output=True, text=True)
     if p.returncode != 0:
@@ -164,40 +179,51 @@ def measure_loudness(src):
     return j
 
 
-def apply_loudnorm(src, dst, meas):
-    """Pass 2: static gain (linear=true) + true-peak limit. tmp+rename write.
+def compute_static_gain(meas):
+    """gain = min(gain_loudness, gain_peak): TP-safe by construction.
 
-    Returns (ok, normalization_type). The type string is parsed from the
-    pass-2 summary ("Linear" expected for a successful static-gain pass);
-    any other value means loudnorm fell back to dynamic normalization and
-    the caller must stop (user directive 2026-09-27).
+    gain_loudness drives integrated loudness to TARGET_I; gain_peak caps
+    the true peak at TARGET_TP. When the peak constraint binds
+    (tp_limited=True), the final loudness stays BELOW target - allowed and
+    recorded (user directive 2026-09-27: TP safety first, never dynamic
+    processing to force the loudness target).
     """
-    af = (f"loudnorm=I={LOUDNORM_I}:TP={LOUDNORM_TP}:LRA={LOUDNORM_LRA}"
-          f":measured_I={meas['input_i']}:measured_TP={meas['input_tp']}"
-          f":measured_LRA={meas['input_lra']}:measured_thresh={meas['input_thresh']}"
-          f":offset={meas['target_offset']}:linear=true:print_format=summary")
+    gain_loudness = TARGET_I - float(meas["input_i"])
+    gain_peak = TARGET_TP - float(meas["input_tp"])
+    return min(gain_loudness, gain_peak), gain_peak < gain_loudness
+
+
+def apply_static_gain(src, dst, gain_db):
+    """Apply ONE constant gain via the ffmpeg volume filter. tmp+rename.
+
+    Pure sample-wise multiplication: no compressor, no limiter, no dynamic
+    loudnorm (forbidden by the production data principle). Output true peak
+    cannot exceed src true peak + gain; compute_static_gain keeps that
+    <= TARGET_TP by construction.
+    """
     tmp = dst.with_name(dst.name + ".tmp.wav")
-    cmd = ["ffmpeg", "-hide_banner", "-nostats", "-y", "-i", str(src), "-af", af,
+    cmd = ["ffmpeg", "-hide_banner", "-nostats", "-y", "-i", str(src),
+           "-af", f"volume={gain_db:.6f}dB",
            "-ar", str(SAMPLE_RATE), "-ac", "1", "-c:a", "pcm_s16le", str(tmp)]
     p = subprocess.run(cmd, capture_output=True, text=True)
     if p.returncode != 0:
         tmp.unlink(missing_ok=True)
-        return False, None
-    mt = re.search(r"Normalization Type:\s*(\S+)", p.stderr)
+        return False
     tmp.rename(dst)
-    return True, (mt.group(1) if mt else "unknown")
+    return True
 
 
 def normalize_one(rel, src, dst):
+    """Measure (loudnorm pass 1) + explicit static gain (volume filter)."""
     if dst.exists() and dst.stat().st_size > 1024:
         return rel, "cached", None
     meas = measure_loudness(src)
     if meas is None:
         return rel, "measure_failed", None
-    ok, ntype = apply_loudnorm(src, dst, meas)
-    if not ok:
+    gain, tp_limited = compute_static_gain(meas)
+    if not apply_static_gain(src, dst, gain):
         return rel, "apply_failed", None
-    return rel, "ok", ntype
+    return rel, "ok", {"gain_db": round(gain, 6), "tp_limited": tp_limited}
 
 
 # ---------------- slicing ----------------
@@ -370,31 +396,27 @@ def main():
                     continue
                 tasks.append((split, rel, src, norm_dir / (Path(rel).stem + ".wav")))
 
-        # 1) loudness normalization (parallel ffmpeg two-pass)
+        # 1) loudness normalization: measure (loudnorm pass 1) + explicit
+        #    static gain (ffmpeg volume). Parallel ffmpeg.
         stats = defaultdict(int)
-        dyn_fallbacks = []
+        tp_limited_files = []
         with ThreadPoolExecutor(args.ffmpeg_jobs) as ex:
             futs = {ex.submit(normalize_one, rel, src, dst): (split, rel, dst)
                     for split, rel, src, dst in tasks}
             for fut in tqdm(as_completed(futs), total=len(futs),
-                            desc=f"loudnorm spk{spk}", leave=False):
+                            desc=f"static-gain spk{spk}", leave=False):
                 split, rel, dst = futs[fut]
-                rel_, status, ntype = fut.result()
+                rel_, status, info = fut.result()
                 stats[f"norm_{status}"] += 1
-                if ntype is not None:
-                    stats[f"norm_type_{ntype.lower()}"] += 1
-                    if ntype.lower() != "linear":
-                        dyn_fallbacks.append((rel, ntype))
+                if info is not None and info["tp_limited"]:
+                    tp_limited_files.append({"rel": rel, "gain_db": info["gain_db"]})
                 if status.endswith("failed"):
-                    log_reject(s, f"loudnorm_{status}", rel, "ffmpeg two-pass loudnorm")
-        if dyn_fallbacks:
-            for rel, nt in dyn_fallbacks:
-                log_reject(s, "loudnorm_dynamic_fallback", rel,
-                           f"normalization_type={nt}")
-            raise SystemExit(
-                f"[!] loudnorm dynamic fallback on {len(dyn_fallbacks)} file(s) "
-                f"of singer {s} (logged to {rej_path}). Requirement: pure static "
-                f"gain only - STOP for review (user directive 2026-09-27).")
+                    log_reject(s, f"norm_{status}", rel,
+                               "measure + static-gain normalization")
+        stats["norm_tp_limited"] = len(tp_limited_files)
+        if tp_limited_files:
+            print(f" [!] spk {spk}: {len(tp_limited_files)} file(s) TP-limited "
+                  f"(loudness below target, TP safety first; recorded in report)")
 
         # 2) slicing (repo Slicer) into the split audio trees
         singer_slices = []
@@ -431,6 +453,7 @@ def main():
                "pool_min_stage1a": round(plan[s]["pool_min"], 2),
                "n_train_src": len(plan[s]["train"]), "n_val_src": len(plan[s]["val"]),
                "norm": {k: v for k, v in stats.items() if k.startswith("norm_")},
+               "norm_tp_limited": tp_limited_files,
                "slices_short_discarded": stats["slices_short"],
                "slices_quality_removed": stats["slices_quality_removed"]}
         for split in ("train", "val"):
@@ -483,9 +506,16 @@ def main():
         "pool_cap_min_per_singer": args.cap_min,
         "val_frac": args.val_frac,
         "val_split_level": "source file (original performance segment)",
-        "loudnorm": {"tool": "ffmpeg two-pass loudnorm, linear=true (static gain)",
-                     "I_lufs": LOUDNORM_I, "TP_dbtp": LOUDNORM_TP, "LRA": LOUDNORM_LRA,
-                     "output": f"{SAMPLE_RATE} Hz mono pcm_s16le wav"},
+        "normalization": {
+            "method": "measure-only (ffmpeg loudnorm pass 1) + explicit static "
+                      "gain: gain = min(target_I - measured_I, target_TP - "
+                      "measured_TP), applied via ffmpeg volume=<gain>dB",
+            "target_I_lufs": TARGET_I, "target_TP_dbtp": TARGET_TP,
+            "dynamic_processing": "forbidden: no compressor / limiter / dynamic "
+                                  "loudnorm (user decision 2026-09-27, A+)",
+            "tp_limited_policy": "TP safety first: final loudness may stay below "
+                                 "target; files listed in per-singer norm_tp_limited",
+            "output": f"{SAMPLE_RATE} Hz mono pcm_s16le wav"},
         "slicer": {"impl": "repo slicer.py Slicer (reused)", **SLICER_KWARGS,
                    "min_slice_sec": MIN_SLICE_SEC,
                    "note": "max_sil_kept=500 deviates from repo default 5000 "
