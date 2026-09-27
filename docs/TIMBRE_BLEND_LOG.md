@@ -390,3 +390,14 @@ OpenSinger download runs. No GPU training started; download untouched.
 - **待办（Stage 1c 预处理后强制检查项）**：单独复核 spk 41 的 F0 分布与 octave-error 特征；只有出现实际证据证明系统性低八度时才停下报告，不得提前人为修正。
 - 预先固定的自动筛选阈值与权重保持不变（用户明确要求）。
 - 最终选择已固化到 `reports/opensinger_selection_final.json`；后续 Stage 1b/2/3 以该文件为准，speaker ID 不得随意重编号（§12.6）。
+
+### Stage 1b 启动：构建脚本与处理参数（全量运行前固定，2026-09-27）
+- 新脚本 `scripts/build_stage1_dataset.py`：复用 `slicer.py` 的 Slicer（§12.3）与 `select_opensinger.py` 的 analyze_file/阈值常量（§12.4），不重复实现逻辑。源数据只读；全部产物写入 `data/timbre_blend_stage1/`（gitignored）。
+- 响度归一化（§12.2，全 Stage 1 统一参数）：ffmpeg 两遍 loudnorm，`I=-23 LUFS, TP=-1.5 dBTP, LRA=11, linear=true`（纯静态增益，保留动态范围，真峰限制不引入 clipping）；输出 44100 Hz 单声道 pcm_s16le。实测：归一化文件积分响度 -23.01 LUFS；静态增益对 SNR 代理完全不变（18.81 → 18.81 dB）。非峰值拉满。
+- 采样率：源数据即 44100 Hz，与仓库 `configs/reflow.yaml sampling_rate: 44100` 一致，无需重采样（ffmpeg `-ar 44100` 仅兜底）。
+- 切片（§12.3）：repo `Slicer(threshold=-40dB, min_length=2000ms, min_interval=300ms, hop=20ms, max_sil_kept=500ms)`。min_length=2000ms 对应模型最短训练时长（`data.duration: 2`）；max_sil_kept=500 偏离 repo 默认 5000（该默认是推理分块参数），训练用途裁掉边缘长静音。仅保留 slice==False 且 ≥2.0s 的 chunk；不覆盖任何原始音频。
+- 切片级质量复检（§12.4，GPU RMVPE，复用 Stage 1a analyze_file）：duration≥2s、voiced_ratio≥0.25、clip_ratio≤0.01、oct_jumps≤30/min——阈值数值与 Stage 1a 完全一致，未做任何调整。
+- **方法学决定（在任何全量运行/训练之前做出，附实证）**：SNR 代理（p95−p20 帧能量差）不作为切片级剔除判据，改由 Stage 1a 源文件级预过滤强制执行（≥15 dB，入池文件已全部通过）。理由：该代理度量录音本底属性，被静音裁剪系统性扭曲——实测干净样本整文件 18.81 dB，仅裁掉 0.3s 边缘静音后跌至 13.74 dB（裁剪移除最低能量帧使 p20 抬升）；冒烟测试中该判据 4 切片误杀 1 个干净切片（若全量保持该判据将带偏倚地丢弃大量干净数据）。五个阈值数值全部未变；每个切片的 snr_db 仍完整记录于 `data/timbre_blend_stage1/slice_metrics.jsonl`，两种判据均可离线复盘。
+- 数据组织（§12.5/12.6/§11）：pool = Stage 1a usable 源文件按 seed=20260927 洗牌后累计至 60 min/人封顶；**源文件级**（原始演唱片段级）95/5 train/val 划分，稳定可复现；speaker 映射 = 歌手号升序 → spk_id 1..12（`reflow/data_loaders.py` 取 audio 子目录名首个 `_`/`-` token，1-based），目录名 `<spk_id>_singer<NN>`；映射固化 `reports/timbre_blend_speakers.json`，下游 Stage 2/3 不得重编号（Stage 2 虚拟歌手将追加为 spk 13，走已实现的 N→N+1 扩展）。HOLDOUT [29,47,10] 不进训练树，源音频留在官方 WomanRaw 根作 unseen test。
+- 冒烟测试（--singers 36 --limit-per-singer 4，独立 smoke 目录）：loudnorm 4/4 ok、切片 4、train 3 + val 1、短切片 0、质检误杀 0、输出 44100Hz 单声道 PCM_16、目录结构与 data loader 解析规则吻合。
+- 全量构建启动：tmux `stage1b`，日志 `.tmp/build_stage1.log`，预计 ~20-30 min（loudnorm 8 并发 + GPU 复检）。完成后汇报每歌手统计，再进入 §12.7 配置与 preprocess。
