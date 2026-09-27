@@ -418,3 +418,13 @@ OpenSinger download runs. No GPU training started; download untouched.
   3. LINEAR_MODE 下 init() 用 target_I−measured_I 覆盖 s->offset，**用户 offset 参数被丢弃**；expected_i 公式据此修正（smoke di_err max 0.45→0.08 LU）。
 - smoke 树验证结果：3 Linear（含 1 短文件规则）+ 1 Dynamic（lra_zero_sentinel）；该 Dynamic 文件磁盘实证：增益恒定（帧增益残差 std 0.0000 dB、dproxy 0.0001 dB、dlra 0.0、限幅器未触发 tp_norm −11.2 ≪ −1.5）。
 - 全量验证（6041 文件）：tmux `verifyln`，日志 `.tmp/verify_loudnorm.log`，报告 `reports/timbre_blend_stage1_loudnorm_verification.json` + 逐文件 `data/timbre_blend_stage1/loudnorm_verification.jsonl`。按用户指令：如存在 Dynamic → 携每文件机制分类 + 磁盘实证停下报告，等待决定（候选项：按实证接受 / 对受影响文件以显式静态增益重归一化并重建其切片 / 剔除），不得自行进入 preprocess。
+
+### Stage 1b 验收检查 2 结果：loudnorm 全量验证 FAIL → 管线停在关卡（2026-09-27）
+- `scripts/verify_loudnorm.py` 全量 6041 文件（tmux verifyln，约 2.6 min，39 文件/s）：**5991 Linear + 50 Dynamic**，VERDICT FAIL（exit 1）。汇总报告 `reports/timbre_blend_stage1_loudnorm_verification.json`（已提交），逐文件证据 `data/timbre_blend_stage1/loudnorm_verification.jsonl`（gitignored）。
+- Linear 文件零失败：全树 dproxy p99=0.0069 dB、rstd p99=0.0002、dlra p99=0.1、di p99=0.14 —— 对 99.2% 的文件，「纯静态增益、动态保留、响度到位」成立。机制分布：init_linear 4955、short_file_rule 1036（<3s 短文件规则，源码确认为无条件 LINEAR_MODE）。
+- 50 个 Dynamic 的机制分解（ffmpeg 8.0.1 af_loudnorm.c 源码 + 受控实验 + 时长相关性三重确认）：
+  - **35 个 `lra_above_target`**（时长 5.5-13.4s，源实测 LRA > 目标 LRA=11）：init() 条件 `measured_lra <= target_lra` 不满足 → 按 loudnorm 设计执行真动态压缩。磁盘实证动态确被改变：dproxy −3.14~+1.04 dB、rstd 最大 2.17、dlra −5.1~+1.1 LU；28 个超 |dproxy|>0.30、27 个超 |dlra|>0.50、18 个超响度偏差（有重叠），其余 3 个压缩轻微仍在阈值内。**该类违背「只改整体增益、不动原录音动态」的目标，不建议按原样接受**。
+  - **15 个 `lra_zero_sentinel`**（时长 3.02-3.69s，源 LRA 实测恰为 0.00，与 init() 的「未提供测量值」哨兵 `measured_lra != 0` 碰撞）：磁盘实证增益完全恒定（dproxy ≤ 0.0032 dB、rstd ≤ 0.0002、dlra ≤ 0.1、di ≤ 0.2、限幅器未触发）—— Dynamic 标签属哨兵误报，实际效果与纯静态增益无异。铁证：同文件改喂 measured_LRA=2.5 复现即为 Linear。
+- 修复可行性已验证：50 个文件全部可用**显式静态增益**（gain = −23 − measured_I，范围 −8.55~+8.66 dB，i_src 范围 −31.66~−14.45）归一到 −23 LUFS 且真峰保持 ≤ −1.5 dBTP（50/50 TP-safe，无需封顶、不会引入削波）。
+- 影响面：66 个切片（train 64 + val 2）/ 4.60 min，占全树 415.2 min 的 **1.11%**；lra_zero 类切片仅 0.73 min。每歌手最多 spk2 singer14（16/918 切片），其余 ≤ 11。
+- 按用户指令（2026-09-27）：**管线停在 preprocess 之前**，已报告决策选项（A 修复全部 50 / B 剔除 50 源切片 / C 按原样接受 / D 混合：15 按实证接受 + 35 修复或剔除），推荐 A。等待用户决定，决定后记录并继续。
