@@ -1,5 +1,7 @@
 import os
 import time
+import json
+import random
 import numpy as np
 import torch
 import librosa
@@ -64,8 +66,8 @@ def calculate_mel_psnr(gt_mel, pred_mel):
     psnr = 10 * torch.log10(max_power / mse)
     return psnr
 
-def test(args, model, vocoder, loader_test, saver):
-    print(' [*] testing...')
+def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
+    print(f' [*] testing {metric_prefix}...')
     model.eval()
 
     # losses
@@ -181,13 +183,13 @@ def test(args, model, vocoder, loader_test, saver):
             # log mel + audio (heavy: matplotlib figure, librosa decode,
             # tensorboard media) - capped by train.val_log_samples
             if val_log_samples is None or bidx < val_log_samples:
-                saver.log_spec(data['name'][0], data['mel'], mel)
+                saver.log_spec(metric_prefix + '/' + data['name'][0], data['mel'], mel)
                 path_audio = os.path.join(args.data.valid_path, 'audio', data['name_ext'][0])
                 audio, sr = librosa.load(path_audio, sr=args.data.sampling_rate)
                 if len(audio.shape) > 1:
                     audio = librosa.to_mono(audio)
                 audio = torch.from_numpy(audio).unsqueeze(0).to(signal)
-                saver.log_audio({fn+'/gt.wav': audio, fn+'/pred.wav': signal})
+                saver.log_audio({metric_prefix+'/'+fn+'/gt.wav': audio, metric_prefix+'/'+fn+'/pred.wav': signal})
 
             # 计算指标
             mel_val_mse_all += torch.nn.functional.mse_loss(mel, data['mel']).detach().cpu().numpy()
@@ -224,31 +226,64 @@ def test(args, model, vocoder, loader_test, saver):
         # excluded is diagnostic-only and must never enter the objective
         print(' [test_reflow_loss_included]', test_reflow_loss)
         saver.log_value({
-            'validation/reflow_loss_included': test_reflow_loss
+            f'{metric_prefix}/reflow_loss_included': test_reflow_loss
         })
         if num_reflow_excluded_batches > 0:
             print(' [test_reflow_loss_excluded_diagnostic]', test_reflow_loss_excluded)
             saver.log_value({
-                'validation/reflow_loss_excluded_diagnostic': test_reflow_loss_excluded
+                f'{metric_prefix}/reflow_loss_excluded_diagnostic': test_reflow_loss_excluded
             })
     print(' Real Time Factor', np.mean(rtf_all))
     print(' Mel Val MSE', mel_val_mse_all)
     saver.log_value({
-        'validation/mel_val_mse': mel_val_mse_all
+        f'{metric_prefix}/mel_val_mse': mel_val_mse_all
     })
     print(' Mel Val SNR', mel_val_snr_all)
     saver.log_value({
-        'validation/mel_val_snr': mel_val_snr_all
+        f'{metric_prefix}/mel_val_snr': mel_val_snr_all
     })
     print(' Mel Val PSNR', mel_val_psnr_all)
     saver.log_value({
-        'validation/mel_val_psnr': mel_val_psnr_all
+        f'{metric_prefix}/mel_val_psnr': mel_val_psnr_all
     })
     print(' Mel Val SI-SNR', mel_val_sisnr_all)
     saver.log_value({
-        'validation/mel_val_sisnr': mel_val_sisnr_all
+        f'{metric_prefix}/mel_val_sisnr': mel_val_sisnr_all
     })
-    return test_ddsp_loss, test_reflow_loss
+    return {
+        'ddsp_loss': test_ddsp_loss,
+        'reflow_loss': test_reflow_loss,
+        'reflow_loss_excluded_diagnostic': test_reflow_loss_excluded,
+        'mel_val_mse': float(mel_val_mse_all),
+        'mel_val_snr': float(mel_val_snr_all),
+        'mel_val_psnr': float(mel_val_psnr_all),
+        'mel_val_sisnr': float(mel_val_sisnr_all),
+    }
+
+
+def test(args, model, vocoder, loader_test, saver,
+         metric_prefix='validation', return_metrics=False):
+    seed = args.train.get('val_seed')
+    if seed is None:
+        metrics = _test_impl(args, model, vocoder, loader_test, saver, metric_prefix)
+    else:
+        # Fixed validation RNG; restore training RNG so testing does not alter
+        # the sampler / augmentation stream. Each curve gets the same seed.
+        py_state, np_state = random.getstate(), np.random.get_state()
+        devices = [torch.cuda.current_device()] if args.device == 'cuda' else []
+        try:
+            with torch.random.fork_rng(devices=devices):
+                random.seed(int(seed))
+                np.random.seed(int(seed))
+                torch.manual_seed(int(seed))
+                metrics = _test_impl(args, model, vocoder, loader_test, saver,
+                                     metric_prefix)
+        finally:
+            random.setstate(py_state)
+            np.random.set_state(np_state)
+    if return_metrics:
+        return metrics
+    return metrics['ddsp_loss'], metrics['reflow_loss']
 
 
 def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loader_train, loader_test):
@@ -266,6 +301,55 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
         saver.log_info(
             f' > reflow_exclude_spk: {reflow_exclude_spk} '
             '(masked out of the reflow loss in both training and validation)')
+
+    # Stage-2 validation: fixed, separately logged public/virtual curves.
+    # On resume, reuse the original baseline and history, never recalibrate
+    # a threshold after seeing training results.
+    stage2 = isinstance(loader_test, dict)
+    if stage2:
+        baseline_path = os.path.join(args.env.expdir, 'baseline.json')
+        history_path = os.path.join(args.env.expdir, 'validation_history.jsonl')
+        if os.path.exists(baseline_path):
+            with open(baseline_path) as f:
+                baseline = json.load(f)
+            saver.log_info(' [validation] baseline restored from ' + baseline_path)
+        else:
+            baseline = {
+                group: test(args, model, vocoder, loader, saver,
+                            f'validation/{group}', return_metrics=True)
+                for group, loader in loader_test.items()
+            }
+            with open(baseline_path, 'w') as f:
+                json.dump(baseline, f, indent=2)
+            saver.log_info(' [validation] step-zero baseline: ' + json.dumps(baseline))
+            for group, metrics in baseline.items():
+                saver.log_value({f'validation/{group}/{k}': v
+                                 for k, v in metrics.items()})
+            model.train()
+        history = []
+        if os.path.exists(history_path):
+            with open(history_path) as f:
+                history = [json.loads(line) for line in f if line.strip()]
+        virtual_base = baseline['virtual']['ddsp_loss']
+        virtual_best = min([virtual_base] + [r['virtual']['ddsp_loss'] for r in history])
+        best_step = next((r['step'] for r in history
+                          if r['virtual']['ddsp_loss'] == virtual_best), 0)
+        prev_virtual = history[-1]['virtual']['ddsp_loss'] if history else virtual_base
+        # Count only the trailing consecutive upward comparisons.
+        values = [virtual_base] + [r['virtual']['ddsp_loss'] for r in history]
+        rises = 0
+        for before, after in zip(values[-2::-1], values[:0:-1]):
+            if after <= before:
+                break
+            rises += 1
+        virtual_seen_drop = virtual_best < virtual_base
+        n_virtual, n_seen = 0, 0
+        saver.log_info(f' [validation] public forgetting threshold: '
+                       f"{baseline['public']['ddsp_loss'] * 1.1:.8f} "
+                       '(step-zero public ddsp x 1.10)')
+        if args.train.get('baseline_only'):
+            saver.log_info('STAGE2_BASELINE_ONLY_DONE')
+            return
 
     # run
     num_batches = len(loader_train)
@@ -291,6 +375,10 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
                 if not k.startswith('name'):
                     data[k] = data[k].to(args.device)
             
+            if stage2:
+                n_virtual += int((data['spk_id'] == int(args.train.virtual_spk_id)).sum())
+                n_seen += data['spk_id'].numel()
+
             # forward
             reflow_mask = build_reflow_mask(data['spk_id'], reflow_exclude_spk)
             if dtype == torch.float32:
@@ -358,21 +446,55 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
                 if last_val_step % args.train.interval_force_save != 0:
                     saver.delete_model(postfix=f'{last_val_step}')
                 
-                # run testing set
-                test_ddsp_loss, test_reflow_loss = test(args, model, vocoder, loader_test, saver)
-                test_loss = args.train.lambda_ddsp * test_ddsp_loss + test_reflow_loss
-                
-                # log loss
-                saver.log_info(
-                    ' --- <validation> --- \nloss: {:.3f}. '.format(
-                        test_loss,
+                if stage2:
+                    metrics = {
+                        group: test(args, model, vocoder, loader, saver,
+                                    f'validation/{group}', return_metrics=True)
+                        for group, loader in loader_test.items()
+                    }
+                    ratio = n_virtual / n_seen if n_seen else 0
+                    row = {'step': saver.global_step, **metrics,
+                           'actual_virtual_fraction': ratio}
+                    with open(history_path, 'a') as f:
+                        f.write(json.dumps(row) + '\n')
+                    saver.log_info(' --- <validation> --- ' + json.dumps(row))
+                    saver.log_value({
+                        f'validation/{group}/{key}': val
+                        for group, result in metrics.items()
+                        for key, val in result.items()
+                    } | {'train/actual_virtual_fraction': ratio})
+                    n_virtual, n_seen = 0, 0
+                    pub = metrics['public']['ddsp_loss']
+                    virt = metrics['virtual']['ddsp_loss']
+                    if virt < virtual_best:
+                        virtual_best, best_step = virt, saver.global_step
+                    virtual_seen_drop |= virt < virtual_base
+                    rises = rises + 1 if virt > prev_virtual else 0
+                    prev_virtual = virt
+                    saver.log_info(f' [validation] virtual best: step={best_step} '
+                                   f'loss={virtual_best:.8f}; consecutive rises={rises}')
+                    if pub > baseline['public']['ddsp_loss'] * 1.1:
+                        saver.log_info('STAGE2_STOP_REASON=PUBLIC_FORGETTING '
+                                       f'public_ddsp={pub:.8f}; '
+                                       f"baseline={baseline['public']['ddsp_loss']:.8f}")
+                        return
+                    if virtual_seen_drop and rises >= 2:
+                        saver.log_info('STAGE2_STOP_REASON=VIRTUAL_TWO_RISES '
+                                       f'best_step={best_step} best_loss={virtual_best:.8f}')
+                        return
+                    if saver.global_step >= int(args.train.get('max_steps') or 10000):
+                        saver.log_info('STAGE2_STOP_REASON=MAX_STEPS '
+                                       f'best_step={best_step} best_loss={virtual_best:.8f}')
+                        return
+                else:
+                    test_ddsp_loss, test_reflow_loss = test(args, model, vocoder, loader_test, saver)
+                    test_loss = args.train.lambda_ddsp * test_ddsp_loss + test_reflow_loss
+                    saver.log_info(
+                        ' --- <validation> --- \nloss: {:.3f}. '.format(test_loss)
                     )
-                )
-                
-                saver.log_value({
-                    'validation/loss': test_loss,
-                    'validation/ddsp_loss': test_ddsp_loss,
-                    'validation/reflow_loss': test_reflow_loss
-                })
-                
+                    saver.log_value({
+                        'validation/loss': test_loss,
+                        'validation/ddsp_loss': test_ddsp_loss,
+                        'validation/reflow_loss': test_reflow_loss
+                    })
                 model.train()

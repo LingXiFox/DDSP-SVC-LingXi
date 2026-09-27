@@ -1,0 +1,1589 @@
+{
+  "seed": 20260927,
+  "public_val_frac": 0.05,
+  "virtual_val_songs": 2,
+  "song_key_rule": "check_song_split_leakage.song_key",
+  "totals": {
+    "train_minutes": 407.54,
+    "val_minutes": 38.62,
+    "audio_files": 7182
+  },
+  "speakers": {
+    "10_singer36": {
+      "songs": 27,
+      "val_songs": 1,
+      "slices_train": 733,
+      "slices_val": 49,
+      "train_minutes": 38.15,
+      "val_minutes": 2.33,
+      "song_assignment": [
+        {
+          "song": "36_一笑倾城",
+          "split": "train",
+          "slices": 37,
+          "sec": 121.89
+        },
+        {
+          "song": "36_七月上",
+          "split": "train",
+          "slices": 6,
+          "sec": 18.42
+        },
+        {
+          "song": "36_世间美好与你环环相扣",
+          "split": "train",
+          "slices": 31,
+          "sec": 105.19
+        },
+        {
+          "song": "36_云烟成雨",
+          "split": "train",
+          "slices": 55,
+          "sec": 162.68
+        },
+        {
+          "song": "36_你不知道的事",
+          "split": "train",
+          "slices": 32,
+          "sec": 104.01
+        },
+        {
+          "song": "36_化身孤岛的鲸",
+          "split": "train",
+          "slices": 39,
+          "sec": 120.44
+        },
+        {
+          "song": "36_北京东路的日子",
+          "split": "train",
+          "slices": 7,
+          "sec": 18.33
+        },
+        {
+          "song": "36_可能否",
+          "split": "train",
+          "slices": 35,
+          "sec": 119.04
+        },
+        {
+          "song": "36_喜欢你",
+          "split": "train",
+          "slices": 3,
+          "sec": 11.39
+        },
+        {
+          "song": "36_奇妙能力歌",
+          "split": "train",
+          "slices": 25,
+          "sec": 82.15
+        },
+        {
+          "song": "36_孤独的总和",
+          "split": "train",
+          "slices": 10,
+          "sec": 33.46
+        },
+        {
+          "song": "36_岁月神偷",
+          "split": "train",
+          "slices": 24,
+          "sec": 78.77
+        },
+        {
+          "song": "36_巴啦啦小魔仙",
+          "split": "train",
+          "slices": 10,
+          "sec": 28.03
+        },
+        {
+          "song": "36_情深深雨濛濛",
+          "split": "train",
+          "slices": 35,
+          "sec": 97.06
+        },
+        {
+          "song": "36_我愿意",
+          "split": "val",
+          "slices": 49,
+          "sec": 140.08
+        },
+        {
+          "song": "36_明天你好",
+          "split": "train",
+          "slices": 59,
+          "sec": 156.32
+        },
+        {
+          "song": "36_暖暖",
+          "split": "train",
+          "slices": 49,
+          "sec": 145.09
+        },
+        {
+          "song": "36_有可能的夜晚",
+          "split": "train",
+          "slices": 39,
+          "sec": 119.74
+        },
+        {
+          "song": "36_有点甜",
+          "split": "train",
+          "slices": 43,
+          "sec": 140.97
+        },
+        {
+          "song": "36_爱的供养",
+          "split": "train",
+          "slices": 21,
+          "sec": 74.03
+        },
+        {
+          "song": "36_父亲",
+          "split": "train",
+          "slices": 6,
+          "sec": 22.1
+        },
+        {
+          "song": "36_离岸",
+          "split": "train",
+          "slices": 33,
+          "sec": 93.2
+        },
+        {
+          "song": "36_突然好想你",
+          "split": "train",
+          "slices": 45,
+          "sec": 153.19
+        },
+        {
+          "song": "36_约定",
+          "split": "train",
+          "slices": 34,
+          "sec": 121.31
+        },
+        {
+          "song": "36_追光者",
+          "split": "train",
+          "slices": 7,
+          "sec": 24.15
+        },
+        {
+          "song": "36_遥不可及的你",
+          "split": "train",
+          "slices": 27,
+          "sec": 80.35
+        },
+        {
+          "song": "36_马德里不思议",
+          "split": "train",
+          "slices": 21,
+          "sec": 57.51
+        }
+      ]
+    },
+    "11_singer41": {
+      "songs": 18,
+      "val_songs": 2,
+      "slices_train": 476,
+      "slices_val": 68,
+      "train_minutes": 30.14,
+      "val_minutes": 3.75,
+      "song_assignment": [
+        {
+          "song": "41_一次就好",
+          "split": "train",
+          "slices": 28,
+          "sec": 118.45
+        },
+        {
+          "song": "41_不再见",
+          "split": "train",
+          "slices": 34,
+          "sec": 121.63
+        },
+        {
+          "song": "41_你不知道的事",
+          "split": "train",
+          "slices": 35,
+          "sec": 113.46
+        },
+        {
+          "song": "41_修炼爱情",
+          "split": "val",
+          "slices": 28,
+          "sec": 96.45
+        },
+        {
+          "song": "41_天黑黑",
+          "split": "train",
+          "slices": 25,
+          "sec": 92.78
+        },
+        {
+          "song": "41_好久不见",
+          "split": "train",
+          "slices": 34,
+          "sec": 134.91
+        },
+        {
+          "song": "41_想自由",
+          "split": "train",
+          "slices": 38,
+          "sec": 134.57
+        },
+        {
+          "song": "41_我怀念的",
+          "split": "train",
+          "slices": 41,
+          "sec": 179.62
+        },
+        {
+          "song": "41_戒烟",
+          "split": "train",
+          "slices": 21,
+          "sec": 92.42
+        },
+        {
+          "song": "41_消愁",
+          "split": "train",
+          "slices": 13,
+          "sec": 52.34
+        },
+        {
+          "song": "41_知足",
+          "split": "train",
+          "slices": 32,
+          "sec": 138.08
+        },
+        {
+          "song": "41_空白格",
+          "split": "train",
+          "slices": 38,
+          "sec": 119.68
+        },
+        {
+          "song": "41_突然的自我",
+          "split": "train",
+          "slices": 26,
+          "sec": 92.29
+        },
+        {
+          "song": "41_落叶归根",
+          "split": "train",
+          "slices": 28,
+          "sec": 95.59
+        },
+        {
+          "song": "41_记得",
+          "split": "val",
+          "slices": 40,
+          "sec": 128.68
+        },
+        {
+          "song": "41_说谎",
+          "split": "train",
+          "slices": 34,
+          "sec": 124.0
+        },
+        {
+          "song": "41_那些你很冒险的梦",
+          "split": "train",
+          "slices": 28,
+          "sec": 104.85
+        },
+        {
+          "song": "41_需要人陪",
+          "split": "train",
+          "slices": 21,
+          "sec": 93.74
+        }
+      ]
+    },
+    "12_singer42": {
+      "songs": 18,
+      "val_songs": 2,
+      "slices_train": 525,
+      "slices_val": 51,
+      "train_minutes": 33.61,
+      "val_minutes": 3.51,
+      "song_assignment": [
+        {
+          "song": "42_可惜不是你",
+          "split": "train",
+          "slices": 49,
+          "sec": 180.74
+        },
+        {
+          "song": "42_呼吸决定",
+          "split": "train",
+          "slices": 35,
+          "sec": 126.1
+        },
+        {
+          "song": "42_大鱼",
+          "split": "train",
+          "slices": 27,
+          "sec": 127.38
+        },
+        {
+          "song": "42_天亮了",
+          "split": "train",
+          "slices": 33,
+          "sec": 108.53
+        },
+        {
+          "song": "42_失落沙洲",
+          "split": "train",
+          "slices": 36,
+          "sec": 158.68
+        },
+        {
+          "song": "42_心动",
+          "split": "train",
+          "slices": 34,
+          "sec": 136.47
+        },
+        {
+          "song": "42_情深深雨濛濛",
+          "split": "train",
+          "slices": 46,
+          "sec": 155.51
+        },
+        {
+          "song": "42_我要快乐",
+          "split": "train",
+          "slices": 30,
+          "sec": 123.53
+        },
+        {
+          "song": "42_我要我们在一起",
+          "split": "train",
+          "slices": 26,
+          "sec": 106.82
+        },
+        {
+          "song": "42_春风十里",
+          "split": "val",
+          "slices": 33,
+          "sec": 107.36
+        },
+        {
+          "song": "42_晚婚",
+          "split": "train",
+          "slices": 43,
+          "sec": 153.45
+        },
+        {
+          "song": "42_浪费",
+          "split": "train",
+          "slices": 33,
+          "sec": 149.4
+        },
+        {
+          "song": "42_爱情36计",
+          "split": "train",
+          "slices": 35,
+          "sec": 135.02
+        },
+        {
+          "song": "42_爱的供养",
+          "split": "val",
+          "slices": 18,
+          "sec": 103.06
+        },
+        {
+          "song": "42_爱笑的眼睛",
+          "split": "train",
+          "slices": 37,
+          "sec": 146.68
+        },
+        {
+          "song": "42_红豆",
+          "split": "train",
+          "slices": 8,
+          "sec": 24.13
+        },
+        {
+          "song": "42_致青春",
+          "split": "train",
+          "slices": 32,
+          "sec": 113.54
+        },
+        {
+          "song": "42_那个男人",
+          "split": "train",
+          "slices": 21,
+          "sec": 70.46
+        }
+      ]
+    },
+    "1_singer09": {
+      "songs": 16,
+      "val_songs": 1,
+      "slices_train": 504,
+      "slices_val": 52,
+      "train_minutes": 28.17,
+      "val_minutes": 2.52,
+      "song_assignment": [
+        {
+          "song": "9_不再见",
+          "split": "train",
+          "slices": 33,
+          "sec": 149.86
+        },
+        {
+          "song": "9_云烟成雨",
+          "split": "val",
+          "slices": 52,
+          "sec": 151.46
+        },
+        {
+          "song": "9_关键词",
+          "split": "train",
+          "slices": 30,
+          "sec": 100.92
+        },
+        {
+          "song": "9_化身孤岛的鲸",
+          "split": "train",
+          "slices": 46,
+          "sec": 136.32
+        },
+        {
+          "song": "9_北京东路的日子",
+          "split": "train",
+          "slices": 21,
+          "sec": 67.37
+        },
+        {
+          "song": "9_北京北京",
+          "split": "train",
+          "slices": 35,
+          "sec": 119.74
+        },
+        {
+          "song": "9_大鱼",
+          "split": "train",
+          "slices": 34,
+          "sec": 126.96
+        },
+        {
+          "song": "9_岁月神偷",
+          "split": "train",
+          "slices": 36,
+          "sec": 129.14
+        },
+        {
+          "song": "9_故梦",
+          "split": "train",
+          "slices": 45,
+          "sec": 143.38
+        },
+        {
+          "song": "9_明天你好",
+          "split": "train",
+          "slices": 49,
+          "sec": 129.62
+        },
+        {
+          "song": "9_爱的供养",
+          "split": "train",
+          "slices": 25,
+          "sec": 103.32
+        },
+        {
+          "song": "9_突然好想你",
+          "split": "train",
+          "slices": 39,
+          "sec": 137.63
+        },
+        {
+          "song": "9_红昭愿",
+          "split": "train",
+          "slices": 16,
+          "sec": 38.91
+        },
+        {
+          "song": "9_追光者",
+          "split": "train",
+          "slices": 30,
+          "sec": 97.52
+        },
+        {
+          "song": "9_遇见你的时候所有星星都落在我头上",
+          "split": "train",
+          "slices": 31,
+          "sec": 107.63
+        },
+        {
+          "song": "9_遥不可及的你",
+          "split": "train",
+          "slices": 34,
+          "sec": 101.61
+        }
+      ]
+    },
+    "2_singer14": {
+      "songs": 34,
+      "val_songs": 3,
+      "slices_train": 850,
+      "slices_val": 69,
+      "train_minutes": 50.22,
+      "val_minutes": 4.35,
+      "song_assignment": [
+        {
+          "song": "14_不为谁而作的歌",
+          "split": "train",
+          "slices": 34,
+          "sec": 124.76
+        },
+        {
+          "song": "14_为你我受冷风吹",
+          "split": "train",
+          "slices": 14,
+          "sec": 39.88
+        },
+        {
+          "song": "14_从前慢",
+          "split": "train",
+          "slices": 32,
+          "sec": 115.39
+        },
+        {
+          "song": "14_你把我灌醉",
+          "split": "train",
+          "slices": 41,
+          "sec": 147.85
+        },
+        {
+          "song": "14_修炼爱情",
+          "split": "train",
+          "slices": 26,
+          "sec": 97.11
+        },
+        {
+          "song": "14_倒数",
+          "split": "train",
+          "slices": 35,
+          "sec": 98.16
+        },
+        {
+          "song": "14_光",
+          "split": "val",
+          "slices": 27,
+          "sec": 77.63
+        },
+        {
+          "song": "14_呼吸决定",
+          "split": "train",
+          "slices": 26,
+          "sec": 93.83
+        },
+        {
+          "song": "14_喜欢你",
+          "split": "train",
+          "slices": 8,
+          "sec": 27.94
+        },
+        {
+          "song": "14_大鱼",
+          "split": "train",
+          "slices": 26,
+          "sec": 104.6
+        },
+        {
+          "song": "14_天黑黑",
+          "split": "train",
+          "slices": 38,
+          "sec": 138.92
+        },
+        {
+          "song": "14_好想爱这个世界啊",
+          "split": "train",
+          "slices": 33,
+          "sec": 129.79
+        },
+        {
+          "song": "14_妙龄童",
+          "split": "train",
+          "slices": 8,
+          "sec": 23.44
+        },
+        {
+          "song": "14_小半",
+          "split": "train",
+          "slices": 36,
+          "sec": 108.63
+        },
+        {
+          "song": "14_岁月神偷",
+          "split": "train",
+          "slices": 41,
+          "sec": 152.58
+        },
+        {
+          "song": "14_心动",
+          "split": "train",
+          "slices": 22,
+          "sec": 84.17
+        },
+        {
+          "song": "14_怎么说我不爱你",
+          "split": "val",
+          "slices": 14,
+          "sec": 56.38
+        },
+        {
+          "song": "14_昨日青空",
+          "split": "train",
+          "slices": 16,
+          "sec": 50.96
+        },
+        {
+          "song": "14_泡沫",
+          "split": "train",
+          "slices": 31,
+          "sec": 111.48
+        },
+        {
+          "song": "14_浮生未歇",
+          "split": "train",
+          "slices": 43,
+          "sec": 176.05
+        },
+        {
+          "song": "14_消愁",
+          "split": "train",
+          "slices": 20,
+          "sec": 84.11
+        },
+        {
+          "song": "14_淋雨一直走",
+          "split": "train",
+          "slices": 29,
+          "sec": 71.32
+        },
+        {
+          "song": "14_爱",
+          "split": "train",
+          "slices": 18,
+          "sec": 59.0
+        },
+        {
+          "song": "14_爱的回归线",
+          "split": "train",
+          "slices": 30,
+          "sec": 111.47
+        },
+        {
+          "song": "14_画",
+          "split": "train",
+          "slices": 34,
+          "sec": 105.14
+        },
+        {
+          "song": "14_空白格",
+          "split": "train",
+          "slices": 33,
+          "sec": 107.57
+        },
+        {
+          "song": "14_突然好想你",
+          "split": "train",
+          "slices": 32,
+          "sec": 120.44
+        },
+        {
+          "song": "14_第三人称",
+          "split": "val",
+          "slices": 28,
+          "sec": 127.03
+        },
+        {
+          "song": "14_红豆",
+          "split": "train",
+          "slices": 16,
+          "sec": 55.19
+        },
+        {
+          "song": "14_致青春",
+          "split": "train",
+          "slices": 28,
+          "sec": 93.57
+        },
+        {
+          "song": "14_花田错",
+          "split": "train",
+          "slices": 20,
+          "sec": 76.31
+        },
+        {
+          "song": "14_追梦赤子心",
+          "split": "train",
+          "slices": 20,
+          "sec": 73.68
+        },
+        {
+          "song": "14_长镜头",
+          "split": "train",
+          "slices": 37,
+          "sec": 132.13
+        },
+        {
+          "song": "14_阿楚姑娘",
+          "split": "train",
+          "slices": 23,
+          "sec": 97.47
+        }
+      ]
+    },
+    "3_singer19": {
+      "songs": 17,
+      "val_songs": 1,
+      "slices_train": 562,
+      "slices_val": 33,
+      "train_minutes": 31.95,
+      "val_minutes": 2.0,
+      "song_assignment": [
+        {
+          "song": "19_九张机",
+          "split": "train",
+          "slices": 36,
+          "sec": 117.09
+        },
+        {
+          "song": "19_停格",
+          "split": "train",
+          "slices": 40,
+          "sec": 150.73
+        },
+        {
+          "song": "19_北京东路的日子",
+          "split": "train",
+          "slices": 27,
+          "sec": 86.3
+        },
+        {
+          "song": "19_喜欢你",
+          "split": "train",
+          "slices": 7,
+          "sec": 23.16
+        },
+        {
+          "song": "19_失落沙洲",
+          "split": "train",
+          "slices": 49,
+          "sec": 178.36
+        },
+        {
+          "song": "19_好心分手",
+          "split": "train",
+          "slices": 31,
+          "sec": 90.34
+        },
+        {
+          "song": "19_岁月神偷",
+          "split": "train",
+          "slices": 28,
+          "sec": 93.49
+        },
+        {
+          "song": "19_当你老了",
+          "split": "train",
+          "slices": 31,
+          "sec": 113.96
+        },
+        {
+          "song": "19_我们的爱",
+          "split": "train",
+          "slices": 42,
+          "sec": 161.59
+        },
+        {
+          "song": "19_明天你好",
+          "split": "train",
+          "slices": 59,
+          "sec": 163.98
+        },
+        {
+          "song": "19_有形的翅膀",
+          "split": "val",
+          "slices": 33,
+          "sec": 120.12
+        },
+        {
+          "song": "19_浮生未歇",
+          "split": "train",
+          "slices": 44,
+          "sec": 163.96
+        },
+        {
+          "song": "19_淋雨一直走",
+          "split": "train",
+          "slices": 39,
+          "sec": 103.04
+        },
+        {
+          "song": "19_爱的供养",
+          "split": "train",
+          "slices": 29,
+          "sec": 122.08
+        },
+        {
+          "song": "19_父亲写的散文诗",
+          "split": "train",
+          "slices": 35,
+          "sec": 128.79
+        },
+        {
+          "song": "19_给我一个理由忘记",
+          "split": "train",
+          "slices": 29,
+          "sec": 108.63
+        },
+        {
+          "song": "19_默",
+          "split": "train",
+          "slices": 36,
+          "sec": 111.78
+        }
+      ]
+    },
+    "4_singer21": {
+      "songs": 21,
+      "val_songs": 1,
+      "slices_train": 596,
+      "slices_val": 39,
+      "train_minutes": 37.66,
+      "val_minutes": 2.43,
+      "song_assignment": [
+        {
+          "song": "21_一千年以后",
+          "split": "train",
+          "slices": 13,
+          "sec": 43.39
+        },
+        {
+          "song": "21_大鱼",
+          "split": "train",
+          "slices": 27,
+          "sec": 135.97
+        },
+        {
+          "song": "21_左边",
+          "split": "train",
+          "slices": 50,
+          "sec": 177.92
+        },
+        {
+          "song": "21_巴啦啦小魔仙",
+          "split": "train",
+          "slices": 19,
+          "sec": 60.91
+        },
+        {
+          "song": "21_平凡的一天",
+          "split": "train",
+          "slices": 37,
+          "sec": 178.29
+        },
+        {
+          "song": "21_当你老了",
+          "split": "train",
+          "slices": 27,
+          "sec": 116.43
+        },
+        {
+          "song": "21_故梦",
+          "split": "train",
+          "slices": 34,
+          "sec": 143.96
+        },
+        {
+          "song": "21_春暖花开",
+          "split": "train",
+          "slices": 17,
+          "sec": 67.86
+        },
+        {
+          "song": "21_暖暖",
+          "split": "train",
+          "slices": 35,
+          "sec": 113.58
+        },
+        {
+          "song": "21_最长的电影",
+          "split": "val",
+          "slices": 39,
+          "sec": 145.91
+        },
+        {
+          "song": "21_有一种悲伤",
+          "split": "train",
+          "slices": 21,
+          "sec": 81.83
+        },
+        {
+          "song": "21_水星记",
+          "split": "train",
+          "slices": 34,
+          "sec": 141.05
+        },
+        {
+          "song": "21_淋雨一直走",
+          "split": "train",
+          "slices": 42,
+          "sec": 109.8
+        },
+        {
+          "song": "21_爱的供养",
+          "split": "train",
+          "slices": 20,
+          "sec": 75.02
+        },
+        {
+          "song": "21_白羊",
+          "split": "train",
+          "slices": 39,
+          "sec": 117.84
+        },
+        {
+          "song": "21_童话镇",
+          "split": "train",
+          "slices": 36,
+          "sec": 125.85
+        },
+        {
+          "song": "21_红豆",
+          "split": "train",
+          "slices": 35,
+          "sec": 153.52
+        },
+        {
+          "song": "21_致青春",
+          "split": "train",
+          "slices": 24,
+          "sec": 96.62
+        },
+        {
+          "song": "21_追光者",
+          "split": "train",
+          "slices": 32,
+          "sec": 114.42
+        },
+        {
+          "song": "21_遇见你的时候所有星星都落在我头上",
+          "split": "train",
+          "slices": 37,
+          "sec": 141.34
+        },
+        {
+          "song": "21_默",
+          "split": "train",
+          "slices": 17,
+          "sec": 64.18
+        }
+      ]
+    },
+    "5_singer27": {
+      "songs": 18,
+      "val_songs": 1,
+      "slices_train": 576,
+      "slices_val": 32,
+      "train_minutes": 33.36,
+      "val_minutes": 2.0,
+      "song_assignment": [
+        {
+          "song": "27_不为谁而作的歌",
+          "split": "train",
+          "slices": 30,
+          "sec": 107.7
+        },
+        {
+          "song": "27_十万毫升泪水",
+          "split": "train",
+          "slices": 44,
+          "sec": 135.53
+        },
+        {
+          "song": "27_十二月的奇迹",
+          "split": "train",
+          "slices": 33,
+          "sec": 102.6
+        },
+        {
+          "song": "27_可惜不是你",
+          "split": "train",
+          "slices": 38,
+          "sec": 141.7
+        },
+        {
+          "song": "27_喜欢你",
+          "split": "train",
+          "slices": 6,
+          "sec": 17.77
+        },
+        {
+          "song": "27_大鱼",
+          "split": "train",
+          "slices": 31,
+          "sec": 130.01
+        },
+        {
+          "song": "27_失落沙洲",
+          "split": "train",
+          "slices": 45,
+          "sec": 172.15
+        },
+        {
+          "song": "27_岁月神偷",
+          "split": "train",
+          "slices": 24,
+          "sec": 80.34
+        },
+        {
+          "song": "27_左边",
+          "split": "train",
+          "slices": 53,
+          "sec": 164.8
+        },
+        {
+          "song": "27_我们的爱",
+          "split": "train",
+          "slices": 29,
+          "sec": 117.14
+        },
+        {
+          "song": "27_我好想你",
+          "split": "train",
+          "slices": 44,
+          "sec": 138.98
+        },
+        {
+          "song": "27_有形的翅膀",
+          "split": "train",
+          "slices": 25,
+          "sec": 86.86
+        },
+        {
+          "song": "27_泡沫",
+          "split": "train",
+          "slices": 37,
+          "sec": 122.63
+        },
+        {
+          "song": "27_父亲写的散文诗",
+          "split": "train",
+          "slices": 37,
+          "sec": 127.93
+        },
+        {
+          "song": "27_红豆",
+          "split": "train",
+          "slices": 45,
+          "sec": 159.67
+        },
+        {
+          "song": "27_给我一个理由忘记",
+          "split": "val",
+          "slices": 32,
+          "sec": 119.93
+        },
+        {
+          "song": "27_追光者",
+          "split": "train",
+          "slices": 37,
+          "sec": 118.43
+        },
+        {
+          "song": "27_遇见",
+          "split": "train",
+          "slices": 18,
+          "sec": 77.49
+        }
+      ]
+    },
+    "6_singer28": {
+      "songs": 16,
+      "val_songs": 2,
+      "slices_train": 473,
+      "slices_val": 59,
+      "train_minutes": 28.04,
+      "val_minutes": 3.36,
+      "song_assignment": [
+        {
+          "song": "28_Dance",
+          "split": "train",
+          "slices": 34,
+          "sec": 144.95
+        },
+        {
+          "song": "28_丑八怪",
+          "split": "train",
+          "slices": 28,
+          "sec": 95.66
+        },
+        {
+          "song": "28_催眠",
+          "split": "train",
+          "slices": 37,
+          "sec": 105.25
+        },
+        {
+          "song": "28_北京北京",
+          "split": "val",
+          "slices": 37,
+          "sec": 131.01
+        },
+        {
+          "song": "28_带我走",
+          "split": "train",
+          "slices": 32,
+          "sec": 120.12
+        },
+        {
+          "song": "28_我爱他",
+          "split": "train",
+          "slices": 43,
+          "sec": 174.77
+        },
+        {
+          "song": "28_春泥",
+          "split": "train",
+          "slices": 34,
+          "sec": 121.6
+        },
+        {
+          "song": "28_有你的快乐",
+          "split": "train",
+          "slices": 30,
+          "sec": 110.41
+        },
+        {
+          "song": "28_流星雨",
+          "split": "train",
+          "slices": 30,
+          "sec": 111.86
+        },
+        {
+          "song": "28_爱情36计",
+          "split": "val",
+          "slices": 22,
+          "sec": 70.59
+        },
+        {
+          "song": "28_特别的人",
+          "split": "train",
+          "slices": 36,
+          "sec": 109.72
+        },
+        {
+          "song": "28_电台情歌",
+          "split": "train",
+          "slices": 26,
+          "sec": 100.97
+        },
+        {
+          "song": "28_红豆",
+          "split": "train",
+          "slices": 44,
+          "sec": 159.9
+        },
+        {
+          "song": "28_致青春",
+          "split": "train",
+          "slices": 33,
+          "sec": 101.3
+        },
+        {
+          "song": "28_阿飞的小蝴蝶",
+          "split": "train",
+          "slices": 34,
+          "sec": 103.94
+        },
+        {
+          "song": "28_雨下一整晚",
+          "split": "train",
+          "slices": 32,
+          "sec": 121.71
+        }
+      ]
+    },
+    "7_singer30": {
+      "songs": 15,
+      "val_songs": 1,
+      "slices_train": 382,
+      "slices_val": 24,
+      "train_minutes": 23.2,
+      "val_minutes": 1.56,
+      "song_assignment": [
+        {
+          "song": "30_从前慢",
+          "split": "train",
+          "slices": 30,
+          "sec": 100.61
+        },
+        {
+          "song": "30_你把我灌醉",
+          "split": "train",
+          "slices": 47,
+          "sec": 164.42
+        },
+        {
+          "song": "30_十万毫升泪水",
+          "split": "train",
+          "slices": 42,
+          "sec": 147.14
+        },
+        {
+          "song": "30_天亮了",
+          "split": "train",
+          "slices": 29,
+          "sec": 86.77
+        },
+        {
+          "song": "30_小小",
+          "split": "train",
+          "slices": 42,
+          "sec": 159.15
+        },
+        {
+          "song": "30_岁月神偷",
+          "split": "train",
+          "slices": 32,
+          "sec": 118.21
+        },
+        {
+          "song": "30_巴啦啦小魔仙",
+          "split": "train",
+          "slices": 22,
+          "sec": 74.34
+        },
+        {
+          "song": "30_心动",
+          "split": "val",
+          "slices": 24,
+          "sec": 93.65
+        },
+        {
+          "song": "30_手心的蔷薇",
+          "split": "train",
+          "slices": 20,
+          "sec": 87.27
+        },
+        {
+          "song": "30_拾忆",
+          "split": "train",
+          "slices": 11,
+          "sec": 44.51
+        },
+        {
+          "song": "30_无问",
+          "split": "train",
+          "slices": 27,
+          "sec": 112.25
+        },
+        {
+          "song": "30_棉花糖",
+          "split": "train",
+          "slices": 9,
+          "sec": 38.5
+        },
+        {
+          "song": "30_父亲写的散文诗",
+          "split": "train",
+          "slices": 34,
+          "sec": 124.81
+        },
+        {
+          "song": "30_盛夏光年",
+          "split": "train",
+          "slices": 9,
+          "sec": 27.85
+        },
+        {
+          "song": "30_空心",
+          "split": "train",
+          "slices": 28,
+          "sec": 106.14
+        }
+      ]
+    },
+    "8_singer32": {
+      "songs": 14,
+      "val_songs": 2,
+      "slices_train": 340,
+      "slices_val": 32,
+      "train_minutes": 22.04,
+      "val_minutes": 1.99,
+      "song_assignment": [
+        {
+          "song": "32_九张机",
+          "split": "train",
+          "slices": 36,
+          "sec": 121.36
+        },
+        {
+          "song": "32_光",
+          "split": "val",
+          "slices": 25,
+          "sec": 75.43
+        },
+        {
+          "song": "32_因为遇见你",
+          "split": "train",
+          "slices": 15,
+          "sec": 77.22
+        },
+        {
+          "song": "32_大鱼",
+          "split": "train",
+          "slices": 24,
+          "sec": 123.52
+        },
+        {
+          "song": "32_岁月神偷",
+          "split": "train",
+          "slices": 30,
+          "sec": 109.35
+        },
+        {
+          "song": "32_斑马斑马",
+          "split": "val",
+          "slices": 7,
+          "sec": 43.82
+        },
+        {
+          "song": "32_有形的翅膀",
+          "split": "train",
+          "slices": 34,
+          "sec": 135.51
+        },
+        {
+          "song": "32_有点甜",
+          "split": "train",
+          "slices": 39,
+          "sec": 133.35
+        },
+        {
+          "song": "32_桥豆麻袋",
+          "split": "train",
+          "slices": 23,
+          "sec": 78.96
+        },
+        {
+          "song": "32_梨花又开放",
+          "split": "train",
+          "slices": 30,
+          "sec": 108.84
+        },
+        {
+          "song": "32_父亲写的散文诗",
+          "split": "train",
+          "slices": 35,
+          "sec": 138.26
+        },
+        {
+          "song": "32_童话镇",
+          "split": "train",
+          "slices": 37,
+          "sec": 114.77
+        },
+        {
+          "song": "32_遇见",
+          "split": "train",
+          "slices": 11,
+          "sec": 57.01
+        },
+        {
+          "song": "32_隐形的翅膀",
+          "split": "train",
+          "slices": 26,
+          "sec": 124.19
+        }
+      ]
+    },
+    "9_singer33": {
+      "songs": 16,
+      "val_songs": 2,
+      "slices_train": 435,
+      "slices_val": 50,
+      "train_minutes": 25.81,
+      "val_minutes": 3.06,
+      "song_assignment": [
+        {
+          "song": "33_东风志",
+          "split": "train",
+          "slices": 28,
+          "sec": 97.01
+        },
+        {
+          "song": "33_九万字",
+          "split": "val",
+          "slices": 30,
+          "sec": 109.81
+        },
+        {
+          "song": "33_九张机",
+          "split": "train",
+          "slices": 26,
+          "sec": 84.81
+        },
+        {
+          "song": "33_从前慢",
+          "split": "train",
+          "slices": 25,
+          "sec": 94.26
+        },
+        {
+          "song": "33_化身孤岛的鲸",
+          "split": "train",
+          "slices": 53,
+          "sec": 162.69
+        },
+        {
+          "song": "33_吹梦到西洲",
+          "split": "train",
+          "slices": 44,
+          "sec": 168.8
+        },
+        {
+          "song": "33_大鱼",
+          "split": "train",
+          "slices": 31,
+          "sec": 129.04
+        },
+        {
+          "song": "33_心动",
+          "split": "train",
+          "slices": 30,
+          "sec": 105.81
+        },
+        {
+          "song": "33_浮生未歇",
+          "split": "train",
+          "slices": 41,
+          "sec": 143.22
+        },
+        {
+          "song": "33_海底",
+          "split": "train",
+          "slices": 30,
+          "sec": 103.96
+        },
+        {
+          "song": "33_眉间雪",
+          "split": "train",
+          "slices": 33,
+          "sec": 149.77
+        },
+        {
+          "song": "33_红颜旧",
+          "split": "train",
+          "slices": 32,
+          "sec": 111.47
+        },
+        {
+          "song": "33_舍不得",
+          "split": "train",
+          "slices": 26,
+          "sec": 84.47
+        },
+        {
+          "song": "33_落霜",
+          "split": "train",
+          "slices": 21,
+          "sec": 62.95
+        },
+        {
+          "song": "33_辞九门回忆",
+          "split": "train",
+          "slices": 15,
+          "sec": 50.19
+        },
+        {
+          "song": "33_锦鲤抄",
+          "split": "val",
+          "slices": 20,
+          "sec": 73.89
+        }
+      ]
+    },
+    "13_lingxi": {
+      "songs": 11,
+      "val_songs": 2,
+      "slices_train": 138,
+      "slices_val": 34,
+      "train_minutes": 25.2,
+      "val_minutes": 5.75,
+      "song_assignment": [
+        {
+          "song": "r13_00",
+          "split": "train",
+          "slices": 20,
+          "sec": 208.5
+        },
+        {
+          "song": "r13_01",
+          "split": "train",
+          "slices": 14,
+          "sec": 166.92
+        },
+        {
+          "song": "r13_02",
+          "split": "train",
+          "slices": 14,
+          "sec": 165.18
+        },
+        {
+          "song": "r13_05",
+          "split": "val",
+          "slices": 16,
+          "sec": 169.92
+        },
+        {
+          "song": "r13_06",
+          "split": "train",
+          "slices": 17,
+          "sec": 197.64
+        },
+        {
+          "song": "r13_07",
+          "split": "train",
+          "slices": 16,
+          "sec": 186.84
+        },
+        {
+          "song": "r13_08",
+          "split": "val",
+          "slices": 18,
+          "sec": 175.1
+        },
+        {
+          "song": "r13_09",
+          "split": "train",
+          "slices": 11,
+          "sec": 131.34
+        },
+        {
+          "song": "r13_10",
+          "split": "train",
+          "slices": 20,
+          "sec": 172.64
+        },
+        {
+          "song": "r13_11",
+          "split": "train",
+          "slices": 15,
+          "sec": 150.28
+        },
+        {
+          "song": "r13_12",
+          "split": "train",
+          "slices": 11,
+          "sec": 132.84
+        }
+      ]
+    }
+  }
+}

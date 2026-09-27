@@ -10,3 +10,5 @@ logs/
 samples/
 data/timbre_blend_*/
 reports/opensinger_file_metrics.jsonl
+# Private HF Storage Bucket content; never commit private audio.
+datasets/private-timbre/

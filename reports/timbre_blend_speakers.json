@@ -1,5 +1,5 @@
 {
-  "n_spk": 12,
+  "n_spk": 13,
   "id_convention": "audio subdir first _/- token, 1-based (reflow/data_loaders.py)",
   "seed": 20260927,
   "mapping": [
@@ -62,6 +62,11 @@
       "spk_id": 12,
       "opensinger_singer": 42,
       "dir_name": "12_singer42"
+    },
+    {
+      "spk_id": 13,
+      "singer": "泠溪小狐狸 / 若溪（虚拟歌手）",
+      "dir_name": "13_lingxi"
     }
   ],
   "holdout_singers": [

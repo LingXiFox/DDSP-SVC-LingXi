@@ -1,6 +1,8 @@
 import os
 import argparse
 import torch
+import numpy as np
+import random
 from torch.optim import lr_scheduler
 from optimizer.muon import Muon_AdamW
 from logger import utils
@@ -67,6 +69,12 @@ if __name__ == '__main__':
     args = utils.load_config(cmd.config)
     print(' > config:', cmd.config)
     print(' >    exp:', args.env.expdir)
+    if args.train.get('seed') is not None:
+        seed = int(args.train.seed)
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        print(' > training seed:', seed)
 
     vocoder = Vocoder(
         args.vocoder.type,
@@ -202,6 +210,25 @@ if __name__ == '__main__':
         args,
         whole_audio=False,
     )
+
+    if args.train.get('virtual_spk_id') is not None:
+        from torch.utils.data import DataLoader, Subset
+        target = str(int(args.train.virtual_spk_id))
+        paths = loader_valid.dataset.paths
+        is_virtual = [p.split(os.sep, 1)[0].split('_', 1)[0] == target
+                      for p in paths]
+        indices = {
+            'public': [i for i, flag in enumerate(is_virtual) if not flag],
+            'virtual': [i for i, flag in enumerate(is_virtual) if flag],
+        }
+        if not all(indices.values()):
+            raise ValueError('both public and virtual validation sets are required')
+        loader_valid = {
+            key: DataLoader(Subset(loader_valid.dataset, idx), batch_size=1,
+                            shuffle=False, num_workers=0, pin_memory=False)
+            for key, idx in indices.items()
+        }
+        print(' > validation slices:', {key: len(idx) for key, idx in indices.items()})
 
     train(
         args,

@@ -1,0 +1,1052 @@
+{
+  "root": "data/timbre_blend_stage1",
+  "splits": {
+    "train": {
+      "songs": 230,
+      "slices": 6665
+    },
+    "val": {
+      "songs": 162,
+      "slices": 345
+    }
+  },
+  "songs_shared_across_splits": 162,
+  "shared_song_detail": [
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_一笑倾城",
+      "train_slices": 35,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_七月上",
+      "train_slices": 5,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_世间美好与你环环相扣",
+      "train_slices": 30,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_云烟成雨",
+      "train_slices": 49,
+      "val_slices": 6
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_化身孤岛的鲸",
+      "train_slices": 37,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_可能否",
+      "train_slices": 34,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_奇妙能力歌",
+      "train_slices": 24,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_巴啦啦小魔仙",
+      "train_slices": 9,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_情深深雨濛濛",
+      "train_slices": 33,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_明天你好",
+      "train_slices": 54,
+      "val_slices": 5
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_暖暖",
+      "train_slices": 46,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_有可能的夜晚",
+      "train_slices": 38,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_有点甜",
+      "train_slices": 41,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_爱的供养",
+      "train_slices": 20,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_父亲",
+      "train_slices": 5,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_离岸",
+      "train_slices": 30,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_突然好想你",
+      "train_slices": 42,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_约定",
+      "train_slices": 33,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "10_singer36",
+      "song": "36_遥不可及的你",
+      "train_slices": 24,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_一次就好",
+      "train_slices": 26,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_不再见",
+      "train_slices": 33,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_你不知道的事",
+      "train_slices": 33,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_修炼爱情",
+      "train_slices": 27,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_天黑黑",
+      "train_slices": 24,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_好久不见",
+      "train_slices": 31,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_想自由",
+      "train_slices": 36,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_知足",
+      "train_slices": 31,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_落叶归根",
+      "train_slices": 27,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_记得",
+      "train_slices": 37,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_说谎",
+      "train_slices": 29,
+      "val_slices": 5
+    },
+    {
+      "speaker_dir": "11_singer41",
+      "song": "41_那些你很冒险的梦",
+      "train_slices": 25,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_可惜不是你",
+      "train_slices": 48,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_呼吸决定",
+      "train_slices": 32,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_大鱼",
+      "train_slices": 25,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_天亮了",
+      "train_slices": 30,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_失落沙洲",
+      "train_slices": 33,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_心动",
+      "train_slices": 32,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_春风十里",
+      "train_slices": 30,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_晚婚",
+      "train_slices": 42,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_爱情36计",
+      "train_slices": 33,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_爱的供养",
+      "train_slices": 16,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_爱笑的眼睛",
+      "train_slices": 36,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "12_singer42",
+      "song": "42_那个男人",
+      "train_slices": 17,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_不再见",
+      "train_slices": 31,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_云烟成雨",
+      "train_slices": 51,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_化身孤岛的鲸",
+      "train_slices": 44,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_北京东路的日子",
+      "train_slices": 20,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_大鱼",
+      "train_slices": 31,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_岁月神偷",
+      "train_slices": 34,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_故梦",
+      "train_slices": 43,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_明天你好",
+      "train_slices": 46,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_突然好想你",
+      "train_slices": 35,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_追光者",
+      "train_slices": 28,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_遇见你的时候所有星星都落在我头上",
+      "train_slices": 30,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "1_singer09",
+      "song": "9_遥不可及的你",
+      "train_slices": 31,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_不为谁而作的歌",
+      "train_slices": 32,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_从前慢",
+      "train_slices": 28,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_修炼爱情",
+      "train_slices": 25,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_倒数",
+      "train_slices": 31,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_光",
+      "train_slices": 25,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_大鱼",
+      "train_slices": 25,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_天黑黑",
+      "train_slices": 37,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_好想爱这个世界啊",
+      "train_slices": 32,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_小半",
+      "train_slices": 34,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_心动",
+      "train_slices": 21,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_怎么说我不爱你",
+      "train_slices": 11,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_昨日青空",
+      "train_slices": 15,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_泡沫",
+      "train_slices": 27,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_消愁",
+      "train_slices": 19,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_爱",
+      "train_slices": 15,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_爱的回归线",
+      "train_slices": 28,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_画",
+      "train_slices": 31,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_空白格",
+      "train_slices": 31,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_突然好想你",
+      "train_slices": 29,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_红豆",
+      "train_slices": 14,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_致青春",
+      "train_slices": 27,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_花田错",
+      "train_slices": 19,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_追梦赤子心",
+      "train_slices": 19,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "2_singer14",
+      "song": "14_长镜头",
+      "train_slices": 35,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_九张机",
+      "train_slices": 35,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_停格",
+      "train_slices": 39,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_北京东路的日子",
+      "train_slices": 26,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_失落沙洲",
+      "train_slices": 45,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_好心分手",
+      "train_slices": 30,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_岁月神偷",
+      "train_slices": 26,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_当你老了",
+      "train_slices": 28,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_我们的爱",
+      "train_slices": 41,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_明天你好",
+      "train_slices": 58,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_有形的翅膀",
+      "train_slices": 31,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_浮生未歇",
+      "train_slices": 43,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_淋雨一直走",
+      "train_slices": 35,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_父亲写的散文诗",
+      "train_slices": 33,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_给我一个理由忘记",
+      "train_slices": 28,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "3_singer19",
+      "song": "19_默",
+      "train_slices": 35,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_一千年以后",
+      "train_slices": 12,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_大鱼",
+      "train_slices": 26,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_左边",
+      "train_slices": 49,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_巴啦啦小魔仙",
+      "train_slices": 18,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_平凡的一天",
+      "train_slices": 36,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_故梦",
+      "train_slices": 31,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_暖暖",
+      "train_slices": 34,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_最长的电影",
+      "train_slices": 34,
+      "val_slices": 5
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_有一种悲伤",
+      "train_slices": 18,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_淋雨一直走",
+      "train_slices": 38,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_白羊",
+      "train_slices": 37,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_童话镇",
+      "train_slices": 34,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_红豆",
+      "train_slices": 32,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "4_singer21",
+      "song": "21_追光者",
+      "train_slices": 30,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_不为谁而作的歌",
+      "train_slices": 26,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_十万毫升泪水",
+      "train_slices": 43,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_十二月的奇迹",
+      "train_slices": 31,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_可惜不是你",
+      "train_slices": 35,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_失落沙洲",
+      "train_slices": 43,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_岁月神偷",
+      "train_slices": 23,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_左边",
+      "train_slices": 52,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_我们的爱",
+      "train_slices": 27,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_我好想你",
+      "train_slices": 40,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_有形的翅膀",
+      "train_slices": 22,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_泡沫",
+      "train_slices": 35,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_红豆",
+      "train_slices": 42,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "5_singer27",
+      "song": "27_给我一个理由忘记",
+      "train_slices": 29,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_Dance",
+      "train_slices": 32,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_丑八怪",
+      "train_slices": 26,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_催眠",
+      "train_slices": 33,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_我爱他",
+      "train_slices": 38,
+      "val_slices": 5
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_春泥",
+      "train_slices": 33,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_有你的快乐",
+      "train_slices": 28,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_流星雨",
+      "train_slices": 27,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_特别的人",
+      "train_slices": 35,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_红豆",
+      "train_slices": 42,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_致青春",
+      "train_slices": 32,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_阿飞的小蝴蝶",
+      "train_slices": 33,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "6_singer28",
+      "song": "28_雨下一整晚",
+      "train_slices": 30,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_从前慢",
+      "train_slices": 28,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_你把我灌醉",
+      "train_slices": 44,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_十万毫升泪水",
+      "train_slices": 38,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_巴啦啦小魔仙",
+      "train_slices": 21,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_心动",
+      "train_slices": 22,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_拾忆",
+      "train_slices": 9,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_无问",
+      "train_slices": 25,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_父亲写的散文诗",
+      "train_slices": 32,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_盛夏光年",
+      "train_slices": 7,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "7_singer30",
+      "song": "30_空心",
+      "train_slices": 27,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "8_singer32",
+      "song": "32_九张机",
+      "train_slices": 33,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "8_singer32",
+      "song": "32_光",
+      "train_slices": 23,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "8_singer32",
+      "song": "32_岁月神偷",
+      "train_slices": 26,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "8_singer32",
+      "song": "32_有形的翅膀",
+      "train_slices": 31,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "8_singer32",
+      "song": "32_有点甜",
+      "train_slices": 37,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "8_singer32",
+      "song": "32_桥豆麻袋",
+      "train_slices": 21,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "8_singer32",
+      "song": "32_梨花又开放",
+      "train_slices": 28,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "8_singer32",
+      "song": "32_父亲写的散文诗",
+      "train_slices": 34,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_东风志",
+      "train_slices": 26,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_九万字",
+      "train_slices": 26,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_九张机",
+      "train_slices": 25,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_化身孤岛的鲸",
+      "train_slices": 50,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_吹梦到西洲",
+      "train_slices": 39,
+      "val_slices": 5
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_大鱼",
+      "train_slices": 29,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_心动",
+      "train_slices": 28,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_浮生未歇",
+      "train_slices": 38,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_海底",
+      "train_slices": 29,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_眉间雪",
+      "train_slices": 32,
+      "val_slices": 1
+    },
+    {
+      "speaker_dir": "9_singer33",
+      "song": "33_锦鲤抄",
+      "train_slices": 18,
+      "val_slices": 2
+    }
+  ],
+  "identical_slice_paths_in_both_splits": 0,
+  "per_speaker": {
+    "10_singer36": {
+      "songs_train": 27,
+      "songs_val": 19,
+      "leaked_songs": 19
+    },
+    "11_singer41": {
+      "songs_train": 18,
+      "songs_val": 12,
+      "leaked_songs": 12
+    },
+    "12_singer42": {
+      "songs_train": 18,
+      "songs_val": 12,
+      "leaked_songs": 12
+    },
+    "1_singer09": {
+      "songs_train": 16,
+      "songs_val": 12,
+      "leaked_songs": 12
+    },
+    "2_singer14": {
+      "songs_train": 34,
+      "songs_val": 24,
+      "leaked_songs": 24
+    },
+    "3_singer19": {
+      "songs_train": 17,
+      "songs_val": 15,
+      "leaked_songs": 15
+    },
+    "4_singer21": {
+      "songs_train": 21,
+      "songs_val": 14,
+      "leaked_songs": 14
+    },
+    "5_singer27": {
+      "songs_train": 18,
+      "songs_val": 13,
+      "leaked_songs": 13
+    },
+    "6_singer28": {
+      "songs_train": 16,
+      "songs_val": 12,
+      "leaked_songs": 12
+    },
+    "7_singer30": {
+      "songs_train": 15,
+      "songs_val": 10,
+      "leaked_songs": 10
+    },
+    "8_singer32": {
+      "songs_train": 14,
+      "songs_val": 8,
+      "leaked_songs": 8
+    },
+    "9_singer33": {
+      "songs_train": 16,
+      "songs_val": 11,
+      "leaked_songs": 11
+    }
+  },
+  "verdict": "FAIL"
+}

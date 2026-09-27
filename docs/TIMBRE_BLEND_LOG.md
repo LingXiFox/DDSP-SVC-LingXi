@@ -630,3 +630,22 @@ OpenSinger download runs. No GPU training started; download untouched.
 - WSL2 三个坑的修复保留在 `.tmp/run_tb.py`：Rust data-server 静默死亡（--load_fast=false）、未绑定回环端口 connect_ex 黑洞（1s 超时包装）、镜像模式 LAN 入站需防火墙规则
 
 → **【人工关卡 2】**：训练与样本交付完毕，等待主人试听验收后进入 Stage 2（虚拟歌手 spk13 微调）。
+
+## 2026-09-27 Stage 2 启动前修正（关卡 2 后）
+
+- **纠错**：先前「Stage 1 歌级 train/val 零交集」的判断错误，检查器当时只去掉 `__sN`，漏掉 OpenSinger 同一首歌不同 `_段号`。重新按 `(歌手, 整首歌)` 检查：Stage 1 训练 **230** 首 / 验证 **162** 首，交集 **162**；虚拟歌手原 `sliced-v2` 训练/验证各 **11** 首，交集 **11**。这两个旧验证集均有泄漏，Stage 1 `model_20000.pt` 是在泄漏验证集上选的，真实最佳点可能早于 20k。0.4255 **仅作历史参考**，不得用于新集遗忘阈值。已征得主人同意：保留该 ckpt，在固定新集上重测基线。
+- 脚本：`scripts/check_song_split_leakage.py`（缺失目录也判 FAIL），测试 `tests/test_song_key.py`。纠错前报告：`reports/split_leakage_before_stage1.json` 和 `reports/split_leakage_before_slicedv2.json`。
+- 新建 **独立** `data/timbre_blend_stage2/`（原始 Stage 1/私有音频不动），歌曲级确定性划分；train **220 首/6590 切片**，val **21 首/592 切片**（公开 19 首/558、虚拟 2 首/34），歌曲交集 **0**。19 首公开验证歌从 Stage 2 replay 中全部剔除（脚本断言 PASS）；独立报告 `reports/timbre_blend_stage2_split.json`、`reports/split_leakage_after_stage2.json`。Stage 2 预处理完全沿用 Stage 1 特征参数，7182 个切片逐文件审计 **PASS / 0 缺失 / 0 损坏**（`.tmp/stage2_feature_audit.json`）。
+- 重要限制：19 首新的公开 val 歌**全部曾进入 Stage 1 训练**，因此此公开曲线只用于同一固定数据上的**遗忘检测**，不代表未见歌泛化。Stage 2 虚拟歌手对 `model_20000.pt` 为新数据，整歌划分后的虚拟 val 将用于主要 checkpoint 选择。
+- 公开歌手 #41（spk11）在 Stage 1 **参与训练**（训练树有 519 切片），原关卡 2 所谓「跨说话人测试」并非未见歌手测试。按原 holdout 名单 [10,29,47] 准备三位未训练歌手的测试输入；原始音频保持只读，推理待基线结束后执行。
+- 私有 `LingXiFox/ddsp-svc-lingxi` 是 HF **Storage Bucket**，不是 dataset repo；只以 `HF_ENDPOINT=https://huggingface.co` 访问官方端点。官方 Bucket 直连枚举 172 个 `sliced-v2` WAV，**本机 172 个文件大小逐一匹配**，未向镜像发送私有请求；`datasets/private-timbre/` 已加入 `.gitignore`。仅能证明当前直接元数据和本机文件匹配，先前已存在文件的下载链路未观察，不声称有下载过程审计证据。公开模型仍可使用镜像。
+- TensorBoard 现只绑定 **127.0.0.1:6006**（`ss -tln` 实测），不再接受局域网直连；旧 Windows 入站规则虽仍在，但无对外监听。
+- 起点 checkpoint **MD5=e026eb6e60b7e2e8ba4c579ad8a0ceff** 与指定值逐字匹配；独立迁移校验：12/12 旧 speaker embedding 行逐字节相等，其他全部可比权重 exact equality；spk13 是新增行，fresh optimizer，Stage 2 step 从 0 计。A/B 两组初始权重相同，独立 expdir。配置均 lr=5e-5、batch=48、虚拟回放目标 50%、每 1000 步验证并全留 ckpt、最多计划 10000 步、realism=false；B freeze_reflow=true + exclude_spk=[13]，A 两项均关闭。固定验证随机种子且恢复训练 RNG，分别记录公开/虚拟全量验证集的 ddsp/reflow/mel 曲线。单测（mask + split + stage2 RNG / replay）28 PASS。
+- 新公开 ddsp 初始基线以及全部 `mel_val_*` 将由不训练的 step-0 验证写入 `exp/timbre_blend_stage2_masked/baseline.json`；公开遗忘警戒线是**该新基线 ×1.10**。`mel_val_*` 的每次变化也将完整归档并汇报，不以旧泄漏数值作对照。虚拟歌手曲线先降后连续两升停训，挑拐点附近 checkpoint；遗忘触发则立即停训并先报告。
+
+### Stage 2 零步基线（B 配置，固定全量新验证集）
+- `BASELINE_START=18:40:11`，`BASELINE_END=18:42:31`，`EXIT=0`，零次参数更新；模型从 20k 权重迁移至 13 spk，运行前 MD5 通过。
+- 公开（558 切片、19 首歌，**只用于遗忘检测、非未见歌泛化**）：ddsp_loss **0.25046291546795957**、reflow_loss **0.03105112985524542**、mel_val_mse **0.321774833999227**、mel_val_snr **45.57452837626139**、mel_val_psnr **44.75988653996512**、mel_val_sisnr **45.570797294698735**；遗忘暂停线 **0.27550920701475555**（新 ddsp 基线 ×1.10，严格“大于”才触发）。
+- 虚拟歌手（34 切片、2 首新歌）：ddsp_loss **6.497708446839276**、reflow_loss **0**（按 B 掩码排除）、reflow_loss_excluded_diagnostic **3.3281879800620335**（不参与优化）、mel_val_mse **6.95990044930402**、mel_val_snr **32.53868439618279**、mel_val_psnr **31.358286072226132**、mel_val_sisnr **32.57868643367992**。
+- 权威基线 JSON：`exp/timbre_blend_stage2_masked/baseline.json`（可再生运行产物；关卡 3 固化到报告）。
+- 补齐**真正未见歌手**输入 [10,29,47]：`~/Downloads/timbre_blend_stage1_samples/holdout_unseen_singers/` 含 3 输入 + 3 输出 + records.tsv。旧 #41 是已训练歌手，其旧跨说话人样本只测了已见歌手间转换，不能替代这 3 条未见歌手测试。

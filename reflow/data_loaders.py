@@ -6,7 +6,7 @@ import librosa
 import torch
 import random
 from tqdm import tqdm
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, WeightedRandomSampler
 import concurrent.futures
 
 
@@ -75,10 +75,30 @@ def get_data_loaders(args, whole_audio=False):
         device=args.train.cache_device,
         fp16=args.train.cache_fp16,
         use_aug=True)
+    replay_fraction = args.train.get('virtual_replay_fraction')
+    sampler = None
+    if replay_fraction is not None:
+        fraction = float(replay_fraction)
+        target = int(args.train.virtual_spk_id)
+        if not 0 < fraction < 1:
+            raise ValueError('virtual_replay_fraction must be between 0 and 1')
+        virtual = [p.split(os.sep, 1)[0].split('_', 1)[0] == str(target)
+                   for p in data_train.paths]
+        nv, npub = sum(virtual), len(virtual) - sum(virtual)
+        if not nv or not npub:
+            raise ValueError('replay needs both virtual and public samples')
+        weights = [fraction / nv if is_virtual else (1 - fraction) / npub
+                   for is_virtual in virtual]
+        generator = torch.Generator().manual_seed(int(args.train.get('seed') or 0))
+        sampler = WeightedRandomSampler(weights, len(virtual), replacement=True,
+                                        generator=generator)
+        print(f' [replay] virtual samples={nv}, public samples={npub}, '
+              f'target fraction={fraction:.1%}, replacement=True')
     loader_train = torch.utils.data.DataLoader(
         data_train ,
         batch_size=args.train.batch_size if not whole_audio else 1,
-        shuffle=True,
+        shuffle=sampler is None,
+        sampler=sampler,
         num_workers=args.train.num_workers if args.train.cache_device=='cpu' else 0,
         persistent_workers=(args.train.num_workers > 0) if args.train.cache_device=='cpu' else False,
         # pin_memory disabled (2026-09-27): the pt_data_pin thread's
