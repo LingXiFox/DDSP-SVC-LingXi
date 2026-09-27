@@ -537,3 +537,49 @@ OpenSinger download runs. No GPU training started; download untouched.
 
 #### 下一步
 - Stage 1c：200-step bf16 smoke（计划 §13.2 清单）→ 正式训练 →【人工关卡 2】
+
+---
+
+## 2026-09-27 · Stage 1c smoke 测试：一次死锁 → 根因定位与修复 → 二跑全绿（4398 步）
+
+### Smoke #1（13:35–14:42）——FAIL：首次 validation 冻结
+
+- 训练本体健康：100 步/13.7s（8.4 batch/s），loss 10.25→1.73，0 NaN，model_100.pt（219MB）正常落盘，VRAM 峰值 4527MiB/16376MiB，49°C，54.9M 参数全可训练，realism 参数 0
+- 第一次 validation（当时为全量 345 样本）在样本 1 处 66 分钟无任何输出，GPU 利用率 0% → 判定冻结；kill tmux 会话（SIGHUP），追加 SMOKE_FAILED 标记。证据：.tmp/smoke_run_hang1.log
+- 取证（py-spy/gdb/strace 均未安装，全程 /proc 取证）：
+  - 主线程 wchan = futex_do_wait（阻塞等待）
+  - pin_memory 线程（TID 1037666，与 fork worker PID 相邻而识别）100% 用户态空转：6 秒内 606 jiffies，State R
+  - 独立复现脚本（同 ckpt、同样本、完整推理链：euler-50 推理 0.52s @420it/s + NSF vocoder 0.31s）秒级通过 → 算法与推理路径无罪
+  - 日志探针（matplotlib pcolor 0.12s、librosa.load 1.04s、TB add_audio）全部快速 → 排除日志慢
+- **根因**：DataLoader pin_memory 线程的 cudaHostAlloc 与主线程在 test() 中的 CUDA 调用在 WSL2 半虚拟化 GPU 驱动下互相死锁
+
+### 修复集（3 文件；新增键缺省 = 旧行为，向后兼容）
+
+1. `reflow/data_loaders.py`：两个 loader 均 `pin_memory=False`。数据本就全量驻内存（cache_all_data），pinned 拷贝收益 ≈ 0
+2. `reflow/solver.py` `test()`：
+   - 新增 `val_max_batches` 确定性子集（val loader shuffle=False，子集跨轮可比），分母改为 `processed_batches`
+   - 重 TB 媒体日志（谱图 + librosa 解码 + 音频）仅记录前 `val_log_samples` 个样本
+3. `configs/timbre_blend_stage1.yaml`：`interval_val` 2000→10000（与 interval_force_save 对齐，每个 val ckpt 均保留）；新增 `val_max_batches: 96`、`val_log_samples: 3`
+- 成本论证：全量 345 样本 validation（euler-50 + NSF + librosa + matplotlib + TB 音频）> 10 分钟/轮，对比每 2000 步训练约 4 分钟 → 全量验证经济上不可行；96 样本子集实测 30–60s/轮
+- 回归：pytest 40 passed（17 realism + 23 stage 2a；reflow_exclude_spk 掩码测试不受影响，聚合语义保持）
+
+### Smoke #2（14:44–15:09）——PASS：4398 步 + 43 次 validation 零死锁
+
+- **运维事故与教训**：wrapper 的 `kill -INT` 停机失效——非交互 bash 脚本内 `&` 启动的后台进程继承 SIGINT/SIGQUIT 的 SIG_IGN（实测 /proc SigIgn=0x1301006），CPython 保留继承的 SIG_IGN 不装 KeyboardInterrupt handler，停机信号静默无效，wrapper 在 wait 处死等 16 分钟（期间训练照常推进到 4398 步、43 个 ckpt 全保留）。人工 `kill -TERM` 一次成功（exit 143）。**规约：停训练进程一律 SIGTERM；启动一律 `PYTHONUNBUFFERED=1` 保证重定向 stdout 实时可 tail**
+- §13.2 清单逐项：
+  - 步数真实推进：4398 步 / 20:37（计划要求 200），139 batch/epoch 正常轮转
+  - 两 loss 有限：43 次 validation 均打印 test_ddsp_loss / test_reflow_loss，全部有限；val ddsp 1.0749（step100）→ 0.4441（step4300），val reflow 0.1351 → 0.0449
+  - 无 NaN/Inf：`[x] nan` 0 次（训练循环对两分量分别 isnan 检查）；log_info 全文 inf/nan 0 命中
+  - backward/optimizer 正常：train loss 前 20 步均值 8.52 → 末 20 步均值 0.369；val 组合 loss 1.210 → 0.829 → 0.715 → …（窗口内持续下降，非单点判断）
+  - VRAM 余量：4522–4527MiB / 16376MiB（28%）稳定无爬升
+  - bf16 真跑通：amp_dtype=bf16 全程 4398 步稳定，无回退
+  - ckpt 保存 + 重载：43 个 ckpt 正常落盘；重载另证（下）
+  - 日志正常：log_info / stdout / logs/gpu_smoke.csv 齐全；重媒体日志 cap 生效（每轮 4 条 Mel Val = val_log_samples 截断，而非 96 条）
+- 吞吐与温度：7.4–8.5 batch/s；validation RTF 0.02–0.19；GPU 温度峰值 85°C（validation 推理 burst 期间出现，csv 全程记录，未见持续降频迹象）
+- **重载/续训证明**（15:08:59–15:09:30，.tmp/run_resume_test.sh，输出 .tmp/resume_test.log）：同 expdir 重启 → `[*] restoring model from exp/timbre_blend_stage1_smoke/model_4300.pt`；`optimizer state: none in checkpoint (save_opt=false?)`（符合配置预期）；步数自 4301 续进至 4320（阈值 4308）；0 NaN；SIGTERM 停机 OK
+- 清理：smoke expdir（43 ckpts ≈ 9.5GB，可再生 runtime state）证据固化后删除，磁盘占用 71G→62G。证据保留：.tmp/smoke2_log_info.txt、.tmp/smoke_run.log、.tmp/smoke_run_hang1.log、.tmp/resume_test.log、logs/gpu_smoke.csv
+
+### 结论与下一步
+
+- §13.2 smoke 清单全绿 → 进入 §13.3 正式训练：exp/timbre_blend_stage1 全新目录，interval_val=10000（约 20 分钟训练 + 30–60s validation/轮），总步数由收敛情况决定（validation loss 平台期判停），不机械刷 epoch
+- 正式训练完成 + §13.4 样本推理后 →【人工关卡 2】

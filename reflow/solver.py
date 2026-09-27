@@ -91,6 +91,17 @@ def test(args, model, vocoder, loader_test, saver):
 
     # intialization
     num_batches = len(loader_test)
+    # validation cost controls (optional train-config keys; absent keeps the
+    # legacy full-pass behavior):
+    #   val_max_batches: process only the first N validation batches
+    #     (deterministic subset; the val loader is shuffle=False).
+    #   val_log_samples: cap the heavy per-sample tensorboard media
+    #     (spectrogram figure + gt/pred audio via librosa) to the first K.
+    val_max_batches = int(args.train.get('val_max_batches') or 0)
+    val_log_samples = args.train.get('val_log_samples')
+    if val_log_samples is not None:
+        val_log_samples = int(val_log_samples)
+    processed_batches = 0
     rtf_all = []
     spec_min = -6
     spec_max = 6
@@ -99,6 +110,9 @@ def test(args, model, vocoder, loader_test, saver):
     # run
     with torch.no_grad():
         for bidx, data in enumerate(loader_test):
+            if val_max_batches > 0 and bidx >= val_max_batches:
+                break
+            processed_batches += 1
             fn = data['name'][0]
             print('--------')
             print('{}/{} - {}'.format(bidx, num_batches, fn))
@@ -164,16 +178,16 @@ def test(args, model, vocoder, loader_test, saver):
                 test_reflow_loss_excluded += reflow_loss_excluded.item()
                 num_reflow_excluded_batches += 1
             
-            # log mel
-            saver.log_spec(data['name'][0], data['mel'], mel)
-            
-            # log audio
-            path_audio = os.path.join(args.data.valid_path, 'audio', data['name_ext'][0])
-            audio, sr = librosa.load(path_audio, sr=args.data.sampling_rate)
-            if len(audio.shape) > 1:
-                audio = librosa.to_mono(audio)
-            audio = torch.from_numpy(audio).unsqueeze(0).to(signal)
-            saver.log_audio({fn+'/gt.wav': audio, fn+'/pred.wav': signal})
+            # log mel + audio (heavy: matplotlib figure, librosa decode,
+            # tensorboard media) - capped by train.val_log_samples
+            if val_log_samples is None or bidx < val_log_samples:
+                saver.log_spec(data['name'][0], data['mel'], mel)
+                path_audio = os.path.join(args.data.valid_path, 'audio', data['name_ext'][0])
+                audio, sr = librosa.load(path_audio, sr=args.data.sampling_rate)
+                if len(audio.shape) > 1:
+                    audio = librosa.to_mono(audio)
+                audio = torch.from_numpy(audio).unsqueeze(0).to(signal)
+                saver.log_audio({fn+'/gt.wav': audio, fn+'/pred.wav': signal})
 
             # 计算指标
             mel_val_mse_all += torch.nn.functional.mse_loss(mel, data['mel']).detach().cpu().numpy()
@@ -187,7 +201,7 @@ def test(args, model, vocoder, loader_test, saver):
             mel_val_mse_all_num += 1
             
     # report
-    test_ddsp_loss /= num_batches
+    test_ddsp_loss /= processed_batches
     if num_reflow_included_batches > 0:
         test_reflow_loss /= num_reflow_included_batches
     else:

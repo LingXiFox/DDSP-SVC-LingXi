@@ -62,8 +62,21 @@ train:
   cache_fp16: true
   epochs: 100000
   interval_log: 1
-  interval_val: 2000
+  # Validation cost controls (2026-09-27): full-pass validation over 345
+  # slices (per-sample euler-50 infer + NSF vocoder + TB media logging) cost
+  # ~10 min of CPU per run, and the loader pin_memory thread deadlocked the
+  # WSL2 GPU driver during it. interval_val is aligned with
+  # interval_force_save so every val checkpoint is kept.
+  interval_val: 10000
   interval_force_save: 10000
+  # val_max_batches: process only the first N validation batches as a
+  #   deterministic subset (the val loader is shuffle=False). Absent or 0
+  #   keeps the legacy full-pass behavior.
+  # val_log_samples: cap heavy per-sample tensorboard media (spectrogram
+  #   figure + gt/pred audio via librosa) to the first K samples. Absent
+  #   keeps the legacy log-everything behavior.
+  val_max_batches: 96
+  val_log_samples: 3
   lr: 0.0005
   decay_step: 4000
   gamma: 0.9

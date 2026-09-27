@@ -81,7 +81,13 @@ def get_data_loaders(args, whole_audio=False):
         shuffle=True,
         num_workers=args.train.num_workers if args.train.cache_device=='cpu' else 0,
         persistent_workers=(args.train.num_workers > 0) if args.train.cache_device=='cpu' else False,
-        pin_memory=True if args.train.cache_device=='cpu' else False
+        # pin_memory disabled (2026-09-27): the pt_data_pin thread's
+        # cudaHostAlloc raced with main-thread CUDA work and deadlocked the
+        # WSL2 paravirtualized GPU driver during validation (pin thread
+        # spinning at 100% user CPU, main thread blocked in futex, GPU idle
+        # for ~1h). Data is cached in host RAM; pinned H2D copies gain
+        # nothing measurable for this workload.
+        pin_memory=False
     )
     data_valid = AudioDataset(
         args.data.valid_path,
@@ -97,7 +103,7 @@ def get_data_loaders(args, whole_audio=False):
         batch_size=1,
         shuffle=False,
         num_workers=0,
-        pin_memory=True
+        pin_memory=False  # see loader_train: WSL2 cudaHostAlloc deadlock
     )
     return loader_train, loader_valid 
 
