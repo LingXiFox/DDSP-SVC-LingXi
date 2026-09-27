@@ -401,3 +401,20 @@ OpenSinger download runs. No GPU training started; download untouched.
 - 数据组织（§12.5/12.6/§11）：pool = Stage 1a usable 源文件按 seed=20260927 洗牌后累计至 60 min/人封顶；**源文件级**（原始演唱片段级）95/5 train/val 划分，稳定可复现；speaker 映射 = 歌手号升序 → spk_id 1..12（`reflow/data_loaders.py` 取 audio 子目录名首个 `_`/`-` token，1-based），目录名 `<spk_id>_singer<NN>`；映射固化 `reports/timbre_blend_speakers.json`，下游 Stage 2/3 不得重编号（Stage 2 虚拟歌手将追加为 spk 13，走已实现的 N→N+1 扩展）。HOLDOUT [29,47,10] 不进训练树，源音频留在官方 WomanRaw 根作 unseen test。
 - 冒烟测试（--singers 36 --limit-per-singer 4，独立 smoke 目录）：loudnorm 4/4 ok、切片 4、train 3 + val 1、短切片 0、质检误杀 0、输出 44100Hz 单声道 PCM_16、目录结构与 data loader 解析规则吻合。
 - 全量构建启动：tmux `stage1b`，日志 `.tmp/build_stage1.log`，预计 ~20-30 min（loudnorm 8 并发 + GPU 复检）。完成后汇报每歌手统计，再进入 §12.7 配置与 preprocess。
+
+### Stage 1b 全量构建完成（2026-09-27）
+- tmux `stage1b`，BUILD_EXIT=0，12:25 启动约 25 min 完成。12 歌手全部构建：pool 6041 源文件（464.0 min），loudnorm 6041/6041 成功（0 measure/apply 失败）。
+- 产出：**train 6664 slices / 394.85 min，val 345 slices / 20.3 min**。每歌手 train 23.0-51.7 min（仅 singer 14 触发 60 min 池上限：926→826 文件）；拒绝统计：过短丢弃共 1223、质检剔除共 48（约占切片总数 0.7%，明细 `data/timbre_blend_stage1/rejected.jsonl`）。
+- 产物：`data/timbre_blend_stage1/{train,val}/audio`、`normalized/`、`manifest.json`、`slice_metrics.jsonl`、`rejected.jsonl`；`reports/timbre_blend_speakers.json` 与 `reports/timbre_blend_stage1_build.json` 已提交。smoke 树 `data/timbre_blend_stage1_smoke` 已删除（可再生）。
+
+### 用户补充验收要求（2026-09-27）与落实
+- **要求 1：preprocess 不得以 exit 0 判定成功**（worker 异常路径打印后继续）。工具 `scripts/audit_preprocess_features.py`：对 {train,val}/audio 每个文件核对 6 特征 npy（units/f0/volume/mel/aug_mel/aug_vol）**存在且完整可读**（np.load 全量读取，可抓截断/损坏）、形状（f0/volume/aug_vol 1-D；mel/aug_mel/units 2-D 且 axis0=帧，与 loader get_npy_shape[0] 约定一致）、六特征帧数极差 ≤2（loader 取 min() 容忍 ±1，更大即损坏判 FAIL）、`pitch_aug_dict.npy` 完整（loader 按 dict[rel] 取值，缺键即训练崩溃；train ∈ [-5,5]，val 全 0）、`skip/` 必须为空（builder 已 RMVPE 预检每个切片，任何 skip 都是异常）、孤儿 npy（WARN）、与 build report 切片数交叉核对。任一 FAIL 级问题 → 列出全部路径、exit 1、判 preprocess 未通过。
+- 要求 1 自测（合成 fixture，`.tmp/make_audit_fixture.py`）：坏树 7 类缺陷全部抓获（缺特征/损坏 npy/帧差 7/形状违规/pitch_aug 缺键+鬼键+越界/skip 文件/孤儿 npy）exit 1，且同 run 内干净 val split 判 PASS；干净树整体 PASS exit 0。无假阴性。
+- **要求 2：linear=true 不等于实际线性，须汇总第二遍 loudnorm 的 normalization_type；存在 dynamic → 停下报告，不得直接进 preprocess**。本次全量构建时脚本丢弃了 pass-2 stderr，故用事后补测：`scripts/verify_loudnorm.py`（loudnorm 两遍均确定性，已实证复现 pass-1 测量值逐位一致）。每文件：复现 pass-2 到 null 解析 Normalization Type + 磁盘实证（帧能量代理 p95−p20 不变性、活跃帧增益残差 robust std、LRA 不变性、实测响度 vs 按源码推导的 expected_i）。预登记判据（全量验证运行前固定）：type==Linear；|dproxy|≤0.30 dB；|dlra|≤0.50 LU；|i_norm−expected_i|≤1.0 LUFS。
+- builder 同步补丁（未来运行原生满足要求 2）：apply_loudnorm 解析 pass-2 Normalization Type，per-singer stats 计入 norm_type_*，任何非 Linear 回退 → 记录 rejected.jsonl 并立即中止构建。
+- **机制发现（ffmpeg 8.0.1 af_loudnorm.c 源码 + 受控实验双重确认）**：
+  1. 整文件 <3s：filter_frame() 无条件转 LINEAR_MODE（短文件规则，增益现场计算、TP 超限时压到 TP 上限而非转 dynamic）。
+  2. ≥3s：init() 授予 linear 需 measured_tp≠99 ∧ measured_thresh≠−70 ∧ **measured_lra≠0** ∧ measured_i≠0 ∧ TP 余量 ∧ lra≤target。**实测 LRA 恰为 0.00（短且响度均匀文件的统计简并）与「未提供测量值」哨兵碰撞 → 回退 Dynamic**，音频本身无任何问题。铁证：smoke 文件 36_一笑倾城_12（3.09s，LRA 0.00）按实测值复现 = Dynamic，改喂 measured_LRA=2.5 = Linear。
+  3. LINEAR_MODE 下 init() 用 target_I−measured_I 覆盖 s->offset，**用户 offset 参数被丢弃**；expected_i 公式据此修正（smoke di_err max 0.45→0.08 LU）。
+- smoke 树验证结果：3 Linear（含 1 短文件规则）+ 1 Dynamic（lra_zero_sentinel）；该 Dynamic 文件磁盘实证：增益恒定（帧增益残差 std 0.0000 dB、dproxy 0.0001 dB、dlra 0.0、限幅器未触发 tp_norm −11.2 ≪ −1.5）。
+- 全量验证（6041 文件）：tmux `verifyln`，日志 `.tmp/verify_loudnorm.log`，报告 `reports/timbre_blend_stage1_loudnorm_verification.json` + 逐文件 `data/timbre_blend_stage1/loudnorm_verification.jsonl`。按用户指令：如存在 Dynamic → 携每文件机制分类 + 磁盘实证停下报告，等待决定（候选项：按实证接受 / 对受影响文件以显式静态增益重归一化并重建其切片 / 剔除），不得自行进入 preprocess。

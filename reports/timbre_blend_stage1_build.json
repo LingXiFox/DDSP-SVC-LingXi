@@ -1,0 +1,267 @@
+{
+  "seed": 20260927,
+  "src_root": "/home/hands/datasets/opensinger-official/OpenSinger/WomanRaw",
+  "out_root": "/home/hands/work/DDSP-SVC-LingXi/data/timbre_blend_stage1",
+  "selection_file": "reports/opensinger_selection_final.json",
+  "stage1a_prefilter": "usable==true in reports/opensinger_file_metrics.jsonl (fixed 2026-09-27 thresholds, unchanged)",
+  "pool_cap_min_per_singer": 60.0,
+  "val_frac": 0.05,
+  "val_split_level": "source file (original performance segment)",
+  "loudnorm": {
+    "tool": "ffmpeg two-pass loudnorm, linear=true (static gain)",
+    "I_lufs": -23.0,
+    "TP_dbtp": -1.5,
+    "LRA": 11.0,
+    "output": "44100 Hz mono pcm_s16le wav"
+  },
+  "slicer": {
+    "impl": "repo slicer.py Slicer (reused)",
+    "threshold": -40.0,
+    "min_length": 2000,
+    "min_interval": 300,
+    "hop_size": 20,
+    "max_sil_kept": 500,
+    "min_slice_sec": 2.0,
+    "note": "max_sil_kept=500 deviates from repo default 5000 (inference setting) to trim edge silence for training"
+  },
+  "quality_recheck": {
+    "slice_level": "duration>=2.0s, voiced>=0.25, clip<=0.01, oct<=30.0/min (stage-1a threshold VALUES, GPU rmvpe)",
+    "snr": "enforced at source level via stage-1a prefilter (>=15.0 dB); slice-level SNR proxy distorted by silence trimming, see docstring + log 2026-09-27; values kept in slice_metrics.jsonl"
+  },
+  "per_singer": [
+    {
+      "singer": 9,
+      "spk_id": 1,
+      "dir_name": "1_singer09",
+      "n_usable_src": 484,
+      "n_pool": 484,
+      "pool_min_stage1a": 36.14,
+      "n_train_src": 460,
+      "n_val_src": 24,
+      "norm": {
+        "norm_ok": 484
+      },
+      "slices_short_discarded": 159,
+      "slices_quality_removed": 11,
+      "n_slices_train": 530,
+      "train_min": 29.24,
+      "n_slices_val": 26,
+      "val_min": 1.45
+    },
+    {
+      "singer": 14,
+      "spk_id": 2,
+      "dir_name": "2_singer14",
+      "n_usable_src": 926,
+      "n_pool": 826,
+      "pool_min_stage1a": 59.99,
+      "n_train_src": 785,
+      "n_val_src": 41,
+      "norm": {
+        "norm_ok": 826
+      },
+      "slices_short_discarded": 123,
+      "slices_quality_removed": 5,
+      "n_slices_train": 870,
+      "train_min": 51.69,
+      "n_slices_val": 48,
+      "val_min": 2.83
+    },
+    {
+      "singer": 19,
+      "spk_id": 3,
+      "dir_name": "3_singer19",
+      "n_usable_src": 500,
+      "n_pool": 500,
+      "pool_min_stage1a": 39.62,
+      "n_train_src": 475,
+      "n_val_src": 25,
+      "norm": {
+        "norm_ok": 500
+      },
+      "slices_short_discarded": 110,
+      "slices_quality_removed": 6,
+      "n_slices_train": 570,
+      "train_min": 32.38,
+      "n_slices_val": 26,
+      "val_min": 1.63
+    },
+    {
+      "singer": 21,
+      "spk_id": 4,
+      "dir_name": "4_singer21",
+      "n_usable_src": 573,
+      "n_pool": 573,
+      "pool_min_stage1a": 43.01,
+      "n_train_src": 544,
+      "n_val_src": 29,
+      "norm": {
+        "norm_ok": 573
+      },
+      "slices_short_discarded": 88,
+      "slices_quality_removed": 1,
+      "n_slices_train": 605,
+      "train_min": 38.1,
+      "n_slices_val": 30,
+      "val_min": 1.99
+    },
+    {
+      "singer": 27,
+      "spk_id": 5,
+      "dir_name": "5_singer27",
+      "n_usable_src": 486,
+      "n_pool": 486,
+      "pool_min_stage1a": 38.99,
+      "n_train_src": 462,
+      "n_val_src": 24,
+      "norm": {
+        "norm_ok": 486
+      },
+      "slices_short_discarded": 67,
+      "slices_quality_removed": 0,
+      "n_slices_train": 577,
+      "train_min": 33.51,
+      "n_slices_val": 31,
+      "val_min": 1.85
+    },
+    {
+      "singer": 28,
+      "spk_id": 6,
+      "dir_name": "6_singer28",
+      "n_usable_src": 448,
+      "n_pool": 448,
+      "pool_min_stage1a": 35.85,
+      "n_train_src": 426,
+      "n_val_src": 22,
+      "norm": {
+        "norm_ok": 448
+      },
+      "slices_short_discarded": 72,
+      "slices_quality_removed": 3,
+      "n_slices_train": 506,
+      "train_min": 29.69,
+      "n_slices_val": 26,
+      "val_min": 1.7
+    },
+    {
+      "singer": 30,
+      "spk_id": 7,
+      "dir_name": "7_singer30",
+      "n_usable_src": 327,
+      "n_pool": 327,
+      "pool_min_stage1a": 27.51,
+      "n_train_src": 311,
+      "n_val_src": 16,
+      "norm": {
+        "norm_ok": 327
+      },
+      "slices_short_discarded": 95,
+      "slices_quality_removed": 2,
+      "n_slices_train": 384,
+      "train_min": 23.56,
+      "n_slices_val": 21,
+      "val_min": 1.15
+    },
+    {
+      "singer": 32,
+      "spk_id": 8,
+      "dir_name": "8_singer32",
+      "n_usable_src": 342,
+      "n_pool": 342,
+      "pool_min_stage1a": 25.46,
+      "n_train_src": 325,
+      "n_val_src": 17,
+      "norm": {
+        "norm_ok": 342
+      },
+      "slices_short_discarded": 41,
+      "slices_quality_removed": 3,
+      "n_slices_train": 353,
+      "train_min": 23.02,
+      "n_slices_val": 19,
+      "val_min": 1.01
+    },
+    {
+      "singer": 33,
+      "spk_id": 9,
+      "dir_name": "9_singer33",
+      "n_usable_src": 429,
+      "n_pool": 429,
+      "pool_min_stage1a": 32.86,
+      "n_train_src": 408,
+      "n_val_src": 21,
+      "norm": {
+        "norm_ok": 429
+      },
+      "slices_short_discarded": 100,
+      "slices_quality_removed": 4,
+      "n_slices_train": 459,
+      "train_min": 27.44,
+      "n_slices_val": 26,
+      "val_min": 1.43
+    },
+    {
+      "singer": 36,
+      "spk_id": 10,
+      "dir_name": "10_singer36",
+      "n_usable_src": 707,
+      "n_pool": 707,
+      "pool_min_stage1a": 45.7,
+      "n_train_src": 672,
+      "n_val_src": 35,
+      "norm": {
+        "norm_ok": 707
+      },
+      "slices_short_discarded": 103,
+      "slices_quality_removed": 5,
+      "n_slices_train": 742,
+      "train_min": 38.5,
+      "n_slices_val": 40,
+      "val_min": 1.98
+    },
+    {
+      "singer": 41,
+      "spk_id": 11,
+      "dir_name": "11_singer41",
+      "n_usable_src": 428,
+      "n_pool": 428,
+      "pool_min_stage1a": 38.01,
+      "n_train_src": 407,
+      "n_val_src": 21,
+      "norm": {
+        "norm_ok": 428
+      },
+      "slices_short_discarded": 107,
+      "slices_quality_removed": 3,
+      "n_slices_train": 519,
+      "train_min": 32.35,
+      "n_slices_val": 25,
+      "val_min": 1.54
+    },
+    {
+      "singer": 42,
+      "spk_id": 12,
+      "dir_name": "12_singer42",
+      "n_usable_src": 491,
+      "n_pool": 491,
+      "pool_min_stage1a": 40.93,
+      "n_train_src": 466,
+      "n_val_src": 25,
+      "norm": {
+        "norm_ok": 491
+      },
+      "slices_short_discarded": 158,
+      "slices_quality_removed": 5,
+      "n_slices_train": 549,
+      "train_min": 35.37,
+      "n_slices_val": 27,
+      "val_min": 1.74
+    }
+  ],
+  "totals": {
+    "train_slices": 6664,
+    "val_slices": 345,
+    "train_min": 394.85,
+    "val_min": 20.3
+  }
+}

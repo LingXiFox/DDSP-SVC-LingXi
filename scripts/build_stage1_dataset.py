@@ -18,6 +18,12 @@ Steps
 4. Loudness-normalize with ffmpeg two-pass loudnorm (linear=true =>
    static gain, dynamics preserved, true-peak limited, no clipping):
    I=-23 LUFS, TP=-1.5 dBTP, LRA=11; output 44100 Hz mono pcm_s16le wav.
+   The pass-2 "Normalization Type" is parsed and counted per singer
+   (norm_type_* stats); any non-linear (dynamic) fallback aborts the
+   build immediately (user directive 2026-09-27: static gain only).
+   NOTE: the first full run (2026-09-27) predates this capture; its
+   acceptance evidence is scripts/verify_loudnorm.py (deterministic
+   two-pass reproduction + on-disk dynamics check over all 6041 files).
 5. Slice with the repo Slicer (slicer.py reused per plan §12.3):
    threshold=-40 dB, min_length=2000 ms (== model min training duration,
    configs data.duration=2 s), min_interval=300 ms, hop=20 ms,
@@ -159,7 +165,13 @@ def measure_loudness(src):
 
 
 def apply_loudnorm(src, dst, meas):
-    """Pass 2: static gain (linear=true) + true-peak limit. tmp+rename write."""
+    """Pass 2: static gain (linear=true) + true-peak limit. tmp+rename write.
+
+    Returns (ok, normalization_type). The type string is parsed from the
+    pass-2 summary ("Linear" expected for a successful static-gain pass);
+    any other value means loudnorm fell back to dynamic normalization and
+    the caller must stop (user directive 2026-09-27).
+    """
     af = (f"loudnorm=I={LOUDNORM_I}:TP={LOUDNORM_TP}:LRA={LOUDNORM_LRA}"
           f":measured_I={meas['input_i']}:measured_TP={meas['input_tp']}"
           f":measured_LRA={meas['input_lra']}:measured_thresh={meas['input_thresh']}"
@@ -170,20 +182,22 @@ def apply_loudnorm(src, dst, meas):
     p = subprocess.run(cmd, capture_output=True, text=True)
     if p.returncode != 0:
         tmp.unlink(missing_ok=True)
-        return False
+        return False, None
+    mt = re.search(r"Normalization Type:\s*(\S+)", p.stderr)
     tmp.rename(dst)
-    return True
+    return True, (mt.group(1) if mt else "unknown")
 
 
 def normalize_one(rel, src, dst):
     if dst.exists() and dst.stat().st_size > 1024:
-        return rel, "cached"
+        return rel, "cached", None
     meas = measure_loudness(src)
     if meas is None:
-        return rel, "measure_failed"
-    if not apply_loudnorm(src, dst, meas):
-        return rel, "apply_failed"
-    return rel, "ok"
+        return rel, "measure_failed", None
+    ok, ntype = apply_loudnorm(src, dst, meas)
+    if not ok:
+        return rel, "apply_failed", None
+    return rel, "ok", ntype
 
 
 # ---------------- slicing ----------------
@@ -358,16 +372,29 @@ def main():
 
         # 1) loudness normalization (parallel ffmpeg two-pass)
         stats = defaultdict(int)
+        dyn_fallbacks = []
         with ThreadPoolExecutor(args.ffmpeg_jobs) as ex:
             futs = {ex.submit(normalize_one, rel, src, dst): (split, rel, dst)
                     for split, rel, src, dst in tasks}
             for fut in tqdm(as_completed(futs), total=len(futs),
                             desc=f"loudnorm spk{spk}", leave=False):
                 split, rel, dst = futs[fut]
-                rel_, status = fut.result()
+                rel_, status, ntype = fut.result()
                 stats[f"norm_{status}"] += 1
+                if ntype is not None:
+                    stats[f"norm_type_{ntype.lower()}"] += 1
+                    if ntype.lower() != "linear":
+                        dyn_fallbacks.append((rel, ntype))
                 if status.endswith("failed"):
                     log_reject(s, f"loudnorm_{status}", rel, "ffmpeg two-pass loudnorm")
+        if dyn_fallbacks:
+            for rel, nt in dyn_fallbacks:
+                log_reject(s, "loudnorm_dynamic_fallback", rel,
+                           f"normalization_type={nt}")
+            raise SystemExit(
+                f"[!] loudnorm dynamic fallback on {len(dyn_fallbacks)} file(s) "
+                f"of singer {s} (logged to {rej_path}). Requirement: pure static "
+                f"gain only - STOP for review (user directive 2026-09-27).")
 
         # 2) slicing (repo Slicer) into the split audio trees
         singer_slices = []
