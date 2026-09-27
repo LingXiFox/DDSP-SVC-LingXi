@@ -170,3 +170,70 @@ Questions: (1) where is the real ddsp-svc-lingxi bucket / is it gone;
 (2) is `dataset_final` (21.8 min) the authoritative target-singer training set,
 noting duet sources may contain a second voice (若溪) and one low-cosine outlier
 (track01_005.wav, 0.147).
+
+## 2026-09-27 10:50-11:00 | Bucket found (new HF "buckets" type); user decisions; Stage 1a tooling
+
+### User decisions (chat)
+
+- `LingXiFox/ddsp-svc-lingxi` is a **HF Storage Bucket** (new repo type, web path
+  `/buckets/...`), not a model/dataset repo - that is why repo_info 404-ed.
+  Accessible via mirror with `hf buckets` CLI / bucket_info (huggingface_hub 1.33.0).
+- 泠溪小狐狸 and 若溪（虚拟歌手） are the SAME voice (泠溪 is the project/brand name).
+  Duets in the target data are NOT speaker contamination. No filtering needed for
+  "second singer" risk.
+
+### Bucket recon (metadata only, nothing downloaded yet)
+
+- `LingXiFox/ddsp-svc-lingxi`: private, 13.97 GB, 81,580 files, created 2026-09-18.
+- Top level: datasets/ experiments/ logs/ models/ outputs/ pretrain/ runs/.
+- `datasets/private-timbre/` (target virtual singer 泠溪小狐狸/若溪):
+  - `raw/`: 12 full vocal tracks (~714 MB: LX, lingxi, 圣贤书/风的告别/赴春寰/归途的光/
+    眉南边/莫愁乡/若神明偏爱/无邪 covers...).
+  - `sliced-v2/{train,val}/audio`: **138 train + 34 val slices** (Sep 18, current).
+  - `processed/{train,val}`: full DDSP-SVC feature trees (units/f0/mel/aug_*/volume +
+    pitch_aug_dict.npy) for those 138+34 (Sep 19, newest).
+  - `train/`,`val/`: older smaller preprocess (17+4 files, Sep 18) - superseded.
+- `datasets/public-realism/`: prior public-data realism experiment (not for this task;
+  realism stays disabled here).
+- `datasets/test/`: test01-03.wav (~2s each, smoke inputs).
+- `experiments/`: old checkpoints - `private-joint/model_90.pt` (661.6 MB full model),
+  `private-personalize/model_300.pt` (222.1 MB), `full-smoke/full_with_prior.pt`,
+  realism adapters (2.4 MB each) + configs/logs.
+- `models/`: realism adapter checkpoints only.
+- Decision: download only `datasets/private-timbre/sliced-v2` (+ raw if re-slicing
+  needed) at Stage 2b; whether to reuse `processed/` features or re-preprocess with
+  Stage 1 settings will be decided (and logged) at Stage 2b after comparing configs.
+
+### OpenSinger download
+
+- Restarted 10:49 with `--include "*.wav" --max-workers 16` (labels .lab/.txt are not
+  consumed by the DDSP-SVC pipeline; wav-only cuts 79,866 -> 26,621 files). Resumable;
+  already-fetched files kept. Log: `.tmp/opensinger_download.log`. tmux `opensinger_dl`.
+- Format verified on samples: 44.1 kHz mono PCM_16, 2-9 s slices, folder layout
+  `<singer>_<song>/<singer>_<song>_<seg>.wav` -> singer id = leading integer.
+- Rate fluctuates 1.5-13 files/s via mirror; ETA a few hours.
+
+### Stage 1a tool: scripts/select_opensinger.py (commit 36b2c1b)
+
+- Per-file: duration, clip_ratio, SNR proxy (p95-p20 frame-energy dB, documented as
+  relative indicator), RMVPE voiced_ratio, octave jumps (>=1100 cents with
+  stable neighbours <200 cents, per voiced minute), f0 quarter-tone histogram
+  (96 bins, pooled per singer for p5/median/p95), usable flag.
+- USABLE GATES FIXED A PRIORI (before seeing any aggregate data):
+  duration>=2.0s, voiced_ratio>=0.25, clip_ratio<=0.01, snr_db>=15,
+  oct_jumps/voiced_min<=30.
+- Score weights (rank-normalized, fixed a priori): snr_median .25, oct_jumps -.20,
+  usable_min_capped60 .20, voiced_ratio .15, clip_ratio -.10, range_fit .10
+  (trapezoid on f0 median over [100,150,350,450] Hz).
+- Proposal eligibility (fixed a priori): usable_min >= 10, failed_ratio <= 0.2.
+  Proposes 12 train + 3 holdout by default (CLI 8-15 / 2-3). Seed 20260927 recorded.
+- Resumable JSONL cache `reports/opensinger_file_metrics.jsonl` (gitignored, >1MiB).
+- Smoke-tested on 10 downloaded files: metrics sane (snr 12-25 dB, voiced ~0.8,
+  f0 hist peak ~300 Hz), cache + CSV + proposal all written. ~10 files/s on GPU.
+- tmux `stage1a`: watcher runs the full analysis automatically when the download
+  finishes -> `reports/opensinger_singers.csv` + `reports/opensinger_proposal.json`,
+  log `.tmp/analysis.log`. Expected analysis time ~45 min for 26.6k files.
+
+### Next
+
+- Wait for download + analysis, then present Gate 1 (singer selection) to user.
