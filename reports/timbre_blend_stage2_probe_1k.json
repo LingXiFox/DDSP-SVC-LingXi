@@ -1,0 +1,37 @@
+{
+  "checkpoint": "exp/timbre_blend_stage2_masked/model_1000.pt",
+  "checkpoint_md5": "18270a6fa8dbe26d37a5ba3b9d164662",
+  "speaker_id": 13,
+  "input_source": "OpenSinger official WomanRaw; singers 10 and 47 are Stage-1 holdouts, never trained",
+  "inference": {
+    "t_start": 0.0,
+    "infer_steps": 50,
+    "solver": "euler",
+    "key": 0,
+    "formant": 0,
+    "pitch_extractor": "rmvpe",
+    "threshold": -60,
+    "fmin": 50,
+    "fmax": 1100
+  },
+  "outputs": [
+    {
+      "holdout_singer": 10,
+      "source_input": "10_侧脸/10_侧脸_26.wav",
+      "packaged_input": "samples/stage2/probe_1k/inputs/10_侧脸_26.wav",
+      "output": "samples/stage2/probe_1k/singer10__to_spk13.wav",
+      "duration_sec": 3.773,
+      "sample_rate": 44100,
+      "sha256": "ced2da570d5b17382d725a1c6dedf9c78ca6dfe084158c03b356b95cb22e3f00"
+    },
+    {
+      "holdout_singer": 47,
+      "source_input": "47_秋酿/47_秋酿_16.wav",
+      "packaged_input": "samples/stage2/probe_1k/inputs/47_秋酿_16.wav",
+      "output": "samples/stage2/probe_1k/singer47__to_spk13.wav",
+      "duration_sec": 8.022,
+      "sample_rate": 44100,
+      "sha256": "054f3ea9ceb26ab955e73f3d141fc58be43d064102a502e21eca5bb71ed81337"
+    }
+  ]
+}
