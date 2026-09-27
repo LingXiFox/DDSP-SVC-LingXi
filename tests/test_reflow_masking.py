@@ -277,6 +277,45 @@ def test_mask_all_false_device_dtype_on_cuda():
         assert p.grad is None
 
 
+@pytest.mark.skipif(
+    not torch.cuda.is_available(), reason='CUDA required for autocast checks')
+@pytest.mark.parametrize('dtype', [torch.float16, torch.bfloat16])
+def test_masked_reflow_under_autocast_on_cuda(dtype):
+    """Stage 2 production config: partial mask + AMP autocast on GPU.
+
+    Losses must stay finite, reflow grads must exist for included samples,
+    and the all-False zero must keep device/dtype compatibility.
+    """
+    from torch.amp import autocast
+    model = _make_model(n_spk=3).cuda()
+    units, f0, volume, spk_id, gt_spec = _make_batch(b=4)
+    units, f0, volume, spk_id, gt_spec = (
+        t.cuda() for t in (units, f0, volume, spk_id, gt_spec))
+    spk_id = torch.tensor([[1], [2], [3], [2]], device='cuda')
+    stub = _StubVocoder()
+    mask = torch.tensor([True, False, True, False], device='cuda')
+
+    model.zero_grad()
+    torch.manual_seed(99)
+    with autocast(device_type='cuda', dtype=dtype):
+        ddsp_loss, rl = model(
+            units, f0, volume, spk_id, vocoder=stub, gt_spec=gt_spec,
+            infer=False, t_start=T_START, reflow_mask=mask)
+    assert torch.isfinite(ddsp_loss) and torch.isfinite(rl)
+    (ddsp_loss + rl).backward()
+    gsum = sum(
+        p.grad.abs().sum().item()
+        for p in model.reflow_model.parameters() if p.grad is not None)
+    assert gsum > 0, 'included samples must produce reflow grads under autocast'
+
+    with autocast(device_type='cuda', dtype=dtype):
+        _, rl0 = model(
+            units, f0, volume, spk_id, vocoder=stub, gt_spec=gt_spec,
+            infer=False, t_start=T_START,
+            reflow_mask=torch.zeros(4, dtype=torch.bool, device='cuda'))
+    assert rl0.item() == 0.0 and rl0.device.type == 'cuda'
+
+
 # ---------------------------------------------------------------------------
 # 15. solver-side mask generation
 # ---------------------------------------------------------------------------
