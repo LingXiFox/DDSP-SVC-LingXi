@@ -499,3 +499,9 @@ OpenSinger download runs. No GPU training started; download untouched.
 - 13:23:10 tmux ppchain 启动：preprocess（-d cuda -j 4）→（exit 0 门）→ audit_preprocess_features（--build-report = 修复报告，期望 train 6665 / val 345）
 - GPU 每 120s 记录 → logs/gpu_preprocess.csv
 - 通过后：spk-41 F0 复核（关卡 1 遗留义务，判据已预登记：harvest/rmvpe 中位比值多数 ≥1.5 → 系统性低八度 → STOP；[0.75,1.33] 且 ≥1.5 占比 <20% → 真实低音区 → 继续）→ Stage 1c
+
+### 环境异常记录——更正（用户澄清，2026-09-27）
+- 用户澄清：LingXiAgent（dmesg 中的 LingXiAgentPack）是同机 Windows/WSL 上并行运行、由另一 agent 管理的测试项目，其崩溃记录（invalid opcode ×4）属该项目自身测试内容，不作为宿主机不稳定证据
+- 前条「多个无关进程共 6 次不可能故障」更正为：与本任务相关的仅 2 次 python 故障（13:14 窗口内 SIGSEGV + scipy 导入期不可能 AttributeError），原因未定，属瞬时事件；其后 12 次复测全绿（含 3 次真实 preprocess 45s 存活）
+- 撤回前条中「留意宿主机稳定性 / LingXiAgentPack 崩溃史」的建议
+- 运行提示：同机存在并行测试项目，若发生 GPU/内存争用，症状会是 CUDA OOM 或显著变慢——pp 链若失败先查此项；正常运行则无需任何动作
