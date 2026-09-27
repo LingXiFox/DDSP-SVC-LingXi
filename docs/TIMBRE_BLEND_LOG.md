@@ -108,3 +108,31 @@ pipeline. Append-only; newest entries at the bottom. No secrets allowed in this 
 ### Deviations from plan
 
 - None so far. (nvidia-smi path differs from a plain `nvidia-smi` call; recorded above.)
+
+### Pretrain dependency download + functional verification (10:34-10:45)
+
+- tmux `pretrain_dl` ran `.tmp/download_pretrain.sh`; all downloads finished 10:36.
+- ContentVec: `hf download lengyue233/content-vec-best pytorch_model.bin` via
+  HF_ENDPOINT=https://hf-mirror.com -> `pretrain/contentvec/pytorch_model.bin` (378 MB).
+- RMVPE: GitHub release zip -> `pretrain/rmvpe/model.pt` (368 MB).
+- NSF-HiFiGAN: GitHub release zip contains `model.ckpt` (script initially missed the
+  extension; fixed manually) -> `pretrain/nsf_hifigan/model` (56.7 MB) + `config.json`.
+- Functional check `.tmp/check_pretrain.py` (13.3s, cuda) — ALL PASSED:
+  - Vocoder init: sr 44100, hop 512, 128 mel dims; mel of 2s sine = [1,172,128];
+    vocoded wav [1,1,88064], rms 0.209.
+  - RMVPE on 440 Hz sine: 173 frames, all voiced, median f0 = 439.11 Hz.
+  - ContentVec (contentvec768l12tta2x): units [1,173,768].
+- Git identity: repo-local `user.name=LingXiFox`,
+  `user.email=198294627+LingXiFox@users.noreply.github.com` (same as all existing
+  commits on this repo; global config untouched).
+- First commit on branch: `8bbc397 docs(timbre-blend): add stage 0 recon log and
+  ignore task working dirs`.
+- Cleaned `.tmp` download zips/extract dirs after install.
+
+### BLOCKED - waiting for user (human gate: HF login)
+
+Stage 0 items 10-12 (bucket recon, locating virtual-singer data) and Stage 1a
+(OpenSinger download) require authenticated access to the private repos
+`LingXiFox/ddsp-svc-lingxi` and `LingXiFox/opensinger-womanraw`.
+Anonymous access via mirror returns 401 for both (model and dataset types).
+Stopped per plan section 3.2. No token handling was attempted.
