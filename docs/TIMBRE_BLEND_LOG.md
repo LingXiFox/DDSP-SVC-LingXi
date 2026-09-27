@@ -583,3 +583,50 @@ OpenSinger download runs. No GPU training started; download untouched.
 
 - §13.2 smoke 清单全绿 → 进入 §13.3 正式训练：exp/timbre_blend_stage1 全新目录，interval_val=10000（约 20 分钟训练 + 30–60s validation/轮），总步数由收敛情况决定（validation loss 平台期判停），不机械刷 epoch
 - 正式训练完成 + §13.4 样本推理后 →【人工关卡 2】
+
+## 2026-09-27 Stage 1 正式训练 + §13.4 推理样本（→ 人工关卡 2）
+
+### 正式训练（OpenSinger 12 女声多说话人预训练）
+- 时间窗：15:12:05 → 16:40:39（**1h28m34s**），tmux `strain1`，SIGTERM 干净停机（TRAIN_EXIT=143，TRAIN_DONE 标记齐全）
+- 最终 step **40644**（epoch 292 / 139 batches），速度 7.6–8.3 batch/s，**0 NaN/inf**
+- ckpt：model_10000/20000/30000/40000.pt 全部保留（interval_val = interval_force_save = 10000，无删除）
+- GPU：峰值 VRAM **4542 MiB / 16376**，峰值温度 **84°C**，clocks 2175–2310 MHz 无降频（logs/gpu_stage1.csv，600s 采样）
+- lr 阶梯按配置执行（5e-4 × 0.9^(step/4000)），停机时 lr = 1.74e-4
+
+### 验证轨迹（固定 96 batch 子集，shuffle=False）
+| step | val ddsp | 每万步改善 | val reflow | 组合 | train loss(窗口均值) |
+|---|---|---|---|---|---|
+| 10k | 0.43804 | — | 0.0426 | 0.481 | 0.252→ |
+| 20k | 0.42546 | 2.87% | 0.0449 | **0.470（最低）** | 0.252 |
+| 30k | 0.42484 | 0.15% | 0.0504 | 0.475 | 0.227 |
+| 40k | 0.42935 | **−1.06%（回升）** | **0.0711（暴涨 +41%）** | 0.501 | 0.214 |
+
+### 停训判定（预登记规则的执行记录）
+预登记规则：「连续 ≥3 个 val 点 ddsp 每万步改善 <1% 且 reflow 无下行趋势 → 停」。实际在 30k 拿到第一票平台票（0.15%）后，**40k 出现规则未覆盖的情形：val 回升**——ddsp 转升 +1.06%、reflow 四点单调上升（0.0426→0.0449→0.0504→0.0711）冲穿 smoke 噪声带（0.041–0.048）、组合 val 0.501 比 10k 还差、train/val gap 拉大到 2.34。按 30k 时预先公布的双分支处置（「40k 不回落 → 停，并记录为对三票规则的提前触发，依据是过拟合而非平台」）执行停机。**不属于事后挪门槛：分支判据在 30k 当轮已原文公布。**
+- **最优 ckpt = model_20000.pt**（md5 e026eb6e60b7e2e8ba4c579ad8a0ceff）：组合 val 最低 0.470；ddsp 与 30k 差 0.15% 属噪声级，而 reflow 明显更优
+- 过拟合形态备注：train loss 全程健康下降（0.252→0.214），val 20k 后掉头——12 说话人 × 395 分钟数据在 batch 48 下 20k 步 ≈ 144 epoch，记忆化起点与数据规模自洽
+
+### §13.4 推理样本（9 主样本 + 3 对比样本）
+- 输入全部取自 **val 集**（未参与训练），覆盖 3 位已训歌手 spk2 / spk10 / spk11
+- 参数：`-ts 0.0 -step 50 -method euler -k 0 -f 0 -pe rmvpe -th -60 -fmin 50 -fmax 1100`
+- 矩阵：6 条同说话人重建（每位歌手 ×2）+ 3 条跨说话人转换（41_一次就好→spk2、14_从前慢→spk11、36_云烟成雨→spk2）
+- 附加 `compare_40k/`：model_40000.pt（过拟合 ckpt）对 3 条相同输入的输出，供关卡 2 A/B 试听验证 ckpt 选择
+- 路径：远端 `samples/stage1/`（records.tsv 13 列 × 9 行 + manifest.json）；Mac `~/Downloads/timbre_blend_stage1_samples/`（含 inputs/ 原始切片供对照）
+- 清单归档（git 追踪）：`reports/timbre_blend_stage1_samples_manifest.json`
+
+### 异常记录（均为瞬时宿主不稳，非代码问题，重试即愈）
+1. 样本 spk11__14_从前慢_22__s2 首跑 **SIGSEGV**；同参数原样重试成功
+2. 40k 对比 spk2 首跑**挂起**（主线程 R 态 100% CPU 空转 12 分钟、54 线程 futex 等待、零输出、GPU 0%）；kill 后带 `timeout -k 10 120` 护栏分离重试，**11 秒完成**
+3. 两起均落在本日已记录的 WSL2 宿主不稳窗口；同二进制同输入重试成功 → 判定环境抖动，未改任何代码
+
+### 断点恢复检查
+- 恢复机制已于 15:08 实测验证（smoke ckpt model_4300.pt 重载、step 4301→4320 续跑、TERM_KILL_OK）
+- 正式训练如需续跑：重launch `.tmp/run_stage1_train.sh` 即从 model_40000.pt 恢复（save_opt=false → 优化器重建 + lr 按 step 重算，smoke 已验证该路径无异常）
+- 但基于过拟合判定，**不建议续跑**；20k ckpt 为交付候选
+
+### TensorBoard 服务（长期方案落地）
+- Windows 防火墙新增入站规则 `TensorBoard WSL 6006`：TCP 6006 / 仅 Private 网络类别 / 源限定 10.0.0.0/24（最小暴露，重启不丢）；SSH 隧道方案退役
+- LAN 直连 `http://10.0.0.150:6006` 实测 HTTP 200；SCALARS / IMAGES（前 3 个 val 样本谱图）/ AUDIO（10k–40k 四代 ckpt 试听）齐全
+- WSL2 三个坑的修复保留在 `.tmp/run_tb.py`：Rust data-server 静默死亡（--load_fast=false）、未绑定回环端口 connect_ex 黑洞（1s 超时包装）、镜像模式 LAN 入站需防火墙规则
+
+→ **【人工关卡 2】**：训练与样本交付完毕，等待主人试听验收后进入 Stage 2（虚拟歌手 spk13 微调）。
