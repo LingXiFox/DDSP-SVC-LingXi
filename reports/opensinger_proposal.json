@@ -1,0 +1,44 @@
+{
+  "seed": 20260927,
+  "root": "/home/hands/datasets/opensinger-official/OpenSinger/WomanRaw",
+  "n_files_analyzed": 26621,
+  "thresholds": {
+    "min_duration_sec": 2.0,
+    "min_voiced_ratio": 0.25,
+    "max_clip_ratio": 0.01,
+    "min_snr_db": 15.0,
+    "max_oct_jumps_per_voiced_min": 30.0,
+    "oct_jump_cents": 1100.0,
+    "oct_stable_cents": 200.0,
+    "per_singer_cap_min": 60.0,
+    "min_usable_min_for_proposal": 10.0,
+    "max_failed_ratio_for_proposal": 0.2
+  },
+  "score_weights": {
+    "snr_db_median": 0.25,
+    "oct_jumps_per_voiced_min": -0.2,
+    "usable_duration_min_capped60": 0.2,
+    "voiced_ratio_mean": 0.15,
+    "clip_ratio_mean": -0.1,
+    "range_fit": 0.1
+  },
+  "proposed_train_singers": [
+    36,
+    14,
+    27,
+    28,
+    32,
+    42,
+    19,
+    41,
+    21,
+    33,
+    9,
+    43
+  ],
+  "proposed_holdout_test_singers": [
+    29,
+    47,
+    10
+  ]
+}

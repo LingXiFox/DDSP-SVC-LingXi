@@ -371,3 +371,14 @@ OpenSinger download runs. No GPU training started; download untouched.
 - Stage 1 数据根目录正式切换为：`~/datasets/opensinger-official/OpenSinger/WomanRaw`（79,863 数据文件，wav 共 9.43 GiB，48 位女歌手，711 个 singer_song 目录）。
 - HF 部分下载 `~/datasets/opensinger-womanraw`（7,124 wav）保留作验证证据与备份，等用户验收后决定清理。
 - Stage 1a 完整分析已启动（tmux `stage1a`，`.tmp/run_stage1a.sh`，日志 `.tmp/analysis.log`）：扫描确认 26,621 wav / 48 歌手，GPU（cuda）~30-40 it/s，ETA ~15 分钟。完成后进入【人工关卡 1：歌手选择】。
+
+### Stage 1a 分析完成，进入【人工关卡 1：歌手选择】（等待用户决定）
+- 分析范围：官方 WomanRaw 根目录，26,621 wav / 48 歌手，RMVPE F0，cuda，13m42s，0 个文件分析失败（所有歌手 failed_ratio=0）。
+- 产物：`reports/opensinger_singers.csv`（48 行全量统计）、`reports/opensinger_proposal.json`（seed=20260927，含全部阈值与权重快照）。
+- 阈值与权重为 2026-09-27 预先固定（见本日志前文与脚本 docstring），本次未做任何事后调整。
+- 提案 TRAIN 12 人（按分数降序）：36, 14, 27, 28, 32, 42, 19, 41, 21, 33, 9, 43；HOLDOUT（未见过测试歌手）3 人：29, 47, 10。
+- 硬门槛淘汰 5 人（usable < 10 min）：2 (8.8), 5 (9.1), 31 (9.7), 35 (6.3), 44 (6.2)；其余 28 人分数低于第 12 名落选。
+- 训练池合计（60 min/人封顶后）447.1 min ≈ 7.45 h；最大单人占比 13.4%（spk 14 触顶 60 min）。
+- 两个如实呈报的观察（不影响固定规则的执行，供关卡决策参考）：
+  1. spk 41 的 f0 p5/med/p95 = 127/202/314 Hz，显著低于其他女歌手（中位数普遍 288-353 Hz）。oct_jumps 仅 0.62/min、range_fit=1.0，指标不排除「系统性低八度」与「真女中音」两种解释。按固定规则入选 TRAIN 第 8。
+  2. spk 43 仅 155 文件 / usable 10.55 min，刚过 10 min 门槛，为 TRAIN 中最小样本。
