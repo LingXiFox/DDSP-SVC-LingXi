@@ -442,3 +442,60 @@ OpenSinger download runs. No GPU training started; download untouched.
   - 全树复验（verify_loudnorm.py v2，6041 文件全部通过才 PASS）：① 帧增益残差 rstd ≤ 0.05 dB（恒定增益 ⇒ 无动态压缩）；② |dproxy| ≤ 0.30 dB（动态代理不变）；③ |dlra| ≤ 0.50 LU（响度范围不变）；④ |i_norm − (i_src + expected_gain)| ≤ 1.00 LUFS，expected_gain = min(−23 − i_src, −1.5 − tp_src)（历史 short-file-rule 文件的 loudnorm 现场 global 测量对 pass-1 有 ~0.3-0.7 LU 抖动，由 1.0 容差吸收，v1 全量实测 Linear 文件 di p99=0.14 佐证）；⑤ tp_norm ≤ −1.20 dBTP（上限 −1.5 + 0.3 测量余量）；⑥ 树完整性（pool = 磁盘 = 验证数，orphans/missing = 0）。
   - 切片质检：与构建时完全相同的固定阈值（duration ≥ 2s、voiced ≥ 0.25、clip ≤ 0.01、oct ≤ 30/min，GPU rmvpe）。
 - 执行记录与结果见后续条目。
+
+---
+
+## 2026-09-27 A+ 修复执行：50 文件静态增益重制 + 全树 v2 复验 PASS + 时长瀑布
+
+### 修复执行（scripts/remediate_static_gain.py，13:10:49–13:11:08，REMEDIATE_EXIT=0）
+- 输入：v1 复验 jsonl 中 50 个 Dynamic 文件（35 lra_above_target + 15 lra_zero_sentinel）；所有测量新鲜重取，不信任旧值
+- 方法（指令③⑦）：gain = min(−23 − measured_I, −1.5 − measured_TP)，ffmpeg volume=<gain>dB 单次常数乘法覆写 normalized；全程无 compressor / limiter / 动态 loudnorm
+- 结果（指令⑨）：
+  - 50/50 成功；写后磁盘复检 0 失败（tp_norm ≤ −1.2 dBTP ∧ |i_err| ≤ 1.0 LU）；census mismatch 0
+  - 增益范围 −8.55 ~ +8.66 dB；tp_limited = 0（指令④未触发：全部达到 −23 LUFS 且 TP 有余量）
+  - 响度误差（50 文件）：median 0.01 / p99 0.12 / max 0.13 LU
+  - 修复后 tp_norm（50 文件）：max −4.18 dBTP
+  - 切片（指令⑥）：旧 66（4.60 min）→ 重写 67（<2s 丢弃 11，GPU QC 移除 0）→ 最终 67（4.66 min）；净 +1 片 / +0.06 min
+  - 3 个文件切片数变化（去除动态压缩后 −40dB 切点位置改变）：14_你把我灌醉_23 1→2，19_给我一个理由忘记_39 2→1，30_你把我灌醉_23 1→2
+  - slice_metrics.jsonl 清除 66 条陈旧记录（防 __s{k} 同名缓存碰撞），保留 6991
+  - train/val 源文件划分保持原样（manifest 权威，未重新随机）
+- 最终全树磁盘普查（reports/timbre_blend_stage1_remediation.json 为权威，supersede 构建报告计数）：train 6665 切片 / 394.90 min，val 345 切片 / 20.30 min（修复前 6664 / 345）
+
+### 静态归一化 v2 全树复验（scripts/verify_loudnorm.py v2，13:11:08–13:13:20，VERIFY_EXIT=0）
+- 6041/6041 全部通过，orphans 0 / missing 0，fail reasons: none → VERDICT: PASS
+- 预登记判据（daa5627 已登记，未做任何事后调整）实测：
+  - ① rstd ≤ 0.05 dB：median 0.0001 / max 0.004
+  - ② |dproxy| ≤ 0.30 dB：p99 0.0037 / max 0.0599
+  - ③ |dlra| ≤ 0.50 LU：max 0.1
+  - ④ |di_err| ≤ 1.00 LUFS：p99 0.096 / max 0.22
+  - ⑤ tp_norm ≤ −1.20 dBTP：全树 max −1.7
+  - ⑥ 树完整性：pool = disk = verified = 6041
+- gain_err（磁盘实际帧增益 vs 公式增益）max 0.005 dB → 全树零动态残留（指令⑨动态残留项）
+- len_diff_samples 全树 max 0 → 归一化时长不变（瀑布 C 步证据）
+- 判据有效性实证：修复前对 50 个 Dynamic 文件跑 v2 → 33 异常（rstd 32 / dproxy 28 / dlra 27 / di 18）；legacy Linear 前 20 文件正样本 → 0 异常
+- 报告：reports/timbre_blend_stage1_static_norm_verification.json（逐文件 jsonl 证据在 data/ 下，不入库）
+
+### 时长瀑布（464 min → 415.2 min 去向；只读探针，全部对账通过）
+| 步骤 | 文件/切片 | 分钟 | 损失与说明 |
+|---|---|---|---|
+| A stage-1a 可用（12 歌手） | 6141 | 471.74 | — |
+| B 60-min cap 后池 | 6041 | 464.06 | −7.68：cap（仅 singer 14：67.7→60.0） |
+| C 归一化后 | 6041 | 464.06 | 0：静态增益时长不变（len_diff=0） |
+| D 切片后（≥2s，QC 前） | 7058 | 417.34 | −46.72：Slicer 静音修剪 + 1223 个 <2s 短块丢弃（合计口径；逐源时长未记录） |
+| E 切片 QC 后（最终树） | 7010 | 415.20 | −2.14：QC 移除 48 片（全部来自原构建，修复批 0） |
+| F train | 6665 | 394.90 | — |
+| F val | 345 | 20.30 | — |
+- 对账：E 计数 = D − QC = 7010 ✓；E 分钟差 0.009（舍入）✓
+- 决策说明：C→D 损失无法逐源拆分（Slicer 未记录静音/短块时长），按聚合口径报告；此为构建期记录粒度限制，非数据丢失
+
+### 环境异常记录（系统级瞬时不稳定，非仓库/venv 问题）
+- 13:14 preprocess 首启（-j 4，tmux）3 秒内 SIGSEGV（exit 139）；-j 1 前台复跑出现 scipy.signal 导入期不可能异常（AttributeError：int 对象无 _l 属性——正常 Python 语义无法构造）
+- dmesg 证据：约 3.6h 内多个无关进程共 6 次不可能故障——LingXiAgentPack invalid opcode ×4、python 执行数据地址（ip==fault addr）×1、python 空指针调用 ×1 → 判定宿主/WSL2 瞬时内存损坏窗口
+- 复测全绿：scipy.signal 单独导入 6/6、preprocess 完整导入序列 3/3、真实 preprocess -j 1 三次 45s 存活并正常处理（~10–15 it/s）
+- 处置：继续 -j 4 正式运行。安全网：preprocess 无跳过逻辑（全量覆写，探针残留必被覆盖）；audit 关卡 eager np.load 兜底捕获任何损坏；源数据只读
+- 建议主人留意宿主机稳定性（内存压力 / 温度 / LingXiAgentPack 崩溃史）
+
+### 指令⑩：进入 preprocess
+- 13:23:10 tmux ppchain 启动：preprocess（-d cuda -j 4）→（exit 0 门）→ audit_preprocess_features（--build-report = 修复报告，期望 train 6665 / val 345）
+- GPU 每 120s 记录 → logs/gpu_preprocess.csv
+- 通过后：spk-41 F0 复核（关卡 1 遗留义务，判据已预登记：harvest/rmvpe 中位比值多数 ≥1.5 → 系统性低八度 → STOP；[0.75,1.33] 且 ≥1.5 占比 <20% → 真实低音区 → 继续）→ Stage 1c

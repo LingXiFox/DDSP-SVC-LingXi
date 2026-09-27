@@ -1,0 +1,86 @@
+{
+ "verifier": "v2 static-normalization (measure + explicit static gain contract; loudnorm pass 2 no longer part of production)",
+ "out_root": "/home/hands/work/DDSP-SVC-LingXi/data/timbre_blend_stage1",
+ "src_root": "/home/hands/datasets/opensinger-official/OpenSinger/WomanRaw",
+ "n_pool": 6041,
+ "n_verified": 6041,
+ "partial": false,
+ "normalized_on_disk": 6041,
+ "orphans": [],
+ "n_orphans": 0,
+ "missing": [],
+ "n_missing": 0,
+ "thresholds": {
+  "rstd_max_db": 0.05,
+  "dproxy_max_db": 0.3,
+  "dlra_max_lu": 0.5,
+  "di_max_lufs": 1.0,
+  "tp_ceiling_dbtp": -1.2
+ },
+ "fail_reason_counts": {},
+ "n_anomalies": 0,
+ "anomalies": [],
+ "stats": {
+  "dproxy": {
+   "n": 6041,
+   "median": 0.0,
+   "p99_abs": 0.0037,
+   "max_abs": 0.0599
+  },
+  "dlra": {
+   "n": 6041,
+   "median": 0.0,
+   "p99_abs": 0.1,
+   "max_abs": 0.1
+  },
+  "di_err": {
+   "n": 6041,
+   "median": 0.0,
+   "p99_abs": 0.096,
+   "max_abs": 0.22
+  },
+  "tp_err": {
+   "n": 6041,
+   "median": 0.0,
+   "p99_abs": 0.01,
+   "max_abs": 0.01
+  },
+  "gain_err": {
+   "n": 6041,
+   "median": 0.0,
+   "p99_abs": 0.0047,
+   "max_abs": 0.005
+  },
+  "frame_gain_db": {
+   "n": 6041,
+   "median": -0.77,
+   "p99_abs": 10.952,
+   "max_abs": 15.98
+  },
+  "frame_gain_rstd": {
+   "n": 6041,
+   "median": 0.0001,
+   "p99_abs": 0.0002,
+   "max_abs": 0.004
+  },
+  "frame_gain_p99dev": {
+   "n": 6041,
+   "median": 0.0037,
+   "p99_abs": 0.05,
+   "max_abs": 0.0938
+  },
+  "len_diff_samples": {
+   "n": 6041,
+   "median": 0.0,
+   "p99_abs": 0.0,
+   "max_abs": 0.0
+  }
+ },
+ "input_tp_norm_max": -1.7,
+ "tp_limited": {
+  "n": 0,
+  "rels": []
+ },
+ "elapsed_sec": 130.9,
+ "verdict": "PASS"
+}
