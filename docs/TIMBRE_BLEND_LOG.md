@@ -505,3 +505,35 @@ OpenSinger download runs. No GPU training started; download untouched.
 - 前条「多个无关进程共 6 次不可能故障」更正为：与本任务相关的仅 2 次 python 故障（13:14 窗口内 SIGSEGV + scipy 导入期不可能 AttributeError），原因未定，属瞬时事件；其后 12 次复测全绿（含 3 次真实 preprocess 45s 存活）
 - 撤回前条中「留意宿主机稳定性 / LingXiAgentPack 崩溃史」的建议
 - 运行提示：同机存在并行测试项目，若发生 GPU/内存争用，症状会是 CUDA OOM 或显著变慢——pp 链若失败先查此项；正常运行则无需任何动作
+
+### Stage 1b preprocess + 特征 audit + spk-41 F0 复核 全部通过（13:23–13:31）
+
+#### preprocess（13:23:10–13:27:33，PREPROC_EXIT=0）
+- `preprocess.py -c configs/timbre_blend_stage1.yaml -d cuda -j 4`，7010 切片耗时 4.4 min
+- `[Error]` 0 条（无 worker 异常被吞）；pitch_aug_dict.npy train/val 双 split 落盘
+- GPU 日志：logs/gpu_preprocess.csv（120s 粒度）
+- 备注：正式启动前有 3 次 -j 1 探针（45s timeout，诊断环境异常用）；preprocess 无跳过逻辑、全量覆写，探针残留无影响
+
+#### 特征 audit（验收要求 1：exit 0 不充分，逐文件特征完整性审计）
+- AUDIT_EXIT=0，**AUDIT VERDICT: PASS**（reports/timbre_blend_stage1_preprocess_audit.json）
+- train 6665 / val 345：missing 0、unreadable 0、skip/ 空、orphans 0
+- pitch_aug：keys 全配齐（6665/345），missing 0、extra 0、bad_vals 0
+- 六特征（mel/f0/volume/units/aug_mel/aug_vol）eager np.load 全部可读，帧数对齐通过
+- 按 spk F0 中位（train）：284–344 Hz，唯一例外 11_singer41 = 203.4 Hz → 触发 spk-41 复核
+
+#### spk-41 F0 复核（关卡 1 遗留义务，预登记判据，scripts/spk41_f0_review.py）
+- 方法：最终训练切片上逐文件对照 harvest（pyworld，独立第二提取器）voiced 中位 / rmvpe（训练实际使用的 f0 特征 npy）voiced 中位；spk-41 全量 544 片 + 对照歌手各 150 片
+- 结果：
+
+| spk | n | ratio_med | p10–p90 | ≥1.5 占比 | rmvpe Hz | harvest Hz |
+|---|---|---|---|---|---|---|
+| 11_singer41 | 544 | 1.0033 | 0.98–1.03 | 0.0% | 204.2 | 203.8 |
+| 10_singer36（对照） | 150 | 0.9986 | 0.97–1.02 | 0.0% | 305.6 | 308.1 |
+| 2_singer14（对照） | 150 | 1.0005 | 0.98–1.02 | 0.0% | 320.4 | 319.5 |
+
+- **判定：CONTINUE——真实低音区，无八度病理**。预登记 CONTINUE 判据（ratio_med ∈ [0.75,1.33] 且 ≥1.5 占比 <20%）满足，实测 ≥1.5 占比为 0%；STOP 判据（多数 ≥1.5）完全未触发
+- 结论：singer 41 的 ~204 Hz 为真实女低音/中音音区，RMVPE 跟踪正确；关卡 1 决定（保留为低音区训练歌手）维持，未改动任何既定阈值
+- 证据：reports/timbre_blend_stage1_spk41_f0_review.json（844 片逐文件）
+
+#### 下一步
+- Stage 1c：200-step bf16 smoke（计划 §13.2 清单）→ 正式训练 →【人工关卡 2】

@@ -1,0 +1,203 @@
+{
+ "config": "configs/timbre_blend_stage1.yaml",
+ "splits": {
+  "train": {
+   "root": "data/timbre_blend_stage1/train",
+   "n_audio": 6665,
+   "expected_n": 6665,
+   "expect_issue": null,
+   "missing_counts": {},
+   "unreadable_counts": {},
+   "n_files_with_issues": 0,
+   "bad_files": [],
+   "pitch_aug": {
+    "issues": [],
+    "n_keys": 6665,
+    "missing_keys": [],
+    "n_missing_keys": 0,
+    "extra_keys": [],
+    "n_extra_keys": 0,
+    "bad_vals": [],
+    "n_bad_vals": 0
+   },
+   "skip_files": [],
+   "orphans": {},
+   "f0_by_spk": {
+    "1_singer09": {
+     "n": 530,
+     "med": 284.2,
+     "p10": 231.8,
+     "p90": 392.3
+    },
+    "2_singer14": {
+     "n": 871,
+     "med": 320.6,
+     "p10": 241.2,
+     "p90": 426.0
+    },
+    "3_singer19": {
+     "n": 569,
+     "med": 341.9,
+     "p10": 245.9,
+     "p90": 457.4
+    },
+    "4_singer21": {
+     "n": 605,
+     "med": 307.3,
+     "p10": 221.1,
+     "p90": 416.9
+    },
+    "5_singer27": {
+     "n": 577,
+     "med": 324.2,
+     "p10": 218.7,
+     "p90": 427.4
+    },
+    "6_singer28": {
+     "n": 506,
+     "med": 303.9,
+     "p10": 240.8,
+     "p90": 384.6
+    },
+    "7_singer30": {
+     "n": 385,
+     "med": 315.8,
+     "p10": 222.8,
+     "p90": 416.7
+    },
+    "8_singer32": {
+     "n": 353,
+     "med": 321.8,
+     "p10": 246.6,
+     "p90": 410.4
+    },
+    "9_singer33": {
+     "n": 459,
+     "med": 322.7,
+     "p10": 243.4,
+     "p90": 429.7
+    },
+    "10_singer36": {
+     "n": 742,
+     "med": 309.6,
+     "p10": 245.8,
+     "p90": 413.8
+    },
+    "11_singer41": {
+     "n": 519,
+     "med": 203.4,
+     "p10": 143.4,
+     "p90": 272.2
+    },
+    "12_singer42": {
+     "n": 549,
+     "med": 344.3,
+     "p10": 243.3,
+     "p90": 464.1
+    }
+   },
+   "elapsed_sec": 13.5,
+   "verdict": "PASS"
+  },
+  "val": {
+   "root": "data/timbre_blend_stage1/val",
+   "n_audio": 345,
+   "expected_n": 345,
+   "expect_issue": null,
+   "missing_counts": {},
+   "unreadable_counts": {},
+   "n_files_with_issues": 0,
+   "bad_files": [],
+   "pitch_aug": {
+    "issues": [],
+    "n_keys": 345,
+    "missing_keys": [],
+    "n_missing_keys": 0,
+    "extra_keys": [],
+    "n_extra_keys": 0,
+    "bad_vals": [],
+    "n_bad_vals": 0
+   },
+   "skip_files": [],
+   "orphans": {},
+   "f0_by_spk": {
+    "1_singer09": {
+     "n": 26,
+     "med": 291.0,
+     "p10": 225.2,
+     "p90": 399.3
+    },
+    "2_singer14": {
+     "n": 48,
+     "med": 330.3,
+     "p10": 240.5,
+     "p90": 459.8
+    },
+    "3_singer19": {
+     "n": 26,
+     "med": 335.4,
+     "p10": 251.9,
+     "p90": 421.0
+    },
+    "4_singer21": {
+     "n": 30,
+     "med": 341.4,
+     "p10": 231.3,
+     "p90": 412.6
+    },
+    "5_singer27": {
+     "n": 31,
+     "med": 286.4,
+     "p10": 217.6,
+     "p90": 382.9
+    },
+    "6_singer28": {
+     "n": 26,
+     "med": 296.7,
+     "p10": 223.9,
+     "p90": 404.5
+    },
+    "7_singer30": {
+     "n": 21,
+     "med": 303.5,
+     "p10": 255.9,
+     "p90": 389.5
+    },
+    "8_singer32": {
+     "n": 19,
+     "med": 308.8,
+     "p10": 246.1,
+     "p90": 368.5
+    },
+    "9_singer33": {
+     "n": 26,
+     "med": 344.8,
+     "p10": 269.0,
+     "p90": 416.7
+    },
+    "10_singer36": {
+     "n": 40,
+     "med": 307.0,
+     "p10": 240.5,
+     "p90": 420.2
+    },
+    "11_singer41": {
+     "n": 25,
+     "med": 209.5,
+     "p10": 136.0,
+     "p90": 294.4
+    },
+    "12_singer42": {
+     "n": 27,
+     "med": 335.1,
+     "p10": 232.5,
+     "p90": 474.8
+    }
+   },
+   "elapsed_sec": 0.6,
+   "verdict": "PASS"
+  }
+ },
+ "jsonl": "data/timbre_blend_stage1/feature_audit.jsonl",
+ "verdict": "PASS"
+}
