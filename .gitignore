@@ -9,3 +9,4 @@ cache/
 logs/
 samples/
 data/timbre_blend_*/
+reports/opensinger_file_metrics.jsonl
