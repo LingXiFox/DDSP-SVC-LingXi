@@ -331,3 +331,43 @@ OpenSinger download runs. No GPU training started; download untouched.
   DDSP harmonic synthesizer (`ddsp/vocoder.py`), pre-existing, unrelated to the
   masking changes; losses stay finite and fp32.
 - Full suite now: **40 passed, 0 failed** (17 baseline + 23 new).
+
+## 2026-09-27 Stage 1a 数据源切换：HF 私仓 → 官方 Google Drive 归档（用户批准，验证通过）
+
+### 背景：HF 私仓下载过慢
+- `hf download LingXiFox/opensinger-womanraw`（hf-mirror）实测：16 workers ~2.2 文件/s（~0.82 MB/s）；32 workers ~2.30 文件/s（~0.89 MB/s），并发翻倍仅 +5%。
+- 诊断：镜像 connect 59ms / TLS 120ms / TTFB 0.39s 正常；同一镜像匿名下载公开仓库对照跑到 6.8 MB/s → 瓶颈在 hf-mirror 对私有仓库的认证中继路径（推测回源 huggingface.co 被限速），非客户端并发、非文件系统（已是 WSL2 原生 ext4）。
+- aria2+HF token 方案按用户指令放弃（需显式传递凭据，且对私有中继限额效果不确定）。
+
+### 官方公开源调查（仅元数据，用户指令）
+- 官方唯一分发：Multi-Singer 官网（multi-singer.github.io）Google Drive 共享文件 `OpenSinger.tar.gz`（file id 1EofoZxvalgMjZqzUEuEdleHIZ6SHtNuK），Last-Modified 2021-11-26，大小 14,046,666,684 B（13.08 GiB）。
+- 公开匿名可下、零凭据零 token；远端机可直达 Google（本机透明代理，无 proxy 环境变量）。
+- 测速：单连接 4.13 MB/s；4 路并行聚合 ~11-13 MB/s。HF 镜像上无公开 raw 版本（仅 Codec-SUPERB/CodecSR 等 parquet 衍生品）。
+- 用户确认后切换。
+
+### 执行记录
+- 顺序：先 kill watcher（防 EXIT= 误触发分析）→ SIGINT 优雅暂停 HF 下载（日志 Aborted!/EXIT=1）→ 已下载 7,124 个 wav（~2.7GB）全部保留（规则 12：暂不清理，等用户处置）。
+- aria2 安装：sudo 需密码不可用 → 免 sudo 用户态安装：`apt-get download` + `dpkg -x` 解包 Ubuntu 官方签名 deb（aria2 1.37.0、libaria2-0、libcares2；注意 Ubuntu 26.04 中 libc-ares2 是过渡空包，真实包名为 libcares2），置于 `~/.local/aria2`，ldd 依赖全解析。未使用任何来路不明二进制。
+- aria2 8 连接（-x8 -s8 --continue=true --max-tries=0 --file-allocation=falloc）：13 GiB 用时 8.5 分钟，平均 25 MiB/s（约为 HF 私有中继的 28 倍）。
+
+### 文件数量矛盾排查（用户规则 7）
+- HF 私仓 79,866 文件 = 26,621 wav + 26,621 lab + 26,621 txt + 3 个非数据文件：`.DS_Store`（6,148B）、`._.DS_Store`（4,096B）为 macOS 垃圾，`.gitattributes`（2,504B）为 HF LFS 配置。数据本体 = 26,621 × 3 = 79,863。
+- 官方 tar 的 WomanRaw 根目录同样含 `.DS_Store`/`._.DS_Store` 且字节大小与私仓完全一致 → 私仓即由该官方 tar 解出内容直接上传。
+
+### 验证结果（规则 5/8，全部通过）
+1. 精确大小 14,046,666,684 B 一致；`gzip -t` 通过；`tar -tzvf` 列出 130,381 条目（owner huangrongjie = 论文一作 Huang Rongjie，时间戳 2021-11-25，与论文时间线吻合）。
+2. 只解压 WomanRaw + LICENSE + README.md，未解出 ManRaw（规则 6）。
+3. 相对路径+字节大小全量 diff：79,863 vs 79,863 完全一致（对称排除 .DS_Store 类垃圾；唯一差异 = HF 侧特有 .gitattributes，属 HF 工件）。
+4. HF 已下载 7,124 个 wav 与 tar 解出对应文件 md5 全量对比：全部一致。
+5. lab/txt 各随机抽样 200（seed=42）从 HF 私仓按需拉取原文与 tar 版本 hash 对比：400/400 一致。
+6. 结论：官方 tar 的 WomanRaw 与 `LingXiFox/opensinger-womanraw` 为同一份数据，字节级一致。验证脚本与中间产物：`.tmp/verify_official.sh`、`.tmp/verify_extract_diff.sh`、`.tmp/sample_labtxt_verify.py`、`.tmp/official_tar_list.txt`、`.tmp/hf_repo_listing.tsv`、`.tmp/hf_wavs.md5`、`.tmp/official_wavs.md5`。
+
+### 许可证（以 tar 内权威文本为准，非第三方描述）
+- `OpenSinger/LICENSE`（20,842 B）= **CC BY-NC-SA 4.0 International** 全文。
+- `OpenSinger/README.md`（1,363 B）：所有使用者必须遵循 CC BY-NC-SA；官方引用为 ACM MM 2021 Multi-Singer 论文（Huang, Chen, Ren, Liu, Cui, Zhao）；数据申请渠道 help_multisinger@163.com。
+- 对本项目含义：仅限非商业目的；衍生作品须以相同许可证共享；须署名。本项目为私人非商业研究实验，在许可范围内；若未来发布衍生模型/数据需注意 ShareAlike 与 NonCommercial 条款。
+
+### 数据根目录切换（规则 9/11）
+- Stage 1 数据根目录正式切换为：`~/datasets/opensinger-official/OpenSinger/WomanRaw`（79,863 数据文件，wav 共 9.43 GiB，48 位女歌手，711 个 singer_song 目录）。
+- HF 部分下载 `~/datasets/opensinger-womanraw`（7,124 wav）保留作验证证据与备份，等用户验收后决定清理。
+- Stage 1a 完整分析已启动（tmux `stage1a`，`.tmp/run_stage1a.sh`，日志 `.tmp/analysis.log`）：扫描确认 26,621 wav / 48 歌手，GPU（cuda）~30-40 it/s，ETA ~15 分钟。完成后进入【人工关卡 1：歌手选择】。
