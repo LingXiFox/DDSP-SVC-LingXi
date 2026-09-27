@@ -320,3 +320,14 @@ OpenSinger download runs. No GPU training started; download untouched.
 - OpenSinger download: ~10% (2.7k/26.6k files), ETA ~3.5h, tmux `opensinger_dl`.
 - tmux `stage1a` watcher will auto-run the full singer analysis on completion.
 - Next: Gate 1 (singer selection) after analysis; then Stage 1b data prep.
+
+### 2026-09-27 11:55 | Stage 2a addendum
+
+- Autocast smoke (fp16 + bf16, partial mask + all-False, CUDA) passed as a .tmp
+  probe, then promoted into the permanent suite as
+  `test_masked_reflow_under_autocast_on_cuda` (skipif no CUDA) - this is the
+  exact Stage 2 production config (AMP + masked reflow). Probe script deleted.
+- Note: the ComplexHalf UserWarning under fp16 autocast comes from the upstream
+  DDSP harmonic synthesizer (`ddsp/vocoder.py`), pre-existing, unrelated to the
+  masking changes; losses stay finite and fp32.
+- Full suite now: **40 passed, 0 failed** (17 baseline + 23 new).
