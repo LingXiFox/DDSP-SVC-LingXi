@@ -428,3 +428,17 @@ OpenSinger download runs. No GPU training started; download untouched.
 - 修复可行性已验证：50 个文件全部可用**显式静态增益**（gain = −23 − measured_I，范围 −8.55~+8.66 dB，i_src 范围 −31.66~−14.45）归一到 −23 LUFS 且真峰保持 ≤ −1.5 dBTP（50/50 TP-safe，无需封顶、不会引入削波）。
 - 影响面：66 个切片（train 64 + val 2）/ 4.60 min，占全树 415.2 min 的 **1.11%**；lra_zero 类切片仅 0.73 min。每歌手最多 spk2 singer14（16/918 切片），其余 ≤ 11。
 - 按用户指令（2026-09-27）：**管线停在 preprocess 之前**，已报告决策选项（A 修复全部 50 / B 剔除 50 源切片 / C 按原样接受 / D 混合：15 按实证接受 + 35 修复或剔除），推荐 A。等待用户决定，决定后记录并继续。
+
+### 【人工关卡·补充验收】用户决策：A+ 全量修复（2026-09-27）
+- 用户选择选项 A 并升级为生产流水线标准 A+：**50 个 Dynamic 源文件全部修复，不删除，也不接受 Dynamic 处理结果**。
+- 决策理由（用户给出）：
+  1. 35 个 lra_above_target 文件恰含较强真实演唱动态，删除会产生数据选择偏差；
+  2. 接受 Dynamic 违背「响度处理只允许整体静态增益、不改变原始动态」的数据原则；
+  3. 15 个 sentinel 文件虽磁盘实证等价静态增益，但生产流水线不应依赖 FFmpeg 的 sentinel/fallback 特例。
+- 用户指令要点（10 条）：①已验证的 5991 个 Linear 文件保留，不全量重建；②50 源重新生成 normalized，不再用 loudnorm 第二遍做实际归一化；③新生产归一化 = 仅测量（integrated loudness + true peak）→ gain_loudness = target_I − measured_I，gain_peak = target_TP − measured_TP，gain = min(两者) → ffmpeg volume=<gain>dB 单一恒定增益；禁止 compressor/limiter/dynamic loudnorm；target_I = −23 LUFS，target_TP = −1.5 dBTP；④TP 受限时 TP 安全优先，允许最终响度低于 −23，明确记录，不得用动态处理强行达标；⑤本轮 50 个预计全部 TP-safe，磁盘输出后仍需实测确认；⑥重跑 Slicer、删除/替换旧 Dynamic 版本切片、重跑切片级 GPU 质检、保持原 train/val 源划分不得重新随机；⑦build_stage1_dataset.py 今后统一新方案（loudnorm 仅可用于测量，不得执行动态归一化）；⑧verify_loudnorm.py 升级为 static-normalization verifier（帧增益残差/动态代理/积分响度/真峰/无动态压缩）；⑨修复后按清单报告（50/50 成功数、前后切片数与时长、最终 train/val 总时长、响度误差分布、TP 最大值、动态代理 p99/max、TP-limited 清单、动态残留）；⑩全部通过后再进入 preprocess。另补 duration waterfall：stage-1a 入选 → 60min cap → 归一化 → 切片 → QC → 最终 train+val，解释 464.0 → 415.15 min 去向。
+- **预登记：修复与复验判据（运行前固定，不得事后调整）**
+  - 静态增益：gain_db = min(−23 − measured_I, −1.5 − measured_TP)，测量值来自 loudnorm pass-1（确定性，已实证复现一致）；施加：ffmpeg `volume=<gain>dB` + `-ar 44100 -ac 1 -c:a pcm_s16le`（纯恒定乘法，无任何动态环节）。
+  - 修复后磁盘复测（逐文件）：tp_norm ≤ −1.2 dBTP；|i_norm − (i_src + gain)| ≤ 1.0 LU；任一不过 → 该文件记修复失败并列出。
+  - 全树复验（verify_loudnorm.py v2，6041 文件全部通过才 PASS）：① 帧增益残差 rstd ≤ 0.05 dB（恒定增益 ⇒ 无动态压缩）；② |dproxy| ≤ 0.30 dB（动态代理不变）；③ |dlra| ≤ 0.50 LU（响度范围不变）；④ |i_norm − (i_src + expected_gain)| ≤ 1.00 LUFS，expected_gain = min(−23 − i_src, −1.5 − tp_src)（历史 short-file-rule 文件的 loudnorm 现场 global 测量对 pass-1 有 ~0.3-0.7 LU 抖动，由 1.0 容差吸收，v1 全量实测 Linear 文件 di p99=0.14 佐证）；⑤ tp_norm ≤ −1.20 dBTP（上限 −1.5 + 0.3 测量余量）；⑥ 树完整性（pool = 磁盘 = 验证数，orphans/missing = 0）。
+  - 切片质检：与构建时完全相同的固定阈值（duration ≥ 2s、voiced ≥ 0.25、clip ≤ 0.01、oct ≤ 30/min，GPU rmvpe）。
+- 执行记录与结果见后续条目。
