@@ -237,3 +237,86 @@ noting duet sources may contain a second voice (若溪) and one low-cosine outli
 ### Next
 
 - Wait for download + analysis, then present Gate 1 (singer selection) to user.
+
+## 2026-09-27 11:05-11:40 | Stage 2a code complete (parallel with OpenSinger download)
+
+User approved parallelizing the pure-code Stage 2a work (plan 14-19 + 21) while the
+OpenSinger download runs. No GPU training started; download untouched.
+
+### Implementation (4 commits)
+
+- `9c3e2cf` feat(reflow): 
+  - `Unit2Wav.forward(..., reflow_mask=None)` + `Unit2Wav.masked_reflow_loss()`.
+    None -> legacy path bit-for-bit. [B] bool mask validated (dtype/shape/device,
+    raises ValueError). Subsets ddsp_mel/gt_spec BEFORE RectifiedFlow, so the
+    reduction is the mean over actual participants (never full-batch mean x mask).
+    All-False -> `ddsp_mel.new_zeros(())`: correct device/dtype, reflow_model not
+    called at all (no params, no grads, no RNG consumed).
+  - `reflow/solver.py`: `build_reflow_mask(spk_id, exclude)` (returns None for
+    empty exclude = legacy); train() and test() use the SAME rule.
+  - Validation split (15.1): returned/optimized `validation/reflow_loss` is the
+    INCLUDED masked loss; when exclude is set also logs
+    `validation/reflow_loss_included` and (under the existing no_grad)
+    `validation/reflow_loss_excluded_diagnostic` - diagnostic never enters the
+    objective. All-excluded edge case reports 0.0 with a loud warning.
+  - `configs/reflow.yaml`: `train.reflow_exclude_spk: []`, `train.freeze_reflow: false`.
+- `e70608d` feat(training): `train.freeze_reflow` via importable helpers
+  `apply_freeze_reflow(model)` + `build_muon_adamw_optimizer(model, args, freeze_reflow)`
+  in train_reflow.py. Freeze runs AFTER configure_training_stage (which would
+  re-enable requires_grad on the whole backbone for stage timbre - order matters).
+  Frozen params excluded from Muon_AdamW via new optional `params=` kwarg
+  (None = legacy layout exactly). Semantics documented: reflow forward still runs
+  and its loss still backprops INTO the DDSP backbone (keeps ddsp_mel compatible
+  with the frozen reflow), but reflow params get no grad and no optimizer update.
+- `c9538f5` feat(ckpt): `logger/utils.load_model` hardened:
+  - `optimizer_state_mismatch()`: structural check (param_group counts/sizes,
+    recursing into ChainedOptimizer sub-states). Match -> restore + log
+    "fully restored". Mismatch -> explicit discard + loud multi-line log
+    (reason, likely cause, what WAS restored); training continues with fresh
+    optimizer. Never silent, never pretends. `resume_optimizer` mechanism reused.
+  - `expand_spk_embed_state()` (plan 21): n_spk N->N+K migration for
+    `ddsp_model.unit2ctrl.spk_embed.weight`. Old rows copied verbatim (exact
+    equality), new rows keep the model fresh init. Shrink -> RuntimeError.
+    Any OTHER shape mismatch untouched (still raises in load_state_dict -
+    no silent masking). Triggers only where the old code crashed anyway.
+- `d069595` test(reflow): `tests/test_reflow_masking.py`, 21 tests, CPU-only tiny
+  Unit2Wav + deterministic differentiable stub vocoder (+1 conditional CUDA test
+  for the all-False device/dtype contract). Covers every case listed in plan 18:
+  None/all-True(bitwise == None)/all-False(zero, no reflow call, no reflow grads,
+  ddsp loss bitwise unchanged)/partial(bitwise subset equality via direct
+  masked_reflow_loss call + full-forward poison leak checks incl. gradients),
+  mask validation errors, build_reflow_mask, freeze false/true (optimizer layout,
+  weights bitwise unchanged after a real step, backbone keeps training), missing
+  config keys, yaml defaults, old-ckpt->frozen (weights exact, optimizer discarded
+  loudly, step continues), matching-layout restore (state tensors bitwise equal),
+  ckpt-without-optimizer, spk expansion (old rows exact + fresh row kept + all
+  other tensors exact), shrink raises, unrelated mismatch still raises, and
+  solver.test() validation split (included/diagnostic/all-excluded/legacy).
+
+### Verification
+
+- `python -m compileall -q ddsp reflow logger train_reflow.py train_realism.py optimizer scripts` OK.
+- `.venv/bin/python -m pytest -q tests/` -> **38 passed, 0 failed** (17 baseline + 21 new).
+- NOTE: must run `python -m pytest` (not bare `pytest`): pre-existing realism tests
+  have no sys.path bootstrap and rely on CWD injection by `python -m`. Baseline
+  Stage 0 run used the same invocation.
+
+### Findings worth remembering
+
+- `CombSubSuperFast.forward` unconditionally draws `noise = torch.randn_like(combtooth)`
+  (noise exciter) - RNG consumption is batch-size dependent even with no dropout.
+  Consequence for tests: a b=4 masked forward and a separate b=2 subset forward
+  diverge in RNG stream; equivalence must be tested either at the
+  masked_reflow_loss level (seeded right before) or via poison-invariance within
+  identical batch shapes. This is also a (pre-existing, upstream) source of
+  nondeterminism in inference.
+- First partial-mask test draft failed for exactly this reason (0.166 vs 1.858,
+  l2_lognorm weights amplify different t draws). Implementation was correct;
+  test comparison method was wrong. Fixed by redesigning the comparison, NOT by
+  loosening tolerances.
+
+### Status
+
+- OpenSinger download: ~10% (2.7k/26.6k files), ETA ~3.5h, tmux `opensinger_dl`.
+- tmux `stage1a` watcher will auto-run the full singer analysis on completion.
+- Next: Gate 1 (singer selection) after analysis; then Stage 1b data prep.
