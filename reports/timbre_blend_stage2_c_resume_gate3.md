@@ -1,6 +1,6 @@
 # Stage 2 C expanded blind-listening comparison
 
-> Status: **Human gate 3 — waiting for blind listening.** This is not a passed gate.
+> Status: **Human gate 3 resolved — C@7800 selected as the main checkpoint.** The user heard no clear difference from C@3000 in a representative paired comparison; the predeclared virtual-validation DDSP loss broke the perceptual tie. This is not a claim of audible improvement.
 
 ## Training and model selection
 
@@ -55,4 +55,4 @@ SpeechBrain ECAPA (speech-trained, fixed local revision) ran in an independent o
 
 - Blind package: 11 original `inputs/`, 33 randomized `audio/` WAVs, `pairs.json`, and listening instructions. **No arm key in the package.** Keep the separately stored key unopened until choices are locked.
 - Raw independent similarity: `reports/timbre_blend_stage2_c_resume_similarity.json`; fixed selection metadata: `reports/timbre_blend_stage2_c_resume_holdout_inputs.json`; training curve: `exp/timbre_blend_stage2_embedding_resume_4600/validation_history.jsonl`.
-- **Human gate 3: pending.** Compare each three-output set against its input, mark preference and mechanical/breathy/high-pitch observations before opening the key. No claim that a preferred model has been selected by this report.
+- **Human gate 3 decision:** the user reported all three-arm results sounded good with smaller perceived differences than the earlier blind test. In a representative same-input C@3000 vs C@7800 comparison, the user could not hear a meaningful difference and found the spectra almost identical. The two output waveforms are not identical (correlation 0.9962). The user accepted **C@7800** as the main checkpoint on the predeclared virtual-DDSP tie-break (1.02055079 → 0.99295372, about 2.7% lower; public-validation metrics unchanged). C@3000 is retained as an audible alternative; do not claim a perceptible superiority for C@7800. B and all intermediate checkpoints remain untouched.

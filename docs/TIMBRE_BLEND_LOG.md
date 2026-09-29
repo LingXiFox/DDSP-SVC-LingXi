@@ -780,3 +780,9 @@ OpenSinger download runs. No GPU training started; download untouched.
 - `.tmp/timbre_blend_stage2_three_arm_blind.zip` 含 `README.md`、11 条未拼接 `inputs/`、33 条匿名 `audio/` 与不含模型身份的 `pairs.json`，共 46 个 ZIP 成员；`ZipFile.testzip()` 全部通过且未包含 `key` 或 selection 源路径。ZIP SHA-256 `42d20efc4b0c3ea7d3ecb53bc65b67cdbbeec2801937ab3e5c1befcc7cc7e672`。主人本机 `~/Downloads/timbre_blend_stage2_C7800_C3000_B1k_blind.zip` 拉取后哈希相同，`unzip -t` 通过。
 - **单独**解盲表 `~/Downloads/timbre_blend_stage2_C7800_C3000_B1k_blind_key.json`（远端 `.tmp/stage2_expanded_blind_key.json`，SHA-256 `398fd6f7031bebe801f18d3e914e3af708f79f53dff8f3bd9dd741ba707ab587`，本机权限 0600），应在盲听决策锁定后才打开；不在 ZIP 内。对照报告 `~/Downloads/timbre_blend_stage2_C7800_C3000_B1k_comparison.md`，SHA-256 `e05f0f273c1464f298a86113a63fb099940f6b7769145bee5cfdec1b125d8064`，原版在 `reports/timbre_blend_stage2_c_resume_gate3.md`。独立评测明细在 `reports/timbre_blend_stage2_c_resume_similarity.json`。
 - B@1k、B@2k、C@3000 等旧 checkpoint 和全部 C 新点均保留。Python 导入阶段偶发运行异常仍未定因，补跑成功**不**消除运行环境风险；关卡 3 仅进入“等待主人试听”，不得写成验收通过。
+
+### 2026-09-29 | 【人工关卡 3】主人选定 C@7800
+- 主人反馈扩大盲听整体表现不错、各版本相较前轮差异缩小；特别点名 `47_秋酿_19.wav` / C@3000、`29_月光_13.wav` / C@7800、`47_秋酿_15.wav` / C@3000 音色饱满。这三段**来自不同原片**，不能当作同输入 2:1 的版本投票。
+- 随后在 `10_侧脸_3.wav` 同原片/seed/推理设置上，只比较 C@3000 与 C@7800 的随机 1/2 盲听：主人表示难以听出区别、频谱几乎一致；该两条 PCM 波形相关系数 `0.996234`，不是逐采样相同。盲听单片段压缩包与不含映射的 1/2 音频已放在主人本机 `~/Downloads/timbre_blend_C3000_vs_C7800_one_clip/`，密钥独立存于远端 `.tmp/timbre_blend_c3000_vs_c7800_one_clip_key.json`（未在对话中揭晓标签映射）。
+- 主人明确接受依原定硬指标打平决胜：**选 C@7800 为主 checkpoint**（MD5 `733d9c6d44071d91a1c0b0f190db44db`）。虚拟验证 ddsp C@3000 `1.0205507927081163` → C@7800 `0.9929537212147432`（约降 2.7%），公开指标不变；扩大盲听 ECAPA 均值 `0.612739` → `0.616574`（很小的代理改善）。**不可宣称有显著可听提升**，C@3000 保留作为备选，B/其他 C checkpoint 全部保留，不再续训。
+- `reports/timbre_blend_stage2_c_resume_gate3.md` 已标关卡 3 人工选型结论；分支提交仍仅在远端 WSL 本地，GitHub HTTPS `git push` 因无非交互认证失败，未读取/更改凭据，待主人配置认证或指定授权推送方式。Python 导入阶段偶发异常根因未定，属于独立环境风险，不能将单次成功补跑当作已修复。
