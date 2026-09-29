@@ -90,19 +90,27 @@ def main():
     refs=select(Path('data/timbre_blend_stage2/val/audio'),limit_speakers=None)
     assert '13_lingxi' in refs and len(refs['13_lingxi'])==2
     private=[wav for _,files in refs['13_lingxi'] for wav in files]
-    def group_outputs(name,dir):
+    def group_outputs(name,dir,filenames=None):
         rows=[]
         for singer in (10,47):
-            path=dir/f'singer{singer}__to_spk13.wav'
+            path=dir/(filenames[singer] if filenames else f'singer{singer}__to_spk13.wav')
             assert path.is_file(),path
             values=[cosine(path,ref) for ref in private]
             rows.append({'input_singer':singer,'similarity_to_virtual_val':describe(values)})
         return {'name':name,'per_input':rows,
                 'all_output_to_virtual_val':describe([
-                  cosine(dir/f'singer{singer}__to_spk13.wav',ref)
+                  cosine(dir/(filenames[singer] if filenames else f'singer{singer}__to_spk13.wav'),ref)
                   for singer in (10,47) for ref in private])}
-    groups=[group_outputs('B_1k',Path('samples/stage2/probe_1k'))]
-    if opt.c_dir:groups.append(group_outputs('C_best',opt.c_dir))
+    if opt.c_dir:
+        key=json.loads(Path('.tmp/stage2_c_vs_b1k_blind_key.json').read_text())
+        groups=[]
+        for name,label in (('B_1k','B_1k'),('C_best','C_3000')):
+            filenames={int(item['input_singer']):filename
+                       for filename,item in key['files'].items() if item['group']==label}
+            assert set(filenames)=={10,47}
+            groups.append(group_outputs(name,opt.c_dir,filenames))
+    else:
+        groups=[group_outputs('B_1k',Path('samples/stage2/probe_1k'))]
     result={'model':'speechbrain/spkrec-ecapa-voxceleb',
             'revision':'0f99f2d0ebe89ac095bcc5903c4dd8f72b367286',
             'license':'Apache-2.0','speechbrain_version':'1.1.1',
