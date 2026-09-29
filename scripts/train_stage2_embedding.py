@@ -126,7 +126,7 @@ def main():
     if resume:
         assert digest(resume) == args.train.resume_checkpoint_md5, 'C resume MD5 mismatch'
         ckpt = torch.load(resume, map_location='cpu', weights_only=True)
-        assert ckpt['global_step'] in (3000, 3400) and 'optimizer' not in ckpt
+        assert ckpt['global_step'] in (3000, 3400, 4200) and 'optimizer' not in ckpt
         assert ckpt['model'][KEY].shape[0] == 13
         model.load_state_dict(ckpt['model'], strict=True)
         initial_step = ckpt['global_step']
@@ -156,6 +156,8 @@ def main():
     expected = frozen_digests(model, row)
     assert_frozen(model, expected, row)
     virtual_root = virtual_tree(args.data.train_path, Path(
+        '.tmp/stage2_c_virtual_train_resume_4200_smoke' if resume and initial_step == 4200 and opt.smoke else
+        '.tmp/stage2_c_virtual_train_resume_4200' if resume and initial_step == 4200 else
         '.tmp/stage2_c_virtual_train_resume_3400_smoke' if resume and initial_step == 3400 and opt.smoke else
         '.tmp/stage2_c_virtual_train_resume_3400' if resume and initial_step == 3400 else
         '.tmp/stage2_c_virtual_train_resume_smoke' if resume and opt.smoke else
@@ -173,7 +175,7 @@ def main():
     if resume:
         source = Path(resume).parent
         baseline = json.loads((source / 'baseline.json').read_text())
-        history_text = (source / 'validation_history.jsonl').read_text()
+        history_text = Path(args.train.get('resume_history_path') or source / 'validation_history.jsonl').read_text()
         history = [json.loads(line) for line in history_text.splitlines()]
         assert len(history) == initial_step // 200 - (1 if initial_step == 3400 else 0)
         assert history[-1]['step'] == (3200 if initial_step == 3400 else initial_step)
@@ -204,6 +206,8 @@ def main():
                         'consecutive_rises_gt_2pct': rises}
             with (exp / 'validation_history.jsonl').open('a') as stream:
                 stream.write(json.dumps(row_data) + '\n')
+                stream.flush()
+                os.fsync(stream.fileno())
             saver.log_info('C_VALIDATION ' + json.dumps(row_data))
             prev = virt
         saver.log_info(f'C_RESUME_VERIFY=PASS step={initial_step} optimizer=RESET no_state_saved')
@@ -245,6 +249,8 @@ def main():
                 # Fail before writing the checkpoint if any non-target state moved.
                 other_rows_sha = assert_frozen(model, expected, row)
                 saver.save_model(model, None, postfix=str(step))
+                with (exp / f'model_{step}.pt').open('rb') as checkpoint_file:
+                    os.fsync(checkpoint_file.fileno())
                 metrics = {group: test(args, model, vocoder, dl, saver, 'validation/' + group, True)
                            for group, dl in {'train_probe': train_probe, **val}.items()}
                 assert_frozen(model, expected, row)
@@ -259,6 +265,8 @@ def main():
                             'consecutive_rises_gt_2pct': rises}
                 with (exp / 'validation_history.jsonl').open('a') as f:
                     f.write(json.dumps(row_data) + '\n')
+                    f.flush()
+                    os.fsync(f.fileno())
                 saver.log_info('C_VALIDATION ' + json.dumps(row_data))
                 prev = virt
                 if rises >= 2:

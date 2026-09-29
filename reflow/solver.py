@@ -68,6 +68,7 @@ def calculate_mel_psnr(gt_mel, pred_mel):
 
 def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
     print(f' [*] testing {metric_prefix}...')
+    quiet = bool(args.train.get('quiet_validation', False))
     model.eval()
 
     # losses
@@ -136,14 +137,16 @@ def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
                 torch.manual_seed(sample_seed)
             processed_batches += 1
             fn = data['name'][0]
-            print('--------')
-            print('{}/{} - {}'.format(bidx, num_batches, fn))
+            if not quiet:
+                print('--------')
+                print('{}/{} - {}'.format(bidx, num_batches, fn))
 
             # unpack data
             for k in data.keys():
                 if not k.startswith('name'):
                     data[k] = data[k].to(args.device)
-            print('>>', data['name'][0])
+            if not quiet:
+                print('>>', data['name'][0])
 
             # forward
             trace('model_infer_start', bidx, fn)
@@ -158,7 +161,8 @@ def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
                     return_wav=False,
                     infer_step=args.infer.infer_step, 
                     method=args.infer.method,
-                    t_start=args.model.t_start)
+                    t_start=args.model.t_start,
+                    use_tqdm=not quiet)
             trace('vocoder_start', bidx, fn)
             signal = vocoder.infer(mel, data['f0'])
             trace('vocoder_done', bidx, fn)
@@ -168,7 +172,8 @@ def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
             run_time = ed_time - st_time
             song_time = signal.shape[-1] / args.data.sampling_rate
             rtf = run_time / song_time
-            print('RTF: {}  | {} / {}'.format(rtf, run_time, song_time))
+            if not quiet:
+                print('RTF: {}  | {} / {}'.format(rtf, run_time, song_time))
             rtf_all.append(rtf)
            
             # loss (same mask rule as training; see build_reflow_mask)
