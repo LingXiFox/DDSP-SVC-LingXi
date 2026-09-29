@@ -55,7 +55,9 @@ def describe(values):
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--c-dir', type=Path)
+    ap.add_argument('--expanded-dir', type=Path)
     opt=ap.parse_args()
+    assert not (opt.c_dir and opt.expanded_dir)
     assert os.environ.get('HF_HUB_OFFLINE')=='1'
     assert os.environ.get('TORCH_FORCE_WEIGHTS_ONLY_LOAD')=='1'
     root=Path.home()/'work/eval-models/ecapa-voxceleb-0f99f2d'
@@ -101,7 +103,29 @@ def main():
                 'all_output_to_virtual_val':describe([
                   cosine(dir/(filenames[singer] if filenames else f'singer{singer}__to_spk13.wav'),ref)
                   for singer in (10,47) for ref in private])}
-    if opt.c_dir:
+    if opt.expanded_dir:
+        key=json.loads(Path('.tmp/stage2_expanded_blind_key.json').read_text())
+        inputs=json.loads((opt.expanded_dir.parent/'input_selection.json').read_text())['inputs']
+        assert len(inputs)==11 and len(key['jobs'])==33
+        groups=[]
+        for name in ('B_1k','C_3000','C_best'):
+            jobs={job['input']:job for job in key['jobs'] if job['arm']==name}
+            assert set(jobs)=={Path(row['file']).name for row in inputs}
+            rows=[]; all_scores=[]
+            for row in inputs:
+                output=opt.expanded_dir/jobs[Path(row['file']).name]['output']
+                assert output.is_file()
+                scores=[cosine(output,ref) for ref in private]
+                rows.append({'input':Path(row['file']).name,'input_singer':row['singer'],
+                             'similarity_to_virtual_val':describe(scores)})
+                all_scores.extend(scores)
+            groups.append({'name':name,'per_input':rows,
+                           'all_output_to_virtual_val':describe(all_scores),
+                           'per_singer':{str(singer):describe([
+                               cosine(opt.expanded_dir/jobs[Path(r['file']).name]['output'],ref)
+                               for r in inputs if r['singer']==singer for ref in private])
+                               for singer in (10,29,47)}})
+    elif opt.c_dir:
         key=json.loads(Path('.tmp/stage2_c_vs_b1k_blind_key.json').read_text())
         groups=[]
         for name,label in (('B_1k','B_1k'),('C_best','C_3000')):
@@ -121,8 +145,9 @@ def main():
             'virtual_reference':{'songs':2,'clips':len(private),'split':'validation only'},
             'groups':groups,
             'caveat':'Speech-trained speaker model on sung audio: proxy only; no speech threshold reused.'}
-    out=Path('.tmp/stage2_similarity_preliminary.json' if not opt.c_dir else
-             'reports/timbre_blend_stage2_similarity.json')
+    out=Path('reports/timbre_blend_stage2_c_resume_similarity.json' if opt.expanded_dir else
+             'reports/timbre_blend_stage2_similarity.json' if opt.c_dir else
+             '.tmp/stage2_similarity_preliminary.json')
     assert not out.exists(),f'refusing to overwrite {out}'
     out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print('SIMILARITY_REPORT',out,'PUBLIC',result['public_reference'])
