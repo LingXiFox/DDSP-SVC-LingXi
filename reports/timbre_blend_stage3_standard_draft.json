@@ -1,0 +1,1330 @@
+{
+  "status": "PROPOSAL_ONLY_PENDING_USER_CONFIRMATION",
+  "relative_increase_cap": 0.1,
+  "relative_rule": "For each public Y: recipe_mean(Y) / native_virtual_mean(Y) - 1 <= 0.10. Negative increases pass. This 10% cap is a proposed policy choice, not a confidence bound derived from 12 samples.",
+  "absolute_limit_strictly_below": 0.48599176704883557,
+  "absolute_rule": "For every public Y: recipe_mean(Y) < the pairwise different-speaker p95 from 36 pure-public conversions x 11 other public singers x four references (=1584 cosines). This distribution is of individual cosines, while the gate compares 12-cosine means; the alternative matched-unit p95 is reported explicitly.",
+  "matched_unit_p95_strictly_below_alternative": 0.41368152815848586,
+  "matched_unit_rule": "More conservative, apples-to-apples option: 132 conversion-target vs other-reference-singer means, each averaged across three output clips x four reference clips.",
+  "passing_recipe_ids": [],
+  "failed_recipe_ids": [
+    "v100_t000",
+    "v100_t025",
+    "v100_t050",
+    "v080_t000",
+    "v080_t025",
+    "v080_t050",
+    "v060_t000",
+    "v060_t025",
+    "v060_t050",
+    "v040_t000",
+    "v040_t025",
+    "v040_t050"
+  ],
+  "source_reports": [
+    "reports/timbre_blend_stage3_diagnostics.json",
+    "reports/timbre_blend_stage3_recipe_screen.json"
+  ],
+  "results": [
+    {
+      "recipe_id": "v100_t000",
+      "virtual_weight": 1.0,
+      "t_start": 0.0,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.14151078651946025,
+          "actual_similarity": 0.38638254006703693,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.1634361528856454,
+          "actual_similarity": 0.38052478184302646,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.2002261476682925,
+          "actual_similarity": 0.33495953927437466,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.16646533242584138,
+          "actual_similarity": 0.31530247007807094,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5004935910304388,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.397063026825587,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.1174999967985102
+        },
+        "2": {
+          "recipe_similarity": 0.36704966177543,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.09016871485652234
+        },
+        "3": {
+          "recipe_similarity": 0.38638254006703693,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.14151078651946025
+        },
+        "4": {
+          "recipe_similarity": 0.38052478184302646,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.1634361528856454
+        },
+        "5": {
+          "recipe_similarity": 0.33495953927437466,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.2002261476682925
+        },
+        "6": {
+          "recipe_similarity": 0.2671213274200757,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": -0.19090491384971364
+        },
+        "7": {
+          "recipe_similarity": 0.31530247007807094,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.16646533242584138
+        },
+        "8": {
+          "recipe_similarity": 0.20882179339726767,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": -0.1290091290288139
+        },
+        "9": {
+          "recipe_similarity": 0.28376007700959843,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.15391859211312553
+        },
+        "10": {
+          "recipe_similarity": 0.5004935910304388,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.06253442760320471
+        },
+        "11": {
+          "recipe_similarity": 0.17710665675501028,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": -0.12860500658821428
+        },
+        "12": {
+          "recipe_similarity": 0.4689008668065071,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": 0.0007871167783353172
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v100_t025",
+      "virtual_weight": 1.0,
+      "t_start": 0.25,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.13628651895677701,
+          "actual_similarity": 0.38461421181758243,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.1570998364507854,
+          "actual_similarity": 0.3784523643553257,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.1933543386626564,
+          "actual_similarity": 0.33304175237814587,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.17126512786414283,
+          "actual_similarity": 0.31659988313913345,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.500317337612311,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.3967711254954338,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.11814876766709026
+        },
+        "2": {
+          "recipe_similarity": 0.36582965155442554,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.09319283824597213
+        },
+        "3": {
+          "recipe_similarity": 0.38461421181758243,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.13628651895677701
+        },
+        "4": {
+          "recipe_similarity": 0.3784523643553257,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.1570998364507854
+        },
+        "5": {
+          "recipe_similarity": 0.33304175237814587,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.1933543386626564
+        },
+        "6": {
+          "recipe_similarity": 0.26677484313646954,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": -0.19195439475040266
+        },
+        "7": {
+          "recipe_similarity": 0.31659988313913345,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.17126512786414283
+        },
+        "8": {
+          "recipe_similarity": 0.20874586763481298,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": -0.12932581362812556
+        },
+        "9": {
+          "recipe_similarity": 0.2813907749950886,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.1609830897171275
+        },
+        "10": {
+          "recipe_similarity": 0.500317337612311,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.062160246338749614
+        },
+        "11": {
+          "recipe_similarity": 0.17751678948601088,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": -0.12658708351871273
+        },
+        "12": {
+          "recipe_similarity": 0.46842889736096066,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": -0.00022021968455687713
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v100_t050",
+      "virtual_weight": 1.0,
+      "t_start": 0.5,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.14069416889447983,
+          "actual_similarity": 0.3861061284939448,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.1602208993495855,
+          "actual_similarity": 0.37947316964467365,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.1994483245596712,
+          "actual_similarity": 0.3347424641251564,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.171518312519791,
+          "actual_similarity": 0.3166683204472065,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5015268723169962,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.3978165239095688,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.11582529748353632
+        },
+        "2": {
+          "recipe_similarity": 0.3659992230435212,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.09277250971303908
+        },
+        "3": {
+          "recipe_similarity": 0.3861061284939448,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.14069416889447983
+        },
+        "4": {
+          "recipe_similarity": 0.37947316964467365,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.1602208993495855
+        },
+        "5": {
+          "recipe_similarity": 0.3347424641251564,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.1994483245596712
+        },
+        "6": {
+          "recipe_similarity": 0.26497432465354603,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": -0.1974080613337722
+        },
+        "7": {
+          "recipe_similarity": 0.3166683204472065,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.171518312519791
+        },
+        "8": {
+          "recipe_similarity": 0.2081123081346353,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": -0.13196837565143904
+        },
+        "9": {
+          "recipe_similarity": 0.2792567250629266,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.1673461411728946
+        },
+        "10": {
+          "recipe_similarity": 0.5015268723169962,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.06472805597336029
+        },
+        "11": {
+          "recipe_similarity": 0.1782091415176789,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": -0.12318059329904496
+        },
+        "12": {
+          "recipe_similarity": 0.4677830735842387,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": -0.0015986178945118779
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v080_t000",
+      "virtual_weight": 0.8,
+      "t_start": 0.0,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.13935294022360334,
+          "actual_similarity": 0.3856521447499593,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.19728379700321952,
+          "actual_similarity": 0.3915953226387501,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.21726386069393344,
+          "actual_similarity": 0.3397144302725792,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.19701707102812227,
+          "actual_similarity": 0.32356078550219536,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5068025092283884,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.39255787432193756,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.12751300941940125
+        },
+        "2": {
+          "recipe_similarity": 0.3716844742496808,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.078680085853435
+        },
+        "3": {
+          "recipe_similarity": 0.3856521447499593,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.13935294022360334
+        },
+        "4": {
+          "recipe_similarity": 0.3915953226387501,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.19728379700321952
+        },
+        "5": {
+          "recipe_similarity": 0.3397144302725792,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.21726386069393344
+        },
+        "6": {
+          "recipe_similarity": 0.2902554050087929,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": -0.12083312781738742
+        },
+        "7": {
+          "recipe_similarity": 0.32356078550219536,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.19701707102812227
+        },
+        "8": {
+          "recipe_similarity": 0.22246227910121283,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": -0.07211497861249694
+        },
+        "9": {
+          "recipe_similarity": 0.29614181940754253,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.11700021321167497
+        },
+        "10": {
+          "recipe_similarity": 0.5068025092283884,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.07592809119128896
+        },
+        "11": {
+          "recipe_similarity": 0.1912898669640223,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": -0.058821190479391605
+        },
+        "12": {
+          "recipe_similarity": 0.4681108792622884,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": -0.000898973848994955
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v080_t025",
+      "virtual_weight": 0.8,
+      "t_start": 0.25,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.14733038856680003,
+          "actual_similarity": 0.3883523792028427,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.19988717017879254,
+          "actual_similarity": 0.3924468072752158,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.22210170400668017,
+          "actual_similarity": 0.34106457730134326,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.2030996907725191,
+          "actual_similarity": 0.3252049535512924,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5064421320954958,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.39357773711284,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.12524629392228737
+        },
+        "2": {
+          "recipe_similarity": 0.371838786949714,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.078297580332231
+        },
+        "3": {
+          "recipe_similarity": 0.3883523792028427,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.14733038856680003
+        },
+        "4": {
+          "recipe_similarity": 0.3924468072752158,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.19988717017879254
+        },
+        "5": {
+          "recipe_similarity": 0.34106457730134326,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.22210170400668017
+        },
+        "6": {
+          "recipe_similarity": 0.28931594640016556,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": -0.12367869373016305
+        },
+        "7": {
+          "recipe_similarity": 0.3252049535512924,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.2030996907725191
+        },
+        "8": {
+          "recipe_similarity": 0.22064626465241113,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": -0.07968953288063751
+        },
+        "9": {
+          "recipe_similarity": 0.29715082173546153,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.11399169235432416
+        },
+        "10": {
+          "recipe_similarity": 0.5064421320954958,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.07516302023437427
+        },
+        "11": {
+          "recipe_similarity": 0.19194517160455385,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": -0.055596979750211606
+        },
+        "12": {
+          "recipe_similarity": 0.468049260477225,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": -0.0010304883984624258
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v080_t050",
+      "virtual_weight": 0.8,
+      "t_start": 0.5,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.14573524814971006,
+          "actual_similarity": 0.38781245052814484,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.19438038740978514,
+          "actual_similarity": 0.39064570516347885,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.2237575258953155,
+          "actual_similarity": 0.34152668466170627,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.20800138392727452,
+          "actual_similarity": 0.3265299101670583,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5075636655092239,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.3963884810606639,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.11899922135352181
+        },
+        "2": {
+          "recipe_similarity": 0.3708408897121747,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.08077113696671978
+        },
+        "3": {
+          "recipe_similarity": 0.38781245052814484,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.14573524814971006
+        },
+        "4": {
+          "recipe_similarity": 0.39064570516347885,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.19438038740978514
+        },
+        "5": {
+          "recipe_similarity": 0.34152668466170627,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.2237575258953155
+        },
+        "6": {
+          "recipe_similarity": 0.28723185881972313,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": -0.1299912747461709
+        },
+        "7": {
+          "recipe_similarity": 0.3265299101670583,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.20800138392727452
+        },
+        "8": {
+          "recipe_similarity": 0.2186483225474755,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": -0.08802290319518757
+        },
+        "9": {
+          "recipe_similarity": 0.29338279614845914,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.1252267343912522
+        },
+        "10": {
+          "recipe_similarity": 0.5075636655092239,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.0775440054960237
+        },
+        "11": {
+          "recipe_similarity": 0.19232609868049622,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": -0.05372275349066258
+        },
+        "12": {
+          "recipe_similarity": 0.467646819849809,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": -0.0018894277259351444
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v060_t000",
+      "virtual_weight": 0.6,
+      "t_start": 0.0,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.1736212234399539,
+          "actual_similarity": 0.3972513924042384,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.24691794986539795,
+          "actual_similarity": 0.4078291530410449,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.26080356951092365,
+          "actual_similarity": 0.3518655076622963,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.25220700308169497,
+          "actual_similarity": 0.3384789501627286,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5155072137713432,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.40025871992111206,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.11039734815963131
+        },
+        "2": {
+          "recipe_similarity": 0.37791505083441734,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.06323592640684761
+        },
+        "3": {
+          "recipe_similarity": 0.3972513924042384,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.1736212234399539
+        },
+        "4": {
+          "recipe_similarity": 0.4078291530410449,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.24691794986539795
+        },
+        "5": {
+          "recipe_similarity": 0.3518655076622963,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.26080356951092365
+        },
+        "6": {
+          "recipe_similarity": 0.32205424333612126,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": -0.024516281519793126
+        },
+        "7": {
+          "recipe_similarity": 0.3384789501627286,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.25220700308169497
+        },
+        "8": {
+          "recipe_similarity": 0.23309805492560068,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": -0.02775340361579892
+        },
+        "9": {
+          "recipe_similarity": 0.31676401446263,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.05551145126248813
+        },
+        "10": {
+          "recipe_similarity": 0.5155072137713432,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.09440794472939551
+        },
+        "11": {
+          "recipe_similarity": 0.20552161087592444,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": 0.011201419735113127
+        },
+        "12": {
+          "recipe_similarity": 0.4725615407029788,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": 0.008600186733327186
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v060_t025",
+      "virtual_weight": 0.6,
+      "t_start": 0.25,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.17145596288588894,
+          "actual_similarity": 0.396518487483263,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.2440004889378311,
+          "actual_similarity": 0.4068749397993088,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.2589459813437518,
+          "actual_similarity": 0.3513470912973086,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.24727585831248633,
+          "actual_similarity": 0.3371460326015949,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5156153365969658,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.4003584335247676,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.11017572778805262
+        },
+        "2": {
+          "recipe_similarity": 0.3768925207356612,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.06577054221155687
+        },
+        "3": {
+          "recipe_similarity": 0.396518487483263,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.17145596288588894
+        },
+        "4": {
+          "recipe_similarity": 0.4068749397993088,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.2440004889378311
+        },
+        "5": {
+          "recipe_similarity": 0.3513470912973086,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.2589459813437518
+        },
+        "6": {
+          "recipe_similarity": 0.32233829982578754,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": -0.02365589080446595
+        },
+        "7": {
+          "recipe_similarity": 0.3371460326015949,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.24727585831248633
+        },
+        "8": {
+          "recipe_similarity": 0.23306920751929283,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": -0.027873725480373368
+        },
+        "9": {
+          "recipe_similarity": 0.3158680622776349,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.05818289290455636
+        },
+        "10": {
+          "recipe_similarity": 0.5156153365969658,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.09463748657906668
+        },
+        "11": {
+          "recipe_similarity": 0.20505855108300844,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": 0.008923086483328957
+        },
+        "12": {
+          "recipe_similarity": 0.47277919699748355,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": 0.009064736131390028
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v060_t050",
+      "virtual_weight": 0.6,
+      "t_start": 0.5,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.17323811063210148,
+          "actual_similarity": 0.39712171504894894,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.24080535755008325,
+          "actual_similarity": 0.40582990894714993,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.2559333339583376,
+          "actual_similarity": 0.35050632059574127,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.2500646289746502,
+          "actual_similarity": 0.3378998537858327,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5162284697095553,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.40198783824841183,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.10655426324291839
+        },
+        "2": {
+          "recipe_similarity": 0.37718863412737846,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.06503654554627958
+        },
+        "3": {
+          "recipe_similarity": 0.39712171504894894,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.17323811063210148
+        },
+        "4": {
+          "recipe_similarity": 0.40582990894714993,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.24080535755008325
+        },
+        "5": {
+          "recipe_similarity": 0.35050632059574127,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.2559333339583376
+        },
+        "6": {
+          "recipe_similarity": 0.3216381060580413,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": -0.02577673732132102
+        },
+        "7": {
+          "recipe_similarity": 0.3378998537858327,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.2500646289746502
+        },
+        "8": {
+          "recipe_similarity": 0.23342609529693922,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": -0.026385154813326928
+        },
+        "9": {
+          "recipe_similarity": 0.31468527888258296,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.061709573086832115
+        },
+        "10": {
+          "recipe_similarity": 0.5162284697095553,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.09593915168028921
+        },
+        "11": {
+          "recipe_similarity": 0.20613359846174717,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": 0.01421250315844147
+        },
+        "12": {
+          "recipe_similarity": 0.473906231423219,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": 0.01147019454123166
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v040_t000",
+      "virtual_weight": 0.4,
+      "t_start": 0.0,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.1822655368004844,
+          "actual_similarity": 0.40017734964688617,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.28058823433044333,
+          "actual_similarity": 0.41884168485800427,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.24949782350622707,
+          "actual_similarity": 0.3487102960546811,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.2532839095643227,
+          "actual_similarity": 0.3387700443466504,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5107092137138048,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.40368012835582096,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.10279303158872455
+        },
+        "2": {
+          "recipe_similarity": 0.37206829090913135,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.07772869305596386
+        },
+        "3": {
+          "recipe_similarity": 0.40017734964688617,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.1822655368004844
+        },
+        "4": {
+          "recipe_similarity": 0.41884168485800427,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.28058823433044333
+        },
+        "5": {
+          "recipe_similarity": 0.3487102960546811,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.24949782350622707
+        },
+        "6": {
+          "recipe_similarity": 0.3526337593793869,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": 0.06810730794205155
+        },
+        "7": {
+          "recipe_similarity": 0.3387700443466504,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.2532839095643227
+        },
+        "8": {
+          "recipe_similarity": 0.2537362451354663,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": 0.0583280104632502
+        },
+        "9": {
+          "recipe_similarity": 0.33412620176871616,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.003742985329092896
+        },
+        "10": {
+          "recipe_similarity": 0.5107092137138048,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.08422191970102166
+        },
+        "11": {
+          "recipe_similarity": 0.21348902521034083,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": 0.05040245875112026
+        },
+        "12": {
+          "recipe_similarity": 0.4739202906688054,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": 0.011500201548790168
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        4,
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v040_t025",
+      "virtual_weight": 0.4,
+      "t_start": 0.25,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.1833878008917429,
+          "actual_similarity": 0.40055721749862033,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.2837964413179621,
+          "actual_similarity": 0.41989099234342575,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.2492412217931057,
+          "actual_similarity": 0.3486386835575104,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.25418718428593423,
+          "actual_similarity": 0.3390142048398654,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5123868435621262,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.40563301493724185,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.09845260627102526
+        },
+        "2": {
+          "recipe_similarity": 0.3737521730363369,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.07355473841338223
+        },
+        "3": {
+          "recipe_similarity": 0.40055721749862033,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.1833878008917429
+        },
+        "4": {
+          "recipe_similarity": 0.41989099234342575,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.2837964413179621
+        },
+        "5": {
+          "recipe_similarity": 0.3486386835575104,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.2492412217931057
+        },
+        "6": {
+          "recipe_similarity": 0.35196087633570033,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": 0.06606918403237039
+        },
+        "7": {
+          "recipe_similarity": 0.3390142048398654,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.25418718428593423
+        },
+        "8": {
+          "recipe_similarity": 0.2531189111371835,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": 0.05575312463310356
+        },
+        "9": {
+          "recipe_similarity": 0.3334889200826486,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.005643154626517766
+        },
+        "10": {
+          "recipe_similarity": 0.5123868435621262,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.08778348273112191
+        },
+        "11": {
+          "recipe_similarity": 0.21400473887721697,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": 0.05293985805379897
+        },
+        "12": {
+          "recipe_similarity": 0.4737074250976245,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": 0.011045877114087332
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        4,
+        10,
+        12
+      ]
+    },
+    {
+      "recipe_id": "v040_t050",
+      "virtual_weight": 0.4,
+      "t_start": 0.5,
+      "passes_draft": false,
+      "failures": [
+        {
+          "spk_id": 3,
+          "reason": "relative_increase",
+          "increase": 0.18724034630793107,
+          "actual_similarity": 0.40186124046643573,
+          "native_similarity": 0.338483477011323
+        },
+        {
+          "spk_id": 4,
+          "reason": "relative_increase",
+          "increase": 0.28070895962705267,
+          "actual_similarity": 0.4188811704516411,
+          "native_similarity": 0.32706975874801475
+        },
+        {
+          "spk_id": 5,
+          "reason": "relative_increase",
+          "increase": 0.24806593522289755,
+          "actual_similarity": 0.3483106841643651,
+          "native_similarity": 0.2790803549190362
+        },
+        {
+          "spk_id": 7,
+          "reason": "relative_increase",
+          "increase": 0.25968653710956136,
+          "actual_similarity": 0.34050071239471436,
+          "native_similarity": 0.2703059073537588
+        },
+        {
+          "spk_id": 10,
+          "reason": "absolute_pairwise_p95",
+          "actual_similarity": 0.5136625468730927,
+          "ceiling": 0.48599176704883557
+        }
+      ],
+      "public_singer_detail": {
+        "1": {
+          "recipe_similarity": 0.4067772701382637,
+          "native_similarity": 0.44992977380752563,
+          "relative_increase": -0.09590942005034331
+        },
+        "2": {
+          "recipe_similarity": 0.37389715388417244,
+          "native_similarity": 0.4034260722498099,
+          "relative_increase": -0.07319536439715413
+        },
+        "3": {
+          "recipe_similarity": 0.40186124046643573,
+          "native_similarity": 0.338483477011323,
+          "relative_increase": 0.18724034630793107
+        },
+        "4": {
+          "recipe_similarity": 0.4188811704516411,
+          "native_similarity": 0.32706975874801475,
+          "relative_increase": 0.28070895962705267
+        },
+        "5": {
+          "recipe_similarity": 0.3483106841643651,
+          "native_similarity": 0.2790803549190362,
+          "relative_increase": 0.24806593522289755
+        },
+        "6": {
+          "recipe_similarity": 0.35347120091319084,
+          "native_similarity": 0.3301482507959008,
+          "relative_increase": 0.07064387002222339
+        },
+        "7": {
+          "recipe_similarity": 0.34050071239471436,
+          "native_similarity": 0.2703059073537588,
+          "relative_increase": 0.25968653710956136
+        },
+        "8": {
+          "recipe_similarity": 0.25241513798634213,
+          "native_similarity": 0.23975198863384625,
+          "relative_increase": 0.05281770309665834
+        },
+        "9": {
+          "recipe_similarity": 0.3327493667602539,
+          "native_similarity": 0.3353815299148361,
+          "relative_increase": -0.007848265094534512
+        },
+        "10": {
+          "recipe_similarity": 0.5136625468730927,
+          "native_similarity": 0.47103752878805,
+          "relative_increase": 0.09049176653655211
+        },
+        "11": {
+          "recipe_similarity": 0.21387214275697866,
+          "native_similarity": 0.2032449785619974,
+          "relative_increase": 0.05228746250052896
+        },
+        "12": {
+          "recipe_similarity": 0.47436479727427167,
+          "native_similarity": 0.46853207734723884,
+          "relative_increase": 0.01244892336946668
+        }
+      },
+      "fails_grouped_p95_alternative_spk_ids": [
+        4,
+        10,
+        12
+      ]
+    }
+  ],
+  "caveat": "A proposal is not an approved compliance rule. No pass can be inferred from a failed rule, and no new inference was performed."
+}
