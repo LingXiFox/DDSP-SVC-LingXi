@@ -1,5 +1,6 @@
 """Stage 2 C: train only the virtual speaker embedding row."""
 import argparse
+import faulthandler
 import hashlib
 import json
 import os
@@ -125,7 +126,7 @@ def main():
     if resume:
         assert digest(resume) == args.train.resume_checkpoint_md5, 'C resume MD5 mismatch'
         ckpt = torch.load(resume, map_location='cpu', weights_only=True)
-        assert ckpt['global_step'] == 3000 and 'optimizer' not in ckpt
+        assert ckpt['global_step'] in (3000, 3400) and 'optimizer' not in ckpt
         assert ckpt['model'][KEY].shape[0] == 13
         model.load_state_dict(ckpt['model'], strict=True)
         initial_step = ckpt['global_step']
@@ -139,7 +140,7 @@ def main():
     if not resume:
         with torch.no_grad():
             weight[row].copy_(weight[:row].mean(dim=0))
-    print(('EMBED_INIT=stage1_public_mean' if not resume else 'EMBED_RESUME=C_3000') +
+    print(('EMBED_INIT=stage1_public_mean' if not resume else f'EMBED_RESUME=C_{initial_step}') +
           ' row=12 public_rows=12 stage1_md5=' + STAGE1_MD5, flush=True)
     for p in model.parameters():
         p.requires_grad_(False)
@@ -155,6 +156,8 @@ def main():
     expected = frozen_digests(model, row)
     assert_frozen(model, expected, row)
     virtual_root = virtual_tree(args.data.train_path, Path(
+        '.tmp/stage2_c_virtual_train_resume_3400_smoke' if resume and initial_step == 3400 and opt.smoke else
+        '.tmp/stage2_c_virtual_train_resume_3400' if resume and initial_step == 3400 else
         '.tmp/stage2_c_virtual_train_resume_smoke' if resume and opt.smoke else
         '.tmp/stage2_c_virtual_train_resume' if resume else
         '.tmp/stage2_c_virtual_train_smoke' if opt.smoke else
@@ -162,6 +165,9 @@ def main():
     loader, train_probe, val, selected = loaders(args, virtual_root)
     saver = Saver(args, initial_global_step=initial_step)
     saver.log_info('C_FROZEN_BASELINE_SHA256=' + expected[KEY])
+    if initial_step == 3400:
+        fault_log = (Path(args.env.expdir) / 'faulthandler.log').open('w')
+        faulthandler.enable(file=fault_log, all_threads=True)
     public_ref = json.loads(Path('exp/timbre_blend_stage2_masked/baseline.json').read_text())['public']
     exp = Path(args.env.expdir)
     if resume:
@@ -169,21 +175,38 @@ def main():
         baseline = json.loads((source / 'baseline.json').read_text())
         history_text = (source / 'validation_history.jsonl').read_text()
         history = [json.loads(line) for line in history_text.splitlines()]
-        assert len(history) == 15 and history[-1]['step'] == initial_step
-        assert history[-1]['other_speaker_rows_sha256'] == expected[KEY]
-        assert all(entry['public'] == public_ref for entry in history)
+        assert len(history) == initial_step // 200 - (1 if initial_step == 3400 else 0)
+        assert history[-1]['step'] == (3200 if initial_step == 3400 else initial_step)
+        assert all(entry['other_speaker_rows_sha256'] == expected[KEY] and
+                   entry['public'] == public_ref for entry in history)
         assert json.loads((source / 'train_probe_files.json').read_text()) == selected
-        # Recompute the exact same three curves before the first optimizer step.
-        at_resume = {group: test(args, model, vocoder, dl, saver, 'validation/' + group, True)
-                     for group, dl in {'train_probe': train_probe, **val}.items()}
-        assert all(at_resume[group] == history[-1][group] for group in at_resume), 'RESUME_METRICS_MISMATCH'
-        assert_frozen(model, expected, row)
-        saver.log_info('C_RESUME_VERIFY=PASS step=3000 optimizer=RESET no_state_saved')
+        # Preserve all complete validations even if native code crashes during the pending one.
         (exp / 'validation_history.jsonl').write_text(history_text)
         prev = history[-1]['virtual']['ddsp_loss']
         best_row = min(history, key=lambda x: x['virtual']['ddsp_loss'])
         best_step, best_loss = best_row['step'], best_row['virtual']['ddsp_loss']
         rises = history[-1]['consecutive_rises_gt_2pct']
+        # Recompute at the loaded weights before any new optimizer step.
+        at_resume = {group: test(args, model, vocoder, dl, saver, 'validation/' + group, True)
+                     for group, dl in {'train_probe': train_probe, **val}.items()}
+        assert_frozen(model, expected, row)
+        assert at_resume['public'] == public_ref, 'PUBLIC_FORGETTING_OR_NONDETERMINISM'
+        if initial_step == history[-1]['step']:
+            assert all(at_resume[group] == history[-1][group] for group in at_resume), 'RESUME_METRICS_MISMATCH'
+        else:
+            virt = at_resume['virtual']['ddsp_loss']
+            rises = rises + 1 if virt > prev * 1.02 else 0
+            if virt < best_loss:
+                best_step, best_loss = initial_step, virt
+            row_data = {'step': initial_step, **at_resume,
+                        'virtual_val_minus_train': virt - at_resume['train_probe']['ddsp_loss'],
+                        'other_speaker_rows_sha256': expected[KEY],
+                        'consecutive_rises_gt_2pct': rises}
+            with (exp / 'validation_history.jsonl').open('a') as stream:
+                stream.write(json.dumps(row_data) + '\n')
+            saver.log_info('C_VALIDATION ' + json.dumps(row_data))
+            prev = virt
+        saver.log_info(f'C_RESUME_VERIFY=PASS step={initial_step} optimizer=RESET no_state_saved')
     else:
         baseline = {group: test(args, model, vocoder, dl, saver, 'validation/' + group, True)
                     for group, dl in {'train_probe': train_probe, **val}.items()}

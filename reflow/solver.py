@@ -109,6 +109,18 @@ def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
     spec_max = 6
     spec_range = 12
     
+    # Optional crash journal: fsync each phase so a native segfault preserves the last sample/stage.
+    trace_path = os.environ.get('STAGE2_VALIDATION_TRACE')
+
+    def trace(phase, index, name):
+        if trace_path:
+            with open(trace_path, 'a', encoding='utf-8') as journal:
+                journal.write(json.dumps({'time': time.time(), 'pid': os.getpid(),
+                                          'step': saver.global_step, 'group': metric_prefix,
+                                          'index': index, 'sample': name, 'phase': phase}) + '\n')
+                journal.flush()
+                os.fsync(journal.fileno())
+
     # run
     with torch.no_grad():
         for bidx, data in enumerate(loader_test):
@@ -134,6 +146,7 @@ def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
             print('>>', data['name'][0])
 
             # forward
+            trace('model_infer_start', bidx, fn)
             st_time = time.time()
             mel = model(
                     data['units'], 
@@ -146,7 +159,9 @@ def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
                     infer_step=args.infer.infer_step, 
                     method=args.infer.method,
                     t_start=args.model.t_start)
+            trace('vocoder_start', bidx, fn)
             signal = vocoder.infer(mel, data['f0'])
+            trace('vocoder_done', bidx, fn)
             ed_time = time.time()
                         
             # RTF
@@ -209,6 +224,7 @@ def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
             mel_val_psnr_all += calculate_mel_psnr(gt_mel_norm, pre_mel_norm).detach().cpu().numpy()
             mel_val_sisnr_all += calculate_mel_si_snr(gt_mel_norm, pre_mel_norm).detach().cpu().numpy()
             mel_val_mse_all_num += 1
+            trace('metrics_done', bidx, fn)
             
     # report
     test_ddsp_loss /= processed_batches
