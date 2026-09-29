@@ -107,7 +107,8 @@ def main():
     resume = args.train.get('resume_checkpoint')
     assert args.train.max_steps == (10000 if resume else 3000) and args.train.val_seed is not None
     if opt.smoke:
-        args['env']['expdir'] = '.tmp/stage2_c_resume_smoke_exp' if resume else '.tmp/stage2_c_smoke_exp'
+        args['env']['expdir'] = ('.tmp/stage2_c_resume_4600_smoke_exp' if args.train.get('resume_checkpoint_md5') == 'f3bbb354c3e049c4aea5e73be7e03ec7' else
+                                '.tmp/stage2_c_resume_smoke_exp' if resume else '.tmp/stage2_c_smoke_exp')
         assert not Path(args.env.expdir).exists(), 'smoke expdir already exists'
     else:
         assert not Path(args.env.expdir).exists(), 'refusing to overwrite existing C experiment'
@@ -126,7 +127,7 @@ def main():
     if resume:
         assert digest(resume) == args.train.resume_checkpoint_md5, 'C resume MD5 mismatch'
         ckpt = torch.load(resume, map_location='cpu', weights_only=True)
-        assert ckpt['global_step'] in (3000, 3400, 4200) and 'optimizer' not in ckpt
+        assert ckpt['global_step'] in (3000, 3400, 4200, 4600) and 'optimizer' not in ckpt
         assert ckpt['model'][KEY].shape[0] == 13
         model.load_state_dict(ckpt['model'], strict=True)
         initial_step = ckpt['global_step']
@@ -156,6 +157,8 @@ def main():
     expected = frozen_digests(model, row)
     assert_frozen(model, expected, row)
     virtual_root = virtual_tree(args.data.train_path, Path(
+        '.tmp/stage2_c_virtual_train_resume_4600_smoke' if resume and initial_step == 4600 and opt.smoke else
+        '.tmp/stage2_c_virtual_train_resume_4600' if resume and initial_step == 4600 else
         '.tmp/stage2_c_virtual_train_resume_4200_smoke' if resume and initial_step == 4200 and opt.smoke else
         '.tmp/stage2_c_virtual_train_resume_4200' if resume and initial_step == 4200 else
         '.tmp/stage2_c_virtual_train_resume_3400_smoke' if resume and initial_step == 3400 and opt.smoke else
@@ -177,8 +180,9 @@ def main():
         baseline = json.loads((source / 'baseline.json').read_text())
         history_text = Path(args.train.get('resume_history_path') or source / 'validation_history.jsonl').read_text()
         history = [json.loads(line) for line in history_text.splitlines()]
-        assert len(history) == initial_step // 200 - (1 if initial_step == 3400 else 0)
-        assert history[-1]['step'] == (3200 if initial_step == 3400 else initial_step)
+        pending_validation = initial_step in (3400, 4600)
+        assert len(history) == initial_step // 200 - int(pending_validation)
+        assert history[-1]['step'] == initial_step - (200 if pending_validation else 0)
         assert all(entry['other_speaker_rows_sha256'] == expected[KEY] and
                    entry['public'] == public_ref for entry in history)
         assert json.loads((source / 'train_probe_files.json').read_text()) == selected
@@ -193,6 +197,10 @@ def main():
                      for group, dl in {'train_probe': train_probe, **val}.items()}
         assert_frozen(model, expected, row)
         assert at_resume['public'] == public_ref, 'PUBLIC_FORGETTING_OR_NONDETERMINISM'
+        if initial_step == 4600:
+            reference = json.loads(Path(args.train.resume_reference_metrics_path).read_text())
+            assert reference['step'] == initial_step and reference['checkpoint_md5'] == digest(resume)
+            assert at_resume == reference['metrics'], 'ISOLATED_4600_METRICS_MISMATCH'
         if initial_step == history[-1]['step']:
             assert all(at_resume[group] == history[-1][group] for group in at_resume), 'RESUME_METRICS_MISMATCH'
         else:

@@ -164,7 +164,11 @@ def _test_impl(args, model, vocoder, loader_test, saver, metric_prefix):
                     t_start=args.model.t_start,
                     use_tqdm=not quiet)
             trace('vocoder_start', bidx, fn)
-            signal = vocoder.infer(mel, data['f0'])
+            if args.train.get('val_disable_cudnn_vocoder', False):
+                with torch.backends.cudnn.flags(enabled=False):
+                    signal = vocoder.infer(mel, data['f0'])
+            else:
+                signal = vocoder.infer(mel, data['f0'])
             trace('vocoder_done', bidx, fn)
             ed_time = time.time()
                         

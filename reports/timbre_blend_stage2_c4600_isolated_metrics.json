@@ -1,0 +1,34 @@
+{
+  "step": 4600,
+  "checkpoint_md5": "f3bbb354c3e049c4aea5e73be7e03ec7",
+  "protocol": "val_disable_cudnn_vocoder",
+  "metrics": {
+    "train_probe": {
+      "ddsp_loss": 0.8565065781859791,
+      "reflow_loss": 0.0,
+      "reflow_loss_excluded_diagnostic": 0.46583529868300555,
+      "mel_val_mse": 0.9333551403354196,
+      "mel_val_snr": 40.79871940612793,
+      "mel_val_psnr": 39.662443721995636,
+      "mel_val_sisnr": 40.788213168873504
+    },
+    "public": {
+      "ddsp_loss": 0.25033053218997936,
+      "reflow_loss": 0.029853311794676315,
+      "reflow_loss_excluded_diagnostic": 0.0,
+      "mel_val_mse": 0.32234610595797125,
+      "mel_val_snr": 45.57268249347646,
+      "mel_val_psnr": 44.754996644980594,
+      "mel_val_sisnr": 45.568840860893225
+    },
+    "virtual": {
+      "ddsp_loss": 1.0032078080317552,
+      "reflow_loss": 0.0,
+      "reflow_loss_excluded_diagnostic": 0.6259749174724033,
+      "mel_val_mse": 1.0498471663278692,
+      "mel_val_snr": 39.861984365126666,
+      "mel_val_psnr": 38.915774401496435,
+      "mel_val_sisnr": 39.86581342360552
+    }
+  }
+}
