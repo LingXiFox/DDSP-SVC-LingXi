@@ -153,6 +153,11 @@ def parse_args(args=None, namespace=None):
         default='auto',
         help="t_start | default: auto",
     )
+    parser.add_argument(
+        "--disable-vocoder-cudnn",
+        action="store_true",
+        help="use non-cuDNN CUDA convolutions only during waveform synthesis",
+    )
     return parser.parse_args(args=args, namespace=namespace)
 
     
@@ -334,7 +339,11 @@ if __name__ == '__main__':
                     infer_step=infer_step, 
                     method=method,
                     t_start=t_start)
-            seg_output = vocoder.infer(seg_mel, seg_f0)
+            if cmd.disable_vocoder_cudnn:
+                with torch.backends.cudnn.flags(enabled=False):
+                    seg_output = vocoder.infer(seg_mel, seg_f0)
+            else:
+                seg_output = vocoder.infer(seg_mel, seg_f0)
             seg_output *= mask[:, start_frame * args.data.block_size : (start_frame + seg_units.size(1)) * args.data.block_size]
             seg_output = seg_output.squeeze().cpu().numpy()
             

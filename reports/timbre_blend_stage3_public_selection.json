@@ -1,0 +1,163 @@
+{
+  "status": "WAITING_FOR_3_TO_5_PUBLIC_SINGERS",
+  "stage": "3_step_1",
+  "checkpoint": "exp/timbre_blend_stage2_embedding_resume_4600/model_7800.pt",
+  "checkpoint_md5": "733d9c6d44071d91a1c0b0f190db44db",
+  "stage1_public_rows_and_other_weights_exactly_equal": true,
+  "input_pitch_note": "RMVPE median uses interpolated curve; high segment has independently confirmed B4+ voiced frames; not a per-frame voiced claim.",
+  "protocol": {
+    "t_start": 0.0,
+    "infer_step": 50,
+    "method": "euler",
+    "key": 0,
+    "formant_shift": 0,
+    "pitch_extractor": "rmvpe",
+    "threshold_db": -60,
+    "f0_min": 50,
+    "f0_max": 1100,
+    "vocoder_cudnn": false,
+    "seed_rule": "Stage 2 SHA-256 basename first four bytes"
+  },
+  "inputs": [
+    {
+      "band": "low",
+      "input": "10_侧脸_0.wav",
+      "duration_seconds": 6.849886621315193,
+      "source_sha256": "3e70141d0ef2bf78ac71494b6e0709a158b2c8d2af890739402a1905afb634f9",
+      "seed": 2518260682,
+      "interpolated_rmvpe_median_hz": 219.6,
+      "rmvpe_b4_voiced_fraction": 0.0
+    },
+    {
+      "band": "mid",
+      "input": "47_秋酿_19.wav",
+      "duration_seconds": 11.052698412698414,
+      "source_sha256": "5b8ef78a7cf31f06fc8b8e72e82990ddbd7ac25241317275646230836fe9d44c",
+      "seed": 188948858,
+      "interpolated_rmvpe_median_hz": 298.3,
+      "rmvpe_b4_voiced_fraction": 0.0
+    },
+    {
+      "band": "high",
+      "input": "29_月光_13.wav",
+      "duration_seconds": 18.76172335600907,
+      "source_sha256": "a0c7483957a691af78db305972c6c64bbb3181696ad8654c8287b9aa869c600f",
+      "seed": 4099922862,
+      "interpolated_rmvpe_median_hz": 361.0,
+      "rmvpe_b4_voiced_fraction": 0.0588
+    }
+  ],
+  "speakers": [
+    {
+      "spk_id": 1,
+      "opensinger_singer": 9,
+      "dir_name": "1_singer09"
+    },
+    {
+      "spk_id": 2,
+      "opensinger_singer": 14,
+      "dir_name": "2_singer14"
+    },
+    {
+      "spk_id": 3,
+      "opensinger_singer": 19,
+      "dir_name": "3_singer19"
+    },
+    {
+      "spk_id": 4,
+      "opensinger_singer": 21,
+      "dir_name": "4_singer21"
+    },
+    {
+      "spk_id": 5,
+      "opensinger_singer": 27,
+      "dir_name": "5_singer27"
+    },
+    {
+      "spk_id": 6,
+      "opensinger_singer": 28,
+      "dir_name": "6_singer28"
+    },
+    {
+      "spk_id": 7,
+      "opensinger_singer": 30,
+      "dir_name": "7_singer30"
+    },
+    {
+      "spk_id": 8,
+      "opensinger_singer": 32,
+      "dir_name": "8_singer32"
+    },
+    {
+      "spk_id": 9,
+      "opensinger_singer": 33,
+      "dir_name": "9_singer33"
+    },
+    {
+      "spk_id": 10,
+      "opensinger_singer": 36,
+      "dir_name": "10_singer36"
+    },
+    {
+      "spk_id": 11,
+      "opensinger_singer": 41,
+      "dir_name": "11_singer41"
+    },
+    {
+      "spk_id": 12,
+      "opensinger_singer": 42,
+      "dir_name": "12_singer42"
+    }
+  ],
+  "output_sha256": {
+    "spk01_singer09/low.wav": "546b4c95e2c72ad9df6333a46d22b6e9ddd9ee00aff45acaa0cbf1176e175ecc",
+    "spk01_singer09/mid.wav": "5c43af60d9ecb3575097ffa989b34f8819b06e6ef7fa8848636eb1b2272132dc",
+    "spk01_singer09/high.wav": "1bce9752ca1c801302fd4ac3940bbeed1301d93579a1384b15a3e6d54e3831a1",
+    "spk02_singer14/low.wav": "3fc9b412006c0b1e505f59cfde732fd59b796b3273aefc42f828caa27aa72bb8",
+    "spk02_singer14/mid.wav": "06114e6eb4231de6d14aab8adf9a5759c6f2ed130f1e306c32b83015bdd7ab9f",
+    "spk02_singer14/high.wav": "8ebee5788a85bc30f641a9b50076a4a5da869da51fbcb9f030fb879d7daa61b6",
+    "spk03_singer19/low.wav": "ea7f2098e3476ca9cf4a4cda441d58ec2bf377c782188d2745be533272e5cf72",
+    "spk03_singer19/mid.wav": "659fbac1f8f356ce660123a67758903d0d93b5d293f8825a1f952231365d45a6",
+    "spk03_singer19/high.wav": "154024e3f2338795896cbeebf1398c6bab769c244147bc240a129f94e927e4bb",
+    "spk04_singer21/low.wav": "14cca9a71859d014c5b0e1cd356bcbd05004a0a6bcbaf75bb8a370dac66fcd7b",
+    "spk04_singer21/mid.wav": "3569c8215a4cec667a0da14e7ccd210040ecae8481d20d6957e97a7ee74538cf",
+    "spk04_singer21/high.wav": "1ffed84444779f6fbdcd03c758b776c542cef8921b3f14d10108f776f147eedf",
+    "spk05_singer27/low.wav": "8b88859a7c1a6a674406e527ba6aa94f2290584a47191df039405118edc354bd",
+    "spk05_singer27/mid.wav": "95c92624253d206472b50c97b95a724002ff5304e412a654e2be150043d8d194",
+    "spk05_singer27/high.wav": "e4e59476f9515fe91598b61dc6a1e8c547208f342267fb8dc32f374607038bcc",
+    "spk06_singer28/low.wav": "ac2b771bd338c8c1a70a764ff1f82e9159efd34850a78d46e0d24b1c69291ea2",
+    "spk06_singer28/mid.wav": "246d03fffecd46b9172e814c0b9838050c7d8e91dbe21bb40ddce37603218cc3",
+    "spk06_singer28/high.wav": "a3cb2fcf637ed2d22b0828a3985ed5ebc61bf2a2f7798bf9d7aac68a78ce9359",
+    "spk07_singer30/low.wav": "5cb543fa2016b6a593be51e0f3b1c2fc84608042c98c041add6364d274671f4c",
+    "spk07_singer30/mid.wav": "6d24d93c1863a7e727a4071cf9b29c0f0f0846a14c3b8fb23384343a357a0541",
+    "spk07_singer30/high.wav": "047934c5ead9ae7f18bce8df3d5bea07110d12d94abb12265bf5755c0af0beb5",
+    "spk08_singer32/low.wav": "7f8f4ce9e277dd6c3d18a74107bd5bb69fa0a3b09ee682a0f5f4b27ea0ad9834",
+    "spk08_singer32/mid.wav": "af3e9f27f879a8079c0b54ab8d2724c40954c60c0503ac2ce4ad903d4c6be203",
+    "spk08_singer32/high.wav": "f61a948111b2c67f584de020728d1ecbbc88c43c889f2f34f59d1ec4b090015a",
+    "spk09_singer33/low.wav": "836bb7300247f83d685bb66826a7d93a3bf06fe10ec0028f17935607dc0ec4f2",
+    "spk09_singer33/mid.wav": "568aeb0dff280e6cdb85bd0dcdc87764226d03dcf6aeeb851f32eaeb056839c9",
+    "spk09_singer33/high.wav": "c10d1660ad21808ac9de7be7c1ffbbe1a6c83a4047eb842fd9f7017dcac3247a",
+    "spk10_singer36/low.wav": "77b55e232b018a5b90a565a5de57d11ad603a3009e74bb99cca0cf79a6309202",
+    "spk10_singer36/mid.wav": "ef4f9c48bef3c526ff5653d7e3f5af1b59bfd6fb226f81f587be2110ca3236ba",
+    "spk10_singer36/high.wav": "0a22e7bf78d3a5c967f50ae398dcb5d1a2e6d81299adc9e4b281a25f75113489",
+    "spk11_singer41/low.wav": "7ee0410a3f06c9531f1cc7f290ce7074a97efa656d80d3f38383ceca4b341957",
+    "spk11_singer41/mid.wav": "16cfe625547f9a4a1f52616169c96e67f0de4712745392a2a8b8dfb85064880c",
+    "spk11_singer41/high.wav": "f4979fbc807ed8ab0b0227ec1a83d2c3caece0fe17114d313d558838fcae0d6f",
+    "spk12_singer42/low.wav": "84982916d57a680f5d322d09304509b04f196282668b789ff558beea5a62c353",
+    "spk12_singer42/mid.wav": "6db21ac14edb16fd2e6c5f857b006dbe94f4d1d5f23e534661535236f638d6d9",
+    "spk12_singer42/high.wav": "5f298148423036b66c35f15af66e9e1444b60faab645db3e3360aaa9796dad72"
+  },
+  "quality_checks": {
+    "outputs": 36,
+    "distinct_per_input": 12,
+    "all_mono_44100": true,
+    "all_finite_non_silent_and_duration_matched": true,
+    "rms_range": [
+      0.0188,
+      0.1131
+    ],
+    "max_abs_peak": 0.6332,
+    "first_output_matches_isolated_cudnn_off_smoke_exactly": true
+  },
+  "next": "Stop for user to choose 3–5 public singers; no recipe grid or blending yet."
+}
