@@ -5,6 +5,13 @@ pipeline. Append-only; newest entries at the bottom. No secrets allowed in this 
 
 ---
 
+**Current access (2026-09-29):** WSL2 SSH `hands@10.0.0.244:2222` (verified
+against the previously trusted SSH host key). Earlier `.150` addresses in the
+append-only entries below describe historical access, not the current host.
+TensorBoard policy is **127.0.0.1:6006 only**; the existing `.tmp/run_tb.py`
+launcher was changed from `0.0.0.0` to loopback. It is currently stopped
+(no port 6006 listener). Stage 2 validation curves are written to JSONL.
+
 ## 2026-09-27 10:20-10:40 | Stage 0: reconnaissance, baseline, resource prep
 
 - Git: branch `feature/timbre-blend` created from `feature/vocal-realism` @ `95f5bfd`
@@ -699,3 +706,10 @@ OpenSinger download runs. No GPU training started; download untouched.
 - 盲听两组新推理均使用相同的 OpenSinger 官方未训练歌手 **10_侧脸_26.wav**、**47_秋酿_16.wav**；两组同输入各固定 seed=20260929+歌手 ID、spk13、`-ts 0.0 -step 50 -method euler -k 0 -f 0 -pe rmvpe -th -60 -fmin 50 -fmax 1100 -d cuda`，`PYTHONFAULTHANDLER=1`。随机十六进制文件名四条输出与两输入位于 `samples/stage2/blind_c_vs_b1k/`；`pairing.json` 仅按输入给出两个随机文件名、不揭露模型。解盲对照表**单独**保存在未跟踪 `.tmp/stage2_c_vs_b1k_blind_key.json`。Mac 已复制至 `~/Downloads/timbre_blend_stage2_C_vs_B_blind/` 与独立的 `~/Downloads/timbre_blend_stage2_C_vs_B_blind_key.json`，4 个 WAV 的 SHA-256 全部核对；checkpoint 与曲线另存 `~/Downloads/timbre_blend_stage2_C_model_3000.pt` 和 `~/Downloads/timbre_blend_stage2_C_validation_history.jsonl`，Mac 模型 MD5 一致。**试听前勿打开对照表。** 原 `samples/stage2/probe_1k/` 及其 Mac 包完全保留。
 - 相似度评测用固定 HF 官方 revision 的 SpeechBrain ECAPA，私有参考仅从本地虚拟验证 **2 首 × 2 段**提 embedding、只输出汇总分数，`HF_HUB_OFFLINE=1`，未上传任何音频。OpenSinger 公共歌唱参照：12 位歌手、每位 2 首、每歌 2 片；同歌手**不同歌曲**余弦 48 对 mean/median **0.5575/0.5881**、异歌手 1056 对 mean/median **0.2642/0.2590**；p05/p25/p75/p95、std 均在 `reports/timbre_blend_stage2_similarity.json`。用**同一份固定种子盲听包的实际四条输出**做对比：B@1k 对目标原声 mean **0.65830**（10号 0.58692，47号 0.72968），C@3k mean **0.67860**（10号 0.66217，47号 0.69502）。C 总体仅 **+0.02030**，两个输入方向相反，且 8 对输出–原声比较不是 8 个独立歌手；语音模型跨到歌唱的数值仅为 proxy，不能声称机械感改善。首次相似度脚本曾把旧**未固定种子** B 探针与新固定种子 C 混比，旧报告已完整移至 `.tmp/stage2_similarity_mismatched_b_preseed_20260929.json` 作废保留；现最终报告只评分盲听包同批固定种子四条输出。
 - 对比表见 `reports/timbre_blend_stage2_c_gate3.json`；B@1k 与 C@3k **不同训练步数/新行初始化/训练数据和冻结策略**，只能描述整体方案表现，不能单因素归因。A/B 训练仍暂停，B@1k/@2k 保留、不推送；备份待主人验收后再议。**【人工关卡 3】：交付试听，停下等待主人盲听选择，不自动续训 C。**
+
+### 2026-09-29 | 关卡 3 通过后的 C 续训前检查（进行中）
+- 主人盲听 10、47 两位歌手输入均选择 C@3000；确认 C 作为主线，B 不再训练。B@1k / B@2k checkpoint MD5 `18270a6fa8dbe26d37a5ba3b9d164662` / `4031af7eef33f83e8714f0e7f917786a`，均保留不删。重新核验 Stage 1 起点 MD5 `e026eb6e60b7e2e8ba4c579ad8a0ceff`、C@3000 MD5 `ad187f802e17d4bd04d424ce0174d97e`。
+- **续训冻结先决条件已通过**：C `model_0.pt` 与 `model_3000.pt` 的全 state_dict 只有 embedding 表一张张量不同，表的旧 12 行逐元素 exact equality；两者的旧行 SHA-256 与此前 15 次正式验证完全一致：`dc1a76612a3531bf18fea47e61b6af3383a101cf1f6b0ce43ef2ba2539244bb1`。原 ckpt 无 optimizer 字段，因此后续会从相同权重/步数重建 AdamW 动量；数据打乱 RNG 也重新按同一 seed 起步，不能冒称不中断连续训练。
+- 新入口仍是 `scripts/train_stage2_embedding.py`，仅加从已校验 C@3000 checkpoint 恢复的路径；`configs/timbre_blend_stage2_embedding_resume.yaml` 仅将 `max_steps` 设为 10000、使用独立 expdir 和恢复路径/MD5，仍保持 lr=1e-3、仅目标行、无回放、weight_decay=0、Reflow spk13 排除、每 200 步留 ckpt/三组全量验证和 >2% 两次上升停训。完整拷贝原 15 点曲线作新目录历史，从 3200 接续；每次仍逐项核对模型其余所有 state/旧行 SHA、公开验证七项 exact equality。隔离烟测在新 `.tmp/stage2_c_resume_smoke_exp/` 全部通过：未更新时重新计算 C@3000 的三组指标和历史末点逐项严格相等、公开零步不变，step3001 再验证其余 12 行 SHA/公开七项全相等。正式训练尚未启动时，旧 C expdir 只读、旧 checkpoint 未覆盖。
+- 盲听原片限制经主人决策：不拼接；三位 Stage 1 预留未训练歌手 [10,29,47] 各取 3–4 条官方 OpenSinger 连续原片，每条 ≥5s、总时长 ≥60s。当前筛选 **11 段/113.593s**，只复制原片而不编辑。候选明细 `.tmp/stage2_holdout_selection.json`（含逐片音高/HNR/SNR）；先前 Praat 的一些高音是高八度误判，以已有 RMVPE 原片 F0 直方图交叉核对，实际 B4 以上候选为 29 号《月光》#5/#13/#15（有声帧比例约 5.2–5.9%），10/47 暂无足够证据宣称高音。长音仅是稳定音高候选；47 号 #15/#25 低谐噪比为**气声候选、未人工听辨确认**。若不能确认气声，最终报告应列缺口，绝不按 HNR 冒充听感事实。
+- 当前访问为 `.244:2222`；日志历史中的 `.150` 保留原日期证据、页首注明旧址。按主人要求 `.tmp/run_tb.py` 已由对外 `0.0.0.0` 改为仅 `127.0.0.1`，原脚本完整备份在 `.tmp/run_tb_before_loopback_20260929.py`；当前 `ss -ltn` 显示 6006 未启动，不声称已监听，也不在续训期间启动 TensorBoard。
