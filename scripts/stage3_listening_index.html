@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>四段听感 · 离线盲听</title>
+  <style>
+    :root { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; color: #172638; background: #f0f4f3; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    button, textarea, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, textarea:focus-visible, input:focus-visible, label:focus-within { outline: 3px solid #285987; outline-offset: 3px; }
+    .shell { max-width: 1060px; margin: 0 auto; padding: 38px 22px 80px; }
+    header { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; padding-bottom: 26px; border-bottom: 2px solid #172638; }
+    .eyebrow, .meta, .small, .timer, .counter { font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .04em; }
+    .eyebrow { color: #285987; text-transform: uppercase; font-weight: 700; }
+    h1 { margin: 5px 0 8px; font-size: clamp(31px, 5vw, 52px); line-height: 1.09; letter-spacing: -.045em; font-weight: 740; }
+    .intro { margin: 0; max-width: 620px; font-size: 14px; line-height: 1.75; color: #455666; }
+    .counter { border: 1px solid #b7c6ca; padding: 10px 13px; border-radius: 8px; background: #fff; white-space: nowrap; }
+    .stack { display: grid; gap: 15px; margin-top: 24px; }
+    .clip { border: 1px solid #cad4d5; background: #fff; border-radius: 12px; padding: 21px; box-shadow: 0 2px 0 #dae3e1; }
+    .clip-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 17px; }
+    h2 { font-size: 20px; line-height: 1.3; margin: 0 0 4px; letter-spacing: -.025em; }
+    .meta { color: #647784; overflow-wrap: anywhere; }
+    .transport { background: #172638; color: #e4eef0; border-radius: 9px; padding: 14px 15px 12px; }
+    .transport-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .now { color: #ffc596; font-weight: 700; font-size: 13px; }
+    .timer { color: #b7c9d0; white-space: nowrap; }
+    .tracks { display: flex; flex-wrap: wrap; gap: 7px; }
+    .track { border: 1px solid #667889; border-radius: 6px; background: transparent; color: #f2f5f3; font-size: 14px; font-weight: 650; min-width: 75px; padding: 10px 14px; transition: background-color .12s, border-color .12s; }
+    .track:hover { border-color: #ffc596; }
+    .track[aria-pressed="true"] { background: #cf641d; border-color: #cf641d; color: #fff; }
+    .track.original { border-style: dashed; }
+    .controls { display: flex; align-items: center; gap: 13px; margin-top: 14px; }
+    .play { border: 1px solid #e8b787; border-radius: 6px; background: transparent; color: #ffd2ad; padding: 6px 12px; min-width: 63px; }
+    .play:hover { background: #314153; }
+    .seek { width: 100%; min-width: 55px; height: 22px; cursor: pointer; accent-color: #f59a53; }
+    .loop { display: flex; align-items: center; gap: 5px; font-size: 13px; white-space: nowrap; cursor: pointer; }
+    .loop input { accent-color: #f59a53; }
+    .vote-area { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, 280px); gap: 18px; padding-top: 19px; }
+    .prompt { font-weight: 700; font-size: 13px; margin: 0 0 8px; }
+    .options { display: flex; flex-wrap: wrap; gap: 7px; }
+    .choice { border: 1px solid #cbd6d7; border-radius: 6px; padding: 8px 10px; font-size: 13px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+    .choice input { margin: 0; accent-color: #285987; }
+    .choice.selected { background: #e9f2f8; border-color: #285987; }
+    .note label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+    textarea { border: 1px solid #cbd6d7; border-radius: 6px; padding: 9px; width: 100%; min-height: 46px; max-height: 160px; resize: vertical; font-size: 13px; }
+    .footer { margin-top: 26px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0; border-top: 2px solid #172638; }
+    .small { color: #526674; max-width: 640px; }
+    .export { border: 0; border-radius: 7px; background: #285987; color: #fff; padding: 12px 22px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+    .export:hover { background: #174570; }
+    .status { color: #ad4625; font-size: 12px; min-height: 18px; margin: 7px 0 0; }
+    @media (max-width: 700px) { header, .vote-area { grid-template-columns: 1fr; } .shell { padding: 25px 14px 55px; } .clip { padding: 16px; } .footer { align-items: stretch; flex-direction: column; } .export { width: 100%; } }
+    @media (prefers-reduced-motion: reduce) { .track { transition: none; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">OFFLINE LISTENING / 04 CLIPS</div>
+        <h1>四段听感</h1>
+        <p class="intro">每段先听原声，再切换 A／B／C。切换保留播放进度；打开循环可反复比较。选出更喜欢的一组，或选择「听不出差别」，最后导出投票 JSON。音频与页面均在本机，不联网。</p>
+      </div>
+      <div class="counter" id="counter" aria-live="polite">已评 0 / 4</div>
+    </header>
+    <section id="clips" class="stack" aria-label="四段盲听测试"></section>
+    <footer class="footer">
+      <div class="small">结果仅保存在你导出的 JSON 中；页面不会自动上传或持久保存投票。请保留包内 audio/ 与 inputs/ 目录的相对位置。解盲表不在本包内。</div>
+      <button class="export" id="export" type="button">导出投票 JSON</button>
+    </footer>
+  </main>
+  <script id="session-data" type="application/json">__EMBEDDED_JSON__</script>
+  <script>
+  (() => {
+    'use strict';
+    const session = JSON.parse(document.getElementById('session-data').textContent);
+    const container = document.getElementById('clips');
+    const controllers = [];
+    const marks = ['O', 'A', 'B', 'C'];
+    const title = { O: '原声', A: 'A', B: 'B', C: 'C' };
+    const clock = (time) => {
+      const secs = Math.floor(Number.isFinite(time) && time >= 0 ? time : 0);
+      return `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+    };
+    const element = (tag, className, text) => {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    const selectedCount = () => {
+      const count = controllers.filter(({ section }) => section.querySelector('input[type="radio"]:checked')).length;
+      document.getElementById('counter').textContent = `已评 ${count} / ${session.rows.length}`;
+    };
+
+    session.rows.forEach((row, index) => {
+      const section = element('article', 'clip');
+      const head = element('div', 'clip-head');
+      const heading = element('div');
+      heading.append(element('h2', '', row.label), element('div', 'meta', row.input));
+      head.append(heading, element('div', 'meta', `${String(index + 1).padStart(2, '0')} / ${String(session.rows.length).padStart(2, '0')}`));
+      section.append(head);
+      const transport = element('div', 'transport');
+      const top = element('div', 'transport-top');
+      const now = element('span', 'now', '正在听：原声');
+      const timer = element('span', 'timer', '0:00 / 0:00');
+      top.append(now, timer);
+      const tracks = element('div', 'tracks');
+      const controls = element('div', 'controls');
+      const play = element('button', 'play', '播放');
+      play.type = 'button';
+      play.setAttribute('aria-label', `${row.label}：播放或暂停`);
+      const seek = element('input', 'seek');
+      seek.type = 'range'; seek.min = '0'; seek.max = '1000'; seek.value = '0';
+      seek.setAttribute('aria-label', `${row.label}：播放进度`);
+      const loop = element('label', 'loop');
+      const loopBox = element('input');
+      loopBox.type = 'checkbox'; loopBox.checked = true;
+      loop.append(loopBox, document.createTextNode('循环'));
+      controls.append(play, seek, loop);
+      transport.append(top, tracks, controls);
+      section.append(transport);
+      const status = element('p', 'status');
+      status.setAttribute('aria-live', 'polite');
+      section.append(status);
+
+      const audios = new Map();
+      const buttons = new Map();
+      let current = 'O';
+      let generation = 0;
+      const currentAudio = () => audios.get(current);
+      const update = () => {
+        const a = currentAudio();
+        timer.textContent = `${clock(a.currentTime)} / ${clock(a.duration)}`;
+        seek.value = Number.isFinite(a.duration) && a.duration > 0
+          ? String(Math.round(1000 * a.currentTime / a.duration)) : '0';
+        play.textContent = a.paused ? '播放' : '暂停';
+      };
+      marks.forEach((mark) => {
+        const audio = document.createElement('audio');
+        audio.src = row.audio[mark]; audio.preload = 'metadata'; audio.loop = true;
+        audio.addEventListener('timeupdate', () => { if (current === mark) update(); });
+        audio.addEventListener('loadedmetadata', () => { if (current === mark) update(); });
+        audio.addEventListener('play', () => { if (current === mark) update(); });
+        audio.addEventListener('pause', () => { if (current === mark) update(); });
+        audio.addEventListener('error', () => { if (current === mark) status.textContent = '音频打不开，请检查 audio/ 和 inputs/ 目录是否齐全。'; });
+        audios.set(mark, audio);
+        section.append(audio);
+        const button = element('button', `track${mark === 'O' ? ' original' : ''}`, title[mark]);
+        button.type = 'button'; button.setAttribute('aria-pressed', String(mark === 'O'));
+        button.setAttribute('aria-label', `${row.label}：切换到${title[mark]}`);
+        buttons.set(mark, button);
+        tracks.append(button);
+      });
+      const start = (audio, token) => {
+        controllers.forEach((control) => { if (control.section !== section) control.pause(); });
+        const attempt = audio.play();
+        if (attempt && typeof attempt.then === 'function') {
+          attempt.then(() => { if (token !== generation) audio.pause(); }).catch(() => {
+            if (token === generation) status.textContent = '播放失败，请检查音频文件后再点播放。';
+          });
+        }
+      };
+      const switchTo = (mark) => {
+        const old = currentAudio();
+        const position = Number.isFinite(old.currentTime) ? old.currentTime : 0;
+        generation++;
+        const token = generation;
+        old.pause();
+        current = mark;
+        now.textContent = `正在听：${title[mark]}`;
+        status.textContent = '';
+        buttons.forEach((button, id) => button.setAttribute('aria-pressed', String(id === mark)));
+        const next = currentAudio();
+        const seekAndPlay = () => {
+          if (token !== generation) return;
+          next.currentTime = Number.isFinite(next.duration) && next.duration > 0
+            ? Math.min(position, Math.max(0, next.duration - .05)) : position;
+          update();
+          start(next, token);
+        };
+        if (next.readyState >= HTMLMediaElement.HAVE_METADATA) seekAndPlay();
+        else {
+          next.addEventListener('loadedmetadata', seekAndPlay, { once: true });
+          next.load();
+        }
+      };
+      buttons.forEach((button, mark) => button.addEventListener('click', () => switchTo(mark)));
+      play.addEventListener('click', () => {
+        const audio = currentAudio();
+        if (audio.paused) { status.textContent = ''; start(audio, generation); }
+        else audio.pause();
+      });
+      seek.addEventListener('input', () => {
+        const audio = currentAudio();
+        if (Number.isFinite(audio.duration) && audio.duration > 0) audio.currentTime = audio.duration * Number(seek.value) / 1000;
+      });
+      loopBox.addEventListener('change', () => audios.forEach((audio) => { audio.loop = loopBox.checked; }));
+      const voteArea = element('div', 'vote-area');
+      const vote = element('div');
+      vote.append(element('p', 'prompt', '更喜欢哪一个？'));
+      const options = element('div', 'options');
+      [['A', 'A'], ['B', 'B'], ['C', 'C'], ['tie', '听不出差别']].forEach(([value, label]) => {
+        const wrapper = element('label', 'choice');
+        const radio = element('input');
+        radio.type = 'radio'; radio.name = `vote-${index}`; radio.value = value;
+        radio.addEventListener('change', () => {
+          options.querySelectorAll('.choice').forEach((item) => item.classList.toggle('selected', item.querySelector('input').checked));
+          selectedCount();
+        });
+        wrapper.append(radio, document.createTextNode(label));
+        options.append(wrapper);
+      });
+      vote.append(options);
+      const note = element('div', 'note');
+      const noteLabel = element('label', '', '备注（可选）');
+      const textarea = element('textarea');
+      textarea.id = `note-${index}`; noteLabel.htmlFor = textarea.id;
+      textarea.placeholder = '例如：高音更自然、咬字更稳……';
+      note.append(noteLabel, textarea);
+      voteArea.append(vote, note);
+      section.append(voteArea);
+      container.append(section);
+      controllers.push({ section, row, textarea, pause: () => currentAudio().pause() });
+    });
+    document.getElementById('export').addEventListener('click', () => {
+      const exportedAt = new Date().toISOString();
+      const payload = {
+        schema_version: 1,
+        pack_id: session.pack_id,
+        listening_set_id: session.listening_set_id,
+        exported_at: exportedAt,
+        votes: controllers.map(({ section, row, textarea }) => ({
+          input: row.input,
+          role: row.role,
+          choice: section.querySelector('input[type="radio"]:checked')?.value ?? null,
+          note: textarea.value.trim()
+        }))
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2) + '\n'], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `timbre_blend_votes_${exportedAt.replace(/[:.]/g, '-')}.json`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    });
+  })();
+  </script>
+</body>
+</html>

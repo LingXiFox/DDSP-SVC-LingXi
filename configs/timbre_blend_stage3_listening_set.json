@@ -1,0 +1,35 @@
+{
+  "id": "stage3_listening_v1",
+  "source_selection": "samples/stage2/expanded_c_blind/input_selection.json",
+  "rule": "Only these four unstitched public holdout inputs are used for listening in later blind packs; all eleven inputs remain required for each recipe's objective 11x4 evaluation. Each role is assigned to a distinct input.",
+  "clips": [
+    {
+      "role": "high_B4_plus",
+      "label": "高音 · B4 以上",
+      "input": "29_月光_13.wav",
+      "sha256": "a0c7483957a691af78db305972c6c64bbb3181696ad8654c8287b9aa869c600f",
+      "evidence": "RMVPE confirmed B4+ frames: 5.88% of the selected voiced frames; interpolated RMVPE median 361.0 Hz. Not a claim the whole clip stays above B4."
+    },
+    {
+      "role": "breathy_candidate",
+      "label": "气声候选",
+      "input": "47_秋酿_15.wav",
+      "sha256": "9911a810503e28e736ee1309e0b13dd745e97a9790516a4ef85f9553bc56db9d",
+      "evidence": "Low median HNR proxy 18.8 dB among holdouts; breathiness has not been verified by listening."
+    },
+    {
+      "role": "sustained_note_candidate",
+      "label": "长音候选",
+      "input": "47_秋酿_19.wav",
+      "sha256": "5b8ef78a7cf31f06fc8b8e72e82990ddbd7ac25241317275646230836fe9d44c",
+      "evidence": "Praat sustained-pitch candidate run 1.78 s; this is an algorithmic candidate, not a human confirmation."
+    },
+    {
+      "role": "ordinary_mid_register",
+      "label": "普通中音区",
+      "input": "10_侧脸_2.wav",
+      "sha256": "c03396e434935b8162efc7f5b702b304f8873f8f3cb063785c296953a780d86c",
+      "evidence": "Tagged ordinary_reference; interpolated RMVPE median 225.9 Hz. 'Mid' is relative to this holdout listening set."
+    }
+  ]
+}
