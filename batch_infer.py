@@ -327,9 +327,10 @@ def infer(input_path, output_path, cmd, device, model, vocoder, args, units_enco
         exit(0)
 
     with torch.no_grad():
+        model_f0 = f0 / vocal_register_factor
         mel = model(
             units,
-            f0 / vocal_register_factor,
+            model_f0,
             volume,
             spk_id=spk_id,
             spk_mix_dict=spk_mix_dict,
@@ -339,7 +340,12 @@ def infer(input_path, output_path, cmd, device, model, vocoder, args, units_enco
             infer_step=infer_step, 
             method=method,
             t_start=t_start)
-        output = vocoder.infer(mel, f0)
+        adapted_f0, _ = model.adapt_controls(
+            units, model_f0, volume
+        )
+        output = vocoder.infer(
+            mel, adapted_f0 * vocal_register_factor
+        )
         output *= mask
         output = output.squeeze().cpu().numpy()
         os.makedirs(os.path.dirname(output_path), exist_ok=True)

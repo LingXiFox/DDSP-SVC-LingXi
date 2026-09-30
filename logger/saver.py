@@ -10,7 +10,11 @@ import torch
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from torch.utils.tensorboard import SummaryWriter
+
+try:
+    from torch.utils.tensorboard import SummaryWriter
+except Exception:
+    SummaryWriter = None
 
 class Saver(object):
     def __init__(
@@ -35,8 +39,14 @@ class Saver(object):
         # ckpt
         os.makedirs(self.expdir, exist_ok=True)       
 
-        # writer
-        self.writer = SummaryWriter(os.path.join(self.expdir, 'logs'))
+        # writer (optional: training must not depend on tensorboard)
+        self.writer = (
+            SummaryWriter(os.path.join(self.expdir, 'logs'))
+            if SummaryWriter is not None
+            else None
+        )
+        if self.writer is None:
+            print(' [!] tensorboard unavailable, continuing without TB logs')
         
         # save config
         path_config = os.path.join(self.expdir, 'config.yaml')
@@ -68,6 +78,8 @@ class Saver(object):
             fp.write(msg_str+'\n')
 
     def log_value(self, dict):
+        if self.writer is None:
+            return
         for k, v in dict.items():
             self.writer.add_scalar(k, v, self.global_step)
     
@@ -79,9 +91,13 @@ class Saver(object):
         fig = plt.figure(figsize=(12, 9))
         plt.pcolor(spec.T, vmin=vmin, vmax=vmax)
         plt.tight_layout()
-        self.writer.add_figure(name, fig, self.global_step)
+        if self.writer is not None:
+            self.writer.add_figure(name, fig, self.global_step)
+        plt.close(fig)
     
     def log_audio(self, dict):
+        if self.writer is None:
+            return
         for k, v in dict.items():
             self.writer.add_audio(k, v, global_step=self.global_step, sample_rate=self.sample_rate)
     

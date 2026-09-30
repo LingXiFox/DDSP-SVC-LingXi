@@ -323,9 +323,10 @@ if __name__ == '__main__':
             seg_units = units_encoder.encode(seg_input, sample_rate, hop_size)
             seg_f0 = f0[:, start_frame : start_frame + seg_units.size(1), :]
             seg_volume = volume[:, start_frame : start_frame + seg_units.size(1), :]    
+            model_f0 = seg_f0 / vocal_register_factor
             seg_mel = model(
                     seg_units, 
-                    seg_f0 / vocal_register_factor, 
+                    model_f0,
                     seg_volume, 
                     spk_id = spk_id, 
                     spk_mix_dict = spk_mix_dict,
@@ -334,7 +335,12 @@ if __name__ == '__main__':
                     infer_step=infer_step, 
                     method=method,
                     t_start=t_start)
-            seg_output = vocoder.infer(seg_mel, seg_f0)
+            adapted_f0, _ = model.adapt_controls(
+                seg_units, model_f0, seg_volume
+            )
+            seg_output = vocoder.infer(
+                seg_mel, adapted_f0 * vocal_register_factor
+            )
             seg_output *= mask[:, start_frame * args.data.block_size : (start_frame + seg_units.size(1)) * args.data.block_size]
             seg_output = seg_output.squeeze().cpu().numpy()
             

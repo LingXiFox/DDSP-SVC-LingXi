@@ -3,3 +3,22 @@ __pycache__/
 venv/
 results/
 cache/
+
+# macOS finder residue
+.DS_Store
+
+# LingXiSVC local workspace (generated / large / private; never commit)
+production/
+environment/
+outputs/
+inputs/
+logs/
+cache/
+archive/
+
+# local training material (734 MB of dry-vocal wavs, never commit)
+数据集（干声）/
+
+# python build residue
+build/
+*.egg-info/

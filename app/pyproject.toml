@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61"]
+
+[project]
+name = "lingxi-svc"
+version = "0.1.0"
+description = "LingXi SVC Production v1 local offline inference runtime (orchestration only; model math lives in DDSP-SVC-LingXi repo)"
+requires-python = ">=3.14"
+dependencies = [
+    "torch==2.14.0",
+    "torchaudio==2.11.0",
+    "numpy==2.5.3",
+    "soundfile==0.14.0",
+    "librosa==1.0.0",
+    "pyworld==0.3.5",
+    # pyworld imports pkg_resources at runtime; setuptools>=81 removed it.
+    "setuptools<81",
+    "praat-parselmouth==0.4.7",
+    "torchcrepe==0.0.24",
+    "resampy==0.4.3",
+    "transformers==5.17.0",
+    "tqdm==4.70.1",
+    "pyyaml==6.0.3",
+    # required by nsf_hifigan.utils import chain
+    "matplotlib==3.11.2",
+    "scipy==1.18.1",
+]
+
+[project.scripts]
+lingxi-svc = "runtime.cli:main"
+lingxi-selfcheck = "runtime.selfcheck:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["runtime*"]
+
+[tool.lingxi-svc]
+# Validated combination (macOS Apple Silicon, 2026-09-19):
+# torch 2.14.0 + torchaudio 2.11.0, full MPS pipeline, no fallbacks.
+# Keep versions pinned; do NOT chase "matching" version numbers.
+production_candidate = "P"

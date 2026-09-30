@@ -93,7 +93,10 @@ def test(args, model, vocoder, loader_test, saver):
                     infer_step=args.infer.infer_step, 
                     method=args.infer.method,
                     t_start=args.model.t_start)
-            signal = vocoder.infer(mel, data['f0'])
+            adapted_f0, _ = model.adapt_controls(
+                data['units'], data['f0'], data['volume']
+            )
+            signal = vocoder.infer(mel, adapted_f0)
             ed_time = time.time()
                         
             # RTF
@@ -184,6 +187,11 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
     model.train()
     saver.log_info('======= start training =======')
     scaler = GradScaler()
+    incremental_step = 0
+    max_incremental_steps = int(
+        args.train.get('max_incremental_steps', 0)
+    )
+    grad_clip_norm = float(args.train.get('grad_clip_norm', 0.0))
     if args.train.amp_dtype == 'fp32':
         dtype = torch.float32
     elif args.train.amp_dtype == 'fp16':
@@ -211,32 +219,40 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
                     ddsp_loss, reflow_loss=model(data['units'], data['f0'], data['volume'], data['spk_id'], 
                                     aug_shift=data['aug_shift'], vocoder=vocoder, gt_spec=data['mel'].float(), infer=False, t_start=args.model.t_start)
             
-            # handle nan loss
-            if torch.isnan(ddsp_loss):
-                print(' [x] nan ddsp_loss ')
-                optimizer.zero_grad()
-                del ddsp_loss
-                del reflow_loss
-                continue
-            elif torch.isnan(reflow_loss):
-                raise ValueError(' [x] nan reflow_loss ')
+            # handle non-finite loss
+            if not torch.isfinite(ddsp_loss):
+                raise ValueError(' [x] non-finite ddsp_loss ')
+            elif not torch.isfinite(reflow_loss):
+                raise ValueError(' [x] non-finite reflow_loss ')
             else:
                 loss = args.train.lambda_ddsp * ddsp_loss + reflow_loss
                 # backpropagate
                 if dtype == torch.float32:
                     loss.backward()
+                    grad_norm = torch.nn.utils.clip_grad_norm_(
+                        model.parameters(),
+                        grad_clip_norm if grad_clip_norm > 0 else float('inf'),
+                        error_if_nonfinite=True,
+                    )
                     optimizer.step()
                 else:
                     scaler.scale(loss).backward()
+                    scaler.unscale_(optimizer)
+                    grad_norm = torch.nn.utils.clip_grad_norm_(
+                        model.parameters(),
+                        grad_clip_norm if grad_clip_norm > 0 else float('inf'),
+                        error_if_nonfinite=True,
+                    )
                     scaler.step(optimizer)
                     scaler.update()
                 scheduler.step()
+                incremental_step += 1
                 
             # log loss
             if saver.global_step % args.train.interval_log == 0:
                 current_lr =  optimizer.param_groups[0]['lr']
                 saver.log_info(
-                    'epoch: {} | {:3d}/{:3d} | {} | batch/s: {:.2f} | lr: {:.6} | loss: {:.3f} | time: {} | step: {}'.format(
+                    'epoch: {} | {:3d}/{:3d} | {} | batch/s: {:.2f} | lr: {:.6} | loss: {:.3f} | grad: {:.3f} | clipped: {} | time: {} | step: {} | incremental_step: {}'.format(
                         epoch,
                         batch_idx,
                         num_batches,
@@ -244,8 +260,14 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
                         args.train.interval_log/saver.get_interval_time(),
                         current_lr,
                         loss.item(),
+                        float(grad_norm),
+                        bool(
+                            grad_clip_norm > 0
+                            and float(grad_norm) > grad_clip_norm
+                        ),
                         saver.get_total_time(),
-                        saver.global_step
+                        saver.global_step,
+                        incremental_step,
                     )
                 )
                 
@@ -284,3 +306,14 @@ def train(args, initial_global_step, model, optimizer, scheduler, vocoder, loade
                 })
                 
                 model.train()
+
+            if (
+                max_incremental_steps > 0
+                and incremental_step >= max_incremental_steps
+            ):
+                saver.log_info(
+                    'max incremental steps reached: {}'.format(
+                        incremental_step
+                    )
+                )
+                return
