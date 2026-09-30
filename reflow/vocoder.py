@@ -10,6 +10,7 @@ from torchaudio.transforms import Resample
 from .reflow import RectifiedFlow
 from .lynxnet2 import LYNXNet2
 from ddsp.realism_vocoder import CombSubSuperFastRealism
+from logger.utils import SPK_EMBED_KEY
 
 class DotDict(dict):
     def __getattr__(*args):         
@@ -54,8 +55,15 @@ def load_model_vocoder(
         
     print(' [Loading] ' + model_path)
     ckpt = torch.load(model_path, map_location=torch.device(device))
+    single_baked = args.model.n_spk == 1 and SPK_EMBED_KEY in ckpt['model']
+    if single_baked:
+        weight = ckpt['model'][SPK_EMBED_KEY]
+        dim = model.ddsp_model.unit2ctrl.volume_embed.out_features
+        if weight.shape != (1, dim):
+            raise ValueError(f'Invalid single-speaker embedding shape: {tuple(weight.shape)}')
+        model.ddsp_model.unit2ctrl.spk_embed = nn.Embedding(1, dim)
     model.to(device)
-    model.load_state_dict(ckpt['model'], strict=False)
+    model.load_state_dict(ckpt['model'], strict=single_baked)
     model.eval()
     return model, vocoder, args
 

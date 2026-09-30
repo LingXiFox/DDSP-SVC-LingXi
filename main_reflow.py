@@ -158,6 +158,12 @@ def parse_args(args=None, namespace=None):
         action="store_true",
         help="use non-cuDNN CUDA convolutions only during waveform synthesis",
     )
+    parser.add_argument(
+        "--seed-after-load",
+        type=int,
+        default=None,
+        help="reset PyTorch RNG after model and encoder initialization (for deterministic comparisons)",
+    )
     return parser.parse_args(args=args, namespace=namespace)
 
     
@@ -321,6 +327,9 @@ if __name__ == '__main__':
     current_length = 0
     segments = split(audio, sample_rate, hop_size)
     print('Cut the input audio into ' + str(len(segments)) + ' slices')
+    if cmd.seed_after_load is not None:
+        torch.manual_seed(cmd.seed_after_load)
+        torch.cuda.manual_seed_all(cmd.seed_after_load)
     with torch.no_grad():
         for segment in tqdm(segments):
             start_frame = segment[0]
