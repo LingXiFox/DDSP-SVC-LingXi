@@ -3,3 +3,12 @@ __pycache__/
 venv/
 results/
 cache/
+
+# timbre-blend task working dirs (data/artifacts, never commit)
+.tmp/
+logs/
+samples/
+data/timbre_blend_*/
+reports/opensinger_file_metrics.jsonl
+# Private HF Storage Bucket content; never commit private audio.
+datasets/private-timbre/

@@ -153,6 +153,17 @@ def parse_args(args=None, namespace=None):
         default='auto',
         help="t_start | default: auto",
     )
+    parser.add_argument(
+        "--disable-vocoder-cudnn",
+        action="store_true",
+        help="use non-cuDNN CUDA convolutions only during waveform synthesis",
+    )
+    parser.add_argument(
+        "--seed-after-load",
+        type=int,
+        default=None,
+        help="reset PyTorch RNG after model and encoder initialization (for deterministic comparisons)",
+    )
     return parser.parse_args(args=args, namespace=namespace)
 
     
@@ -316,6 +327,9 @@ if __name__ == '__main__':
     current_length = 0
     segments = split(audio, sample_rate, hop_size)
     print('Cut the input audio into ' + str(len(segments)) + ' slices')
+    if cmd.seed_after_load is not None:
+        torch.manual_seed(cmd.seed_after_load)
+        torch.cuda.manual_seed_all(cmd.seed_after_load)
     with torch.no_grad():
         for segment in tqdm(segments):
             start_frame = segment[0]
@@ -334,7 +348,11 @@ if __name__ == '__main__':
                     infer_step=infer_step, 
                     method=method,
                     t_start=t_start)
-            seg_output = vocoder.infer(seg_mel, seg_f0)
+            if cmd.disable_vocoder_cudnn:
+                with torch.backends.cudnn.flags(enabled=False):
+                    seg_output = vocoder.infer(seg_mel, seg_f0)
+            else:
+                seg_output = vocoder.infer(seg_mel, seg_f0)
             seg_output *= mask[:, start_frame * args.data.block_size : (start_frame + seg_units.size(1)) * args.data.block_size]
             seg_output = seg_output.squeeze().cpu().numpy()
             

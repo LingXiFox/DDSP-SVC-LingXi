@@ -1,0 +1,169 @@
+{
+  "status": "HUMAN_GATE_3_WAITING_FOR_BLIND_LISTEN",
+  "selection": "min virtual validation ddsp at step 3000 (not virtual mel)",
+  "stop_reason": "MAX_STEPS; validation ddsp still descending; do not continue without approval",
+  "data": {
+    "virtual_train_songs": 9,
+    "virtual_train_minutes": 25.2,
+    "virtual_train_slices": 138,
+    "virtual_val_songs": 2,
+    "virtual_val_minutes": 5.75,
+    "virtual_val_slices": 34,
+    "fixed_train_probe_slices": 34,
+    "public_val_slices": 558
+  },
+  "starting_stage1_md5": "e026eb6e60b7e2e8ba4c579ad8a0ceff",
+  "public_step0_baseline": {
+    "ddsp_loss": 0.25033053218997936,
+    "reflow_loss": 0.029853311794676315,
+    "reflow_loss_excluded_diagnostic": 0.0,
+    "mel_val_mse": 0.32234610595797125,
+    "mel_val_snr": 45.57268249347646,
+    "mel_val_psnr": 44.754996644980594,
+    "mel_val_sisnr": 45.568840860893225
+  },
+  "arms": {
+    "B_1k": {
+      "checkpoint": {
+        "checkpoint": "exp/timbre_blend_stage2_masked/model_1000.pt",
+        "md5": "18270a6fa8dbe26d37a5ba3b9d164662"
+      },
+      "step": 1000,
+      "train_ddsp": 0.2891307893921347,
+      "virtual_val_ddsp": 0.8600097210968242,
+      "public": {
+        "ddsp_loss": 0.2570199004531334,
+        "reflow_loss": 0.030260746829448366,
+        "reflow_loss_excluded_diagnostic": 0.0,
+        "mel_val_mse": 0.3247411947790867,
+        "mel_val_snr": 45.498645488506575,
+        "mel_val_psnr": 44.70476999590474,
+        "mel_val_sisnr": 45.495668308709256
+      },
+      "similarity_to_virtual_val": {
+        "name": "B_1k",
+        "per_input": [
+          {
+            "input_singer": 10,
+            "similarity_to_virtual_val": {
+              "count": 4,
+              "mean": 0.5869195908308029,
+              "median": 0.5991632640361786,
+              "std": 0.039345960419267995,
+              "p05": 0.5328062087297439,
+              "p25": 0.5707354694604874,
+              "p75": 0.6153473854064941,
+              "p95": 0.6238918304443359
+            }
+          },
+          {
+            "input_singer": 47,
+            "similarity_to_virtual_val": {
+              "count": 4,
+              "mean": 0.729680135846138,
+              "median": 0.7423112690448761,
+              "std": 0.03691439109866751,
+              "p05": 0.6788909316062928,
+              "p25": 0.7130648493766785,
+              "p75": 0.7589265555143356,
+              "p95": 0.7627857536077499
+            }
+          }
+        ],
+        "all_output_to_virtual_val": {
+          "count": 8,
+          "mean": 0.6582998633384705,
+          "median": 0.6481876969337463,
+          "std": 0.08093535530915319,
+          "p05": 0.5454492956399918,
+          "p25": 0.6054752320051193,
+          "p75": 0.734807625412941,
+          "p95": 0.7614993542432785
+        }
+      },
+      "virtual_val_minus_train": 0.5708789317046894,
+      "virtual_val_to_train_ratio": 2.974466063973674,
+      "public_ddsp_change_pct": 2.6722142938909954
+    },
+    "C_3000": {
+      "checkpoint": {
+        "checkpoint": "exp/timbre_blend_stage2_embedding/model_3000.pt",
+        "md5": "ad187f802e17d4bd04d424ce0174d97e"
+      },
+      "step": 3000,
+      "train_ddsp": 0.8636362131904153,
+      "virtual_val_ddsp": 1.0205507927081163,
+      "public": {
+        "ddsp_loss": 0.25033053218997936,
+        "reflow_loss": 0.029853311794676315,
+        "reflow_loss_excluded_diagnostic": 0.0,
+        "mel_val_mse": 0.32234610595797125,
+        "mel_val_snr": 45.57268249347646,
+        "mel_val_psnr": 44.754996644980594,
+        "mel_val_sisnr": 45.568840860893225
+      },
+      "similarity_to_virtual_val": {
+        "name": "C_best",
+        "per_input": [
+          {
+            "input_singer": 10,
+            "similarity_to_virtual_val": {
+              "count": 4,
+              "mean": 0.6621705591678619,
+              "median": 0.6644920110702515,
+              "std": 0.034078717312792,
+              "p05": 0.6210263848304749,
+              "p25": 0.6358841061592102,
+              "p75": 0.6907784640789032,
+              "p95": 0.7000647008419036
+            }
+          },
+          {
+            "input_singer": 47,
+            "similarity_to_virtual_val": {
+              "count": 4,
+              "mean": 0.6950232833623886,
+              "median": 0.6999843120574951,
+              "std": 0.0341166096773384,
+              "p05": 0.6504495739936829,
+              "p25": 0.6818957924842834,
+              "p75": 0.7131118029356003,
+              "p95": 0.7326515525579452
+            }
+          }
+        ],
+        "all_output_to_virtual_val": {
+          "count": 8,
+          "mean": 0.6785969212651253,
+          "median": 0.69095379114151,
+          "std": 0.03784806978606616,
+          "p05": 0.6259789586067199,
+          "p25": 0.6424597203731537,
+          "p75": 0.7030322551727295,
+          "p95": 0.7261383026838303
+        }
+      },
+      "virtual_val_minus_train": 0.15691457951770105,
+      "virtual_val_to_train_ratio": 1.181690597407944,
+      "public_ddsp_change_pct": 0.0
+    }
+  },
+  "c_freeze": {
+    "changed_state_dict_keys": [
+      "ddsp_model.unit2ctrl.spk_embed.weight"
+    ],
+    "rows_0_through_11_exact_equal": true,
+    "other_rows_sha256": "dc1a76612a3531bf18fea47e61b6af3383a101cf1f6b0ce43ef2ba2539244bb1",
+    "public_all_metrics_exact_equal_at_all_15_validations": true
+  },
+  "blind_pack": "samples/stage2/blind_c_vs_b1k/",
+  "blind_key_local_untracked": ".tmp/stage2_c_vs_b1k_blind_key.json",
+  "curve": "reports/timbre_blend_stage2_c_validation_history.jsonl",
+  "similarity_report": "reports/timbre_blend_stage2_similarity.json",
+  "limitations": [
+    "B@1k and C@3k have different training step counts, initial embedding and optimization; no single-factor causal attribution.",
+    "Speaker verifier is trained on speech and provides a proxy on singing; audio outputs are one fixed seed per input, not averaged over inference RNG.",
+    "Public validation songs were seen during Stage 1; exact stability tests forgetting, not generalization.",
+    "Virtual mel metrics were logged but not used for model selection."
+  ]
+}

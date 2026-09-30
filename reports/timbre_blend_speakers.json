@@ -1,0 +1,78 @@
+{
+  "n_spk": 13,
+  "id_convention": "audio subdir first _/- token, 1-based (reflow/data_loaders.py)",
+  "seed": 20260927,
+  "mapping": [
+    {
+      "spk_id": 1,
+      "opensinger_singer": 9,
+      "dir_name": "1_singer09"
+    },
+    {
+      "spk_id": 2,
+      "opensinger_singer": 14,
+      "dir_name": "2_singer14"
+    },
+    {
+      "spk_id": 3,
+      "opensinger_singer": 19,
+      "dir_name": "3_singer19"
+    },
+    {
+      "spk_id": 4,
+      "opensinger_singer": 21,
+      "dir_name": "4_singer21"
+    },
+    {
+      "spk_id": 5,
+      "opensinger_singer": 27,
+      "dir_name": "5_singer27"
+    },
+    {
+      "spk_id": 6,
+      "opensinger_singer": 28,
+      "dir_name": "6_singer28"
+    },
+    {
+      "spk_id": 7,
+      "opensinger_singer": 30,
+      "dir_name": "7_singer30"
+    },
+    {
+      "spk_id": 8,
+      "opensinger_singer": 32,
+      "dir_name": "8_singer32"
+    },
+    {
+      "spk_id": 9,
+      "opensinger_singer": 33,
+      "dir_name": "9_singer33"
+    },
+    {
+      "spk_id": 10,
+      "opensinger_singer": 36,
+      "dir_name": "10_singer36"
+    },
+    {
+      "spk_id": 11,
+      "opensinger_singer": 41,
+      "dir_name": "11_singer41"
+    },
+    {
+      "spk_id": 12,
+      "opensinger_singer": 42,
+      "dir_name": "12_singer42"
+    },
+    {
+      "spk_id": 13,
+      "singer": "泠溪小狐狸 / 若溪（虚拟歌手）",
+      "dir_name": "13_lingxi"
+    }
+  ],
+  "holdout_singers": [
+    29,
+    47,
+    10
+  ],
+  "holdout_note": "never processed into the training tree; unseen test inputs, source audio stays in the official WomanRaw root"
+}

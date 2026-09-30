@@ -178,7 +178,10 @@ def get_params_for_muon(model) -> List[Parameter]:
 
 
 class Muon_AdamW(ChainedOptimizer):
-    def __init__(self, model, lr=0.0005, weight_decay=0.0, muon_args={}, adamw_args={}, verbose=False):
+    def __init__(self, model, lr=0.0005, weight_decay=0.0, muon_args={}, adamw_args={}, verbose=False, params=None):
+        # params: optional explicit parameter iterable (e.g. only requires_grad
+        # params when train.freeze_reflow removes reflow params from training).
+        # None = legacy behavior: all model.parameters() enter the optimizer.
         muon_params_id_set = set(id(p) for p in get_params_for_muon(model))
         spec_muon = OptimizerSpec(Muon, muon_args, lambda param: id(param) in muon_params_id_set)
         spec_adamw = OptimizerSpec(torch.optim.AdamW, adamw_args, None)
@@ -188,4 +191,4 @@ class Muon_AdamW(ChainedOptimizer):
             callback = lambda p, spec_idx: print(
             f"Adding param {p.shape} to optimizer{spec_idx} {str(specs[spec_idx].class_type)}"
         )
-        super().__init__(model.parameters(), specs, lr=lr, weight_decay=weight_decay, optimizer_selection_callback=callback)
+        super().__init__(model.parameters() if params is None else params, specs, lr=lr, weight_decay=weight_decay, optimizer_selection_callback=callback)

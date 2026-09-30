@@ -1,0 +1,51 @@
+{
+  "status": "HUMAN_BLIND_VOTE_TALLIED",
+  "pack_id": "stage3-four-0cac4dcf891b",
+  "listening_set_id": "stage3_listening_v1",
+  "exported_at": "2026-09-30T07:29:09.722Z",
+  "vote_file_sha256": "53648cf58c97447fa962936a86f2d1f07ed0ea866d890618089f771168622f45",
+  "label_to_arm": {
+    "A": "v100_t000",
+    "B": "v060_t000",
+    "C": "v040_t000"
+  },
+  "rows": [
+    {
+      "input": "29_月光_13.wav",
+      "role": "high_B4_plus",
+      "blind_choice": "B",
+      "arm": "v060_t000",
+      "note": ""
+    },
+    {
+      "input": "47_秋酿_15.wav",
+      "role": "breathy_candidate",
+      "blind_choice": "A",
+      "arm": "v100_t000",
+      "note": ""
+    },
+    {
+      "input": "47_秋酿_19.wav",
+      "role": "sustained_note_candidate",
+      "blind_choice": "C",
+      "arm": "v040_t000",
+      "note": ""
+    },
+    {
+      "input": "10_侧脸_2.wav",
+      "role": "ordinary_mid_register",
+      "blind_choice": "C",
+      "arm": "v040_t000",
+      "note": ""
+    }
+  ],
+  "wins_by_arm": {
+    "v040_t000": 2,
+    "v060_t000": 1,
+    "v100_t000": 1
+  },
+  "no_difference_count": 0,
+  "unanswered_count": 0,
+  "total_votes": 4,
+  "interpretation": "One preferred arm per clip; ties and unanswered votes are not awarded as wins. Four subjective listening choices are not statistical proof or a model quality metric."
+}

@@ -1,0 +1,550 @@
+{
+  "protocol": {
+    "model": "speechbrain/spkrec-ecapa-voxceleb",
+    "revision": "0f99f2d0ebe89ac095bcc5903c4dd8f72b367286",
+    "model_file_sha256": {
+      "hyperparams.yaml": "6f78854fa04ba59e761437b76a2575d3aba5e5016de3e9b69f0c9a5077fb1a41",
+      "embedding_model.ckpt": "0575cb64845e6b9a10db9bcb74d5ac32b326b8dc90352671d345e2ee3d0126a2",
+      "mean_var_norm_emb.ckpt": "cd70225b05b37be64fc5a95e24395d804231d43f74b2e1e5a513db7b69b34c33",
+      "classifier.ckpt": "fd9e3634fe68bd0a427c95e354c0c677374f62b3f434e45b78599950d860d535",
+      "label_encoder.txt": "e13c3a167bb4112685670ee896d20e2b565af16b3a4ceeaa8689fa4d22adb8b9"
+    },
+    "public_reference": "Stage-2 per-singer selection (two songs, two longest clips per song), corrected to all twelve public IDs 1–12, excluding virtual ID 13. Cross-singer 12 choose 2 x 16 = 1056 cosines for p95. Four virtual validation clips across two songs. For each output, cosine to each of four clips; equal mean across three output clips.",
+    "native_selection": "Two Stage-2 training songs 00,01 and two validation songs 05,08; each three longest >=3s unchanged original sliced-v2 human-vocal WAVs (filename tie break). All original source SHA-256 match Stage-2 copies. No model outputs used for native baseline.",
+    "native_aggregation": "For each public Y, equal mean of 12 original source segments x 4 reference segments = 48 cosine scores.",
+    "converted_aggregation": "For each target X and reference singer Y, equal mean of three outputs x four references = 12 cosine scores. Pairwise distribution counts each cosine; grouped distribution counts each X,Y mean once.",
+    "stage3_source": "Existing C@7800 Stage-3 public preview WAVs; no new inference."
+  },
+  "native_virtual": {
+    "segments": [
+      {
+        "song_id": "00",
+        "stage2_split": "train",
+        "source": "datasets/private-timbre/sliced-v2/train/audio/r13_00_21.wav",
+        "sha256": "8614d104f47921ac458454cc45bcb21e41317833ba4f97c71767f318cd9ad8d3",
+        "duration_seconds": 16.74
+      },
+      {
+        "song_id": "00",
+        "stage2_split": "train",
+        "source": "datasets/private-timbre/sliced-v2/train/audio/r13_00_13.wav",
+        "sha256": "0a13309cdecba9daced11515549fb75c01d7cf8c757500dfebcd5f53252a48ad",
+        "duration_seconds": 14.72
+      },
+      {
+        "song_id": "00",
+        "stage2_split": "train",
+        "source": "datasets/private-timbre/sliced-v2/train/audio/r13_00_15s0.wav",
+        "sha256": "543047f670180afa331099dda29bffa1c3c5eaa577640bb00987e3e92d9ca1c9",
+        "duration_seconds": 12.0
+      },
+      {
+        "song_id": "01",
+        "stage2_split": "train",
+        "source": "datasets/private-timbre/sliced-v2/train/audio/r13_01_3.wav",
+        "sha256": "ab230cbcb6f5d11355e78717df824ceb8e3078a08cb385b4a5b524c4ee49be3e",
+        "duration_seconds": 18.08
+      },
+      {
+        "song_id": "01",
+        "stage2_split": "train",
+        "source": "datasets/private-timbre/sliced-v2/val/audio/r13_01_9.wav",
+        "sha256": "e6d404cf8970782a6501eae62371e431287f09d09ee69a3c03ef94c5f468640a",
+        "duration_seconds": 18.08
+      },
+      {
+        "song_id": "01",
+        "stage2_split": "train",
+        "source": "datasets/private-timbre/sliced-v2/train/audio/r13_01_11s0.wav",
+        "sha256": "ad77d02c95ce616e4ef2b3a52a78b728da168cbc3664a4e9ecd91d61366d582f",
+        "duration_seconds": 12.0
+      },
+      {
+        "song_id": "05",
+        "stage2_split": "val",
+        "source": "datasets/private-timbre/sliced-v2/val/audio/r13_05_3s0.wav",
+        "sha256": "df81ed1033899749147a4ce5bb495d3e4b660f2278e9834646f078f4b54a6072",
+        "duration_seconds": 12.0
+      },
+      {
+        "song_id": "05",
+        "stage2_split": "val",
+        "source": "datasets/private-timbre/sliced-v2/train/audio/r13_05_3s1.wav",
+        "sha256": "f1b33f38b36b86a2a4ea776a4fe6e091125f7881910ada8414d52cb9b06aef12",
+        "duration_seconds": 12.0
+      },
+      {
+        "song_id": "05",
+        "stage2_split": "val",
+        "source": "datasets/private-timbre/sliced-v2/train/audio/r13_05_3s2.wav",
+        "sha256": "5c9dee8188e42edddfa0bdd85fcec0bdccb2a342018a1233ba41744c9a4ebefd",
+        "duration_seconds": 12.0
+      },
+      {
+        "song_id": "08",
+        "stage2_split": "val",
+        "source": "datasets/private-timbre/sliced-v2/val/audio/r13_08_11.wav",
+        "sha256": "bd03f86a56826fdc8ac9632866107c23eabc2bca446b781d2afacc8d9f1402ca",
+        "duration_seconds": 13.4
+      },
+      {
+        "song_id": "08",
+        "stage2_split": "val",
+        "source": "datasets/private-timbre/sliced-v2/train/audio/r13_08_7.wav",
+        "sha256": "d2591a792e760d0ebbb5ffd08acc62c219cbbda63f0bc847c4b4a2fd0f0610dd",
+        "duration_seconds": 13.06
+      },
+      {
+        "song_id": "08",
+        "stage2_split": "val",
+        "source": "datasets/private-timbre/sliced-v2/train/audio/r13_08_1.wav",
+        "sha256": "655d3ecc9b5841b930922e7003c3e0e85b5148bf4d52447074f296c4db852559",
+        "duration_seconds": 12.94
+      }
+    ],
+    "by_public_spk": {
+      "1": {
+        "mean": 0.44992977380752563,
+        "by_song": {
+          "00": 0.49354318529367447,
+          "01": 0.42207779238621396,
+          "05": 0.4496914893388748,
+          "08": 0.4344066282113393
+        },
+        "opensinger_singer": 9
+      },
+      "2": {
+        "mean": 0.4034260722498099,
+        "by_song": {
+          "00": 0.39142047117153805,
+          "01": 0.40147224565347034,
+          "05": 0.4025475134452184,
+          "08": 0.4182640587290128
+        },
+        "opensinger_singer": 14
+      },
+      "3": {
+        "mean": 0.338483477011323,
+        "by_song": {
+          "00": 0.35445863753557205,
+          "01": 0.33567720651626587,
+          "05": 0.303950568040212,
+          "08": 0.359847495953242
+        },
+        "opensinger_singer": 19
+      },
+      "4": {
+        "mean": 0.32706975874801475,
+        "by_song": {
+          "00": 0.3219716437160969,
+          "01": 0.29776081070303917,
+          "05": 0.28438063710927963,
+          "08": 0.4041659434636434
+        },
+        "opensinger_singer": 21
+      },
+      "5": {
+        "mean": 0.2790803549190362,
+        "by_song": {
+          "00": 0.29313508172829944,
+          "01": 0.19923231254021326,
+          "05": 0.27621157715717953,
+          "08": 0.3477424482504527
+        },
+        "opensinger_singer": 27
+      },
+      "6": {
+        "mean": 0.3301482507959008,
+        "by_song": {
+          "00": 0.31931985542178154,
+          "01": 0.3206298587222894,
+          "05": 0.3047516730924447,
+          "08": 0.3758916159470876
+        },
+        "opensinger_singer": 28
+      },
+      "7": {
+        "mean": 0.2703059073537588,
+        "by_song": {
+          "00": 0.2781899894277255,
+          "01": 0.24702180425326029,
+          "05": 0.2421176259716352,
+          "08": 0.3138942097624143
+        },
+        "opensinger_singer": 30
+      },
+      "8": {
+        "mean": 0.23975198863384625,
+        "by_song": {
+          "00": 0.2627146157125632,
+          "01": 0.2720576139787833,
+          "05": 0.20280365056047836,
+          "08": 0.22143207428356013
+        },
+        "opensinger_singer": 32
+      },
+      "9": {
+        "mean": 0.3353815299148361,
+        "by_song": {
+          "00": 0.3344448059797287,
+          "01": 0.30429737145702046,
+          "05": 0.3150050143400828,
+          "08": 0.3877789278825124
+        },
+        "opensinger_singer": 33
+      },
+      "10": {
+        "mean": 0.47103752878805,
+        "by_song": {
+          "00": 0.43344924847284955,
+          "01": 0.46340951323509216,
+          "05": 0.49242093165715534,
+          "08": 0.494870421787103
+        },
+        "opensinger_singer": 36
+      },
+      "11": {
+        "mean": 0.2032449785619974,
+        "by_song": {
+          "00": 0.22494069362680116,
+          "01": 0.1880971478919188,
+          "05": 0.17907543728748956,
+          "08": 0.2208666354417801
+        },
+        "opensinger_singer": 41
+      },
+      "12": {
+        "mean": 0.46853207734723884,
+        "by_song": {
+          "00": 0.4126433903972308,
+          "01": 0.5059910168250402,
+          "05": 0.453861266374588,
+          "08": 0.5016326357920965
+        },
+        "opensinger_singer": 42
+      }
+    }
+  },
+  "pure_public_conversion": {
+    "outputs": [
+      {
+        "target_spk_id": 1,
+        "opensinger_singer": 9,
+        "output_sha256": {
+          "low": "546b4c95e2c72ad9df6333a46d22b6e9ddd9ee00aff45acaa0cbf1176e175ecc",
+          "mid": "5c43af60d9ecb3575097ffa989b34f8819b06e6ef7fa8848636eb1b2272132dc",
+          "high": "1bce9752ca1c801302fd4ac3940bbeed1301d93579a1384b15a3e6d54e3831a1"
+        },
+        "by_public_spk_mean": {
+          "1": 0.5556578412652016,
+          "2": 0.31057240813970566,
+          "3": 0.41962072998285294,
+          "4": 0.3325268626213074,
+          "5": 0.3177374427517255,
+          "6": 0.22638120067616305,
+          "7": 0.29516548415025073,
+          "8": 0.12783928122371435,
+          "9": 0.2068677588055531,
+          "10": 0.4697853947679202,
+          "11": 0.2080164154370626,
+          "12": 0.3966302548845609
+        }
+      },
+      {
+        "target_spk_id": 2,
+        "opensinger_singer": 14,
+        "output_sha256": {
+          "low": "3fc9b412006c0b1e505f59cfde732fd59b796b3273aefc42f828caa27aa72bb8",
+          "mid": "06114e6eb4231de6d14aab8adf9a5759c6f2ed130f1e306c32b83015bdd7ab9f",
+          "high": "8ebee5788a85bc30f641a9b50076a4a5da869da51fbcb9f030fb879d7daa61b6"
+        },
+        "by_public_spk_mean": {
+          "1": 0.3315802030265331,
+          "2": 0.4274715296924114,
+          "3": 0.379520225028197,
+          "4": 0.415133065233628,
+          "5": 0.31274355202913284,
+          "6": 0.37931781883041066,
+          "7": 0.27212751905123395,
+          "8": 0.2561679631471634,
+          "9": 0.360770870000124,
+          "10": 0.5062092368801435,
+          "11": 0.23038375626007715,
+          "12": 0.39814617857337
+        }
+      },
+      {
+        "target_spk_id": 3,
+        "opensinger_singer": 19,
+        "output_sha256": {
+          "low": "ea7f2098e3476ca9cf4a4cda441d58ec2bf377c782188d2745be533272e5cf72",
+          "mid": "659fbac1f8f356ce660123a67758903d0d93b5d293f8825a1f952231365d45a6",
+          "high": "154024e3f2338795896cbeebf1398c6bab769c244147bc240a129f94e927e4bb"
+        },
+        "by_public_spk_mean": {
+          "1": 0.3531779001156489,
+          "2": 0.3152670661608378,
+          "3": 0.6243912428617477,
+          "4": 0.3629725029071172,
+          "5": 0.319938691953818,
+          "6": 0.23027771711349487,
+          "7": 0.36719078570604324,
+          "8": 0.14265285696213445,
+          "9": 0.23230333315829435,
+          "10": 0.3805385207136472,
+          "11": 0.18559972320993742,
+          "12": 0.3507247393329938
+        }
+      },
+      {
+        "target_spk_id": 4,
+        "opensinger_singer": 21,
+        "output_sha256": {
+          "low": "14cca9a71859d014c5b0e1cd356bcbd05004a0a6bcbaf75bb8a370dac66fcd7b",
+          "mid": "3569c8215a4cec667a0da14e7ccd210040ecae8481d20d6957e97a7ee74538cf",
+          "high": "1ffed84444779f6fbdcd03c758b776c542cef8921b3f14d10108f776f147eedf"
+        },
+        "by_public_spk_mean": {
+          "1": 0.32491447404026985,
+          "2": 0.34643901512026787,
+          "3": 0.3595045047501723,
+          "4": 0.49232588211695355,
+          "5": 0.3582170108954112,
+          "6": 0.30008835966388386,
+          "7": 0.29770371814568836,
+          "8": 0.18316371800998846,
+          "9": 0.35421044503649074,
+          "10": 0.4366426443060239,
+          "11": 0.21945260961850485,
+          "12": 0.34801234553257626
+        }
+      },
+      {
+        "target_spk_id": 5,
+        "opensinger_singer": 27,
+        "output_sha256": {
+          "low": "8b88859a7c1a6a674406e527ba6aa94f2290584a47191df039405118edc354bd",
+          "mid": "95c92624253d206472b50c97b95a724002ff5304e412a654e2be150043d8d194",
+          "high": "e4e59476f9515fe91598b61dc6a1e8c547208f342267fb8dc32f374607038bcc"
+        },
+        "by_public_spk_mean": {
+          "1": 0.2460516020655632,
+          "2": 0.20412552605072656,
+          "3": 0.3244859042267005,
+          "4": 0.37409457688530284,
+          "5": 0.6051057875156403,
+          "6": 0.2617261962344249,
+          "7": 0.3077612283329169,
+          "8": 0.11304984614253044,
+          "9": 0.1989549876501163,
+          "10": 0.32368700082103413,
+          "11": 0.17312294927736124,
+          "12": 0.30819229036569595
+        }
+      },
+      {
+        "target_spk_id": 6,
+        "opensinger_singer": 28,
+        "output_sha256": {
+          "low": "ac2b771bd338c8c1a70a764ff1f82e9159efd34850a78d46e0d24b1c69291ea2",
+          "mid": "246d03fffecd46b9172e814c0b9838050c7d8e91dbe21bb40ddce37603218cc3",
+          "high": "a3cb2fcf637ed2d22b0828a3985ed5ebc61bf2a2f7798bf9d7aac68a78ce9359"
+        },
+        "by_public_spk_mean": {
+          "1": 0.18397146773835024,
+          "2": 0.2918602315088113,
+          "3": 0.254094993074735,
+          "4": 0.3350699432194233,
+          "5": 0.3152559921145439,
+          "6": 0.5676595767339071,
+          "7": 0.23342539618412653,
+          "8": 0.22178305188814798,
+          "9": 0.41897423068682355,
+          "10": 0.3752592094242573,
+          "11": 0.21280193701386452,
+          "12": 0.2719718540708224
+        }
+      },
+      {
+        "target_spk_id": 7,
+        "opensinger_singer": 30,
+        "output_sha256": {
+          "low": "5cb543fa2016b6a593be51e0f3b1c2fc84608042c98c041add6364d274671f4c",
+          "mid": "6d24d93c1863a7e727a4071cf9b29c0f0f0846a14c3b8fb23384343a357a0541",
+          "high": "047934c5ead9ae7f18bce8df3d5bea07110d12d94abb12265bf5755c0af0beb5"
+        },
+        "by_public_spk_mean": {
+          "1": 0.24446368589997292,
+          "2": 0.21854190342128277,
+          "3": 0.2853800654411316,
+          "4": 0.3081396669149399,
+          "5": 0.3357492499053478,
+          "6": 0.17031334899365902,
+          "7": 0.5959476182858149,
+          "8": 0.06745152454823256,
+          "9": 0.1431503500789404,
+          "10": 0.2859099755684535,
+          "11": 0.2070180457085371,
+          "12": 0.3317384285231431
+        }
+      },
+      {
+        "target_spk_id": 8,
+        "opensinger_singer": 32,
+        "output_sha256": {
+          "low": "7f8f4ce9e277dd6c3d18a74107bd5bb69fa0a3b09ee682a0f5f4b27ea0ad9834",
+          "mid": "af3e9f27f879a8079c0b54ab8d2724c40954c60c0503ac2ce4ad903d4c6be203",
+          "high": "f61a948111b2c67f584de020728d1ecbbc88c43c889f2f34f59d1ec4b090015a"
+        },
+        "by_public_spk_mean": {
+          "1": 0.24267274513840675,
+          "2": 0.2698412587245305,
+          "3": 0.30630281815926236,
+          "4": 0.35698027536273,
+          "5": 0.22566517380376658,
+          "6": 0.2754899362723033,
+          "7": 0.20220621240635714,
+          "8": 0.43749430278937024,
+          "9": 0.2708018086850643,
+          "10": 0.29660335679848987,
+          "11": 0.2021433593084415,
+          "12": 0.31907931218544644
+        }
+      },
+      {
+        "target_spk_id": 9,
+        "opensinger_singer": 33,
+        "output_sha256": {
+          "low": "836bb7300247f83d685bb66826a7d93a3bf06fe10ec0028f17935607dc0ec4f2",
+          "mid": "568aeb0dff280e6cdb85bd0dcdc87764226d03dcf6aeeb851f32eaeb056839c9",
+          "high": "c10d1660ad21808ac9de7be7c1ffbbe1a6c83a4047eb842fd9f7017dcac3247a"
+        },
+        "by_public_spk_mean": {
+          "1": 0.22440796718001366,
+          "2": 0.3604943739871184,
+          "3": 0.3180795299510161,
+          "4": 0.4271036411325137,
+          "5": 0.35131606087088585,
+          "6": 0.41249390691518784,
+          "7": 0.29242506871620816,
+          "8": 0.20036066944400469,
+          "9": 0.5386432930827141,
+          "10": 0.37094957008957863,
+          "11": 0.22190808256467184,
+          "12": 0.3411257800956567
+        }
+      },
+      {
+        "target_spk_id": 10,
+        "opensinger_singer": 36,
+        "output_sha256": {
+          "low": "77b55e232b018a5b90a565a5de57d11ad603a3009e74bb99cca0cf79a6309202",
+          "mid": "ef4f9c48bef3c526ff5653d7e3f5af1b59bfd6fb226f81f587be2110ca3236ba",
+          "high": "0a22e7bf78d3a5c967f50ae398dcb5d1a2e6d81299adc9e4b281a25f75113489"
+        },
+        "by_public_spk_mean": {
+          "1": 0.39704016347726184,
+          "2": 0.3860299326479435,
+          "3": 0.4040379822254181,
+          "4": 0.3789496918519338,
+          "5": 0.27231238037347794,
+          "6": 0.3643296882510185,
+          "7": 0.23561574270327887,
+          "8": 0.21072485173741975,
+          "9": 0.31870941010614234,
+          "10": 0.5831936895847321,
+          "11": 0.255669670800368,
+          "12": 0.4078354959686597
+        }
+      },
+      {
+        "target_spk_id": 11,
+        "opensinger_singer": 41,
+        "output_sha256": {
+          "low": "7ee0410a3f06c9531f1cc7f290ce7074a97efa656d80d3f38383ceca4b341957",
+          "mid": "16cfe625547f9a4a1f52616169c96e67f0de4712745392a2a8b8dfb85064880c",
+          "high": "f4979fbc807ed8ab0b0227ec1a83d2c3caece0fe17114d313d558838fcae0d6f"
+        },
+        "by_public_spk_mean": {
+          "1": 0.22857566302021345,
+          "2": 0.2025671818604072,
+          "3": 0.26049132893482846,
+          "4": 0.23681578785181046,
+          "5": 0.3056270269056161,
+          "6": 0.20479336194694042,
+          "7": 0.31892132262388867,
+          "8": 0.13866057836761078,
+          "9": 0.14200816117227077,
+          "10": 0.3356172864635785,
+          "11": 0.4053858481347561,
+          "12": 0.2994842082262039
+        }
+      },
+      {
+        "target_spk_id": 12,
+        "opensinger_singer": 42,
+        "output_sha256": {
+          "low": "84982916d57a680f5d322d09304509b04f196282668b789ff558beea5a62c353",
+          "mid": "6db21ac14edb16fd2e6c5f857b006dbe94f4d1d5f23e534661535236f638d6d9",
+          "high": "5f298148423036b66c35f15af66e9e1444b60faab645db3e3360aaa9796dad72"
+        },
+        "by_public_spk_mean": {
+          "1": 0.361833115418752,
+          "2": 0.29996343453725177,
+          "3": 0.32922040422757465,
+          "4": 0.32892413437366486,
+          "5": 0.2882387476662795,
+          "6": 0.25576346305509406,
+          "7": 0.33932410677274066,
+          "8": 0.23609411157667637,
+          "9": 0.22287055073926845,
+          "10": 0.41247622420390445,
+          "11": 0.205151512597998,
+          "12": 0.5044051830967268
+        }
+      }
+    ],
+    "same_singer_pairwise": {
+      "count": 144,
+      "mean": 0.5281401495966647,
+      "median": 0.5352719128131866,
+      "std": 0.1264278449185196,
+      "p05": 0.285038548707962,
+      "p25": 0.4537448063492775,
+      "p75": 0.6186024844646454,
+      "p95": 0.7252753585577011
+    },
+    "different_singer_pairwise": {
+      "count": 1584,
+      "mean": 0.29199197420008444,
+      "median": 0.28674396872520447,
+      "std": 0.11201996539012173,
+      "p05": 0.11100140437483788,
+      "p25": 0.21800325438380241,
+      "p75": 0.36485254019498825,
+      "p95": 0.48599176704883557
+    },
+    "same_singer_grouped": {
+      "count": 12,
+      "mean": 0.5281401495966647,
+      "median": 0.5471505671739578,
+      "std": 0.07101145532204442,
+      "p05": 0.4175329729914665,
+      "p25": 0.4786179872850577,
+      "p75": 0.5863821717600027,
+      "p95": 0.6137842424213886
+    },
+    "different_singer_grouped": {
+      "count": 132,
+      "mean": 0.2919919742000844,
+      "median": 0.3000258971005678,
+      "std": 0.0802336424482588,
+      "p05": 0.15808999948203567,
+      "p25": 0.22802704743420085,
+      "p75": 0.35178152068207663,
+      "p95": 0.41368152815848586
+    }
+  },
+  "existing_grid_report": "reports/timbre_blend_stage3_recipe_screen.json",
+  "caveat": "ECAPA is a speech-domain proxy on singing; original singer recordings and model conversions differ in source-content distribution. No threshold is approved by this diagnostic."
+}

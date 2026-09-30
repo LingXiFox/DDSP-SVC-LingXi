@@ -1,0 +1,91 @@
+{
+  "root": "datasets/private-timbre/sliced-v2",
+  "splits": {
+    "train": {
+      "songs": 11,
+      "slices": 138
+    },
+    "val": {
+      "songs": 11,
+      "slices": 34
+    }
+  },
+  "songs_shared_across_splits": 11,
+  "shared_song_detail": [
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_00",
+      "train_slices": 16,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_01",
+      "train_slices": 12,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_02",
+      "train_slices": 11,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_05",
+      "train_slices": 13,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_06",
+      "train_slices": 13,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_07",
+      "train_slices": 13,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_08",
+      "train_slices": 14,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_09",
+      "train_slices": 9,
+      "val_slices": 2
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_10",
+      "train_slices": 16,
+      "val_slices": 4
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_11",
+      "train_slices": 12,
+      "val_slices": 3
+    },
+    {
+      "speaker_dir": "(flat)",
+      "song": "r13_12",
+      "train_slices": 9,
+      "val_slices": 2
+    }
+  ],
+  "identical_slice_paths_in_both_splits": 0,
+  "per_speaker": {
+    "(flat)": {
+      "songs_train": 11,
+      "songs_val": 11,
+      "leaked_songs": 11
+    }
+  },
+  "verdict": "FAIL"
+}

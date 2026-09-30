@@ -9,7 +9,8 @@ from nsf_hifigan.models import load_model,load_config
 from torchaudio.transforms import Resample
 from .reflow import RectifiedFlow
 from .lynxnet2 import LYNXNet2
-from ddsp.vocoder import CombSubSuperFast
+from ddsp.realism_vocoder import CombSubSuperFastRealism
+from logger.utils import SPK_EMBED_KEY
 
 class DotDict(dict):
     def __getattr__(*args):         
@@ -46,15 +47,23 @@ def load_model_vocoder(
                     args.model.n_aux_layers,
                     args.model.n_aux_chans,
                     args.model.n_layers,
-                    args.model.n_chans)
+                    args.model.n_chans,
+                    realism_config=args.model.realism)
                    
     else:
         raise ValueError(f" [x] Unknown Model: {args.model.type}")
         
     print(' [Loading] ' + model_path)
     ckpt = torch.load(model_path, map_location=torch.device(device))
+    single_baked = args.model.n_spk == 1 and SPK_EMBED_KEY in ckpt['model']
+    if single_baked:
+        weight = ckpt['model'][SPK_EMBED_KEY]
+        dim = model.ddsp_model.unit2ctrl.volume_embed.out_features
+        if weight.shape != (1, dim):
+            raise ValueError(f'Invalid single-speaker embedding shape: {tuple(weight.shape)}')
+        model.ddsp_model.unit2ctrl.spk_embed = nn.Embedding(1, dim)
     model.to(device)
-    model.load_state_dict(ckpt['model'])
+    model.load_state_dict(ckpt['model'], strict=single_baked)
     model.eval()
     return model, vocoder, args
 
@@ -165,11 +174,12 @@ class Unit2Wav(nn.Module):
             n_aux_layers=3,
             n_aux_chans=256,
             n_layers=6, 
-            n_chans=512):
+            n_chans=512,
+            realism_config=None):
         super().__init__()
         self.sampling_rate = sampling_rate
         self.block_size = block_size
-        self.ddsp_model = CombSubSuperFast(
+        self.ddsp_model = CombSubSuperFastRealism(
                             sampling_rate, 
                             block_size, 
                             win_length, 
@@ -179,18 +189,52 @@ class Unit2Wav(nn.Module):
                             n_aux_chans if n_aux_chans is not None else 256,
                             use_norm,
                             use_attention, 
-                            use_pitch_aug)
+                            use_pitch_aug,
+                            realism_config=realism_config)
         self.reflow_model = RectifiedFlow(LYNXNet2(in_dims=out_dims, dim_cond=out_dims, n_layers=n_layers, n_chans=n_chans), out_dims=out_dims)
+
+    def masked_reflow_loss(self, ddsp_mel, gt_spec, t_start, reflow_mask):
+        '''
+        Reflow training loss over the mask==True subset of the batch only.
+
+        reflow_mask: [B] bool tensor on the same device as the batch;
+                     True = sample participates in the reflow loss.
+        RectifiedFlow already reduces by mean over the samples it receives,
+        so subsetting gives a reduction over the actual participants (never
+        a full-batch mean scaled by the mask). All-False returns a zero
+        scalar with the device/dtype of ddsp_mel without touching
+        reflow_model (no parameters involved, no gradients, no RNG use).
+        '''
+        if reflow_mask.dtype != torch.bool:
+            raise ValueError(f' [x] reflow_mask must be bool, got {reflow_mask.dtype}')
+        if reflow_mask.dim() != 1 or reflow_mask.shape[0] != ddsp_mel.shape[0]:
+            raise ValueError(
+                f' [x] reflow_mask must have shape [B]=[{ddsp_mel.shape[0]}], '
+                f'got {tuple(reflow_mask.shape)}')
+        if reflow_mask.device != ddsp_mel.device:
+            raise ValueError(
+                f' [x] reflow_mask device {reflow_mask.device} != batch device {ddsp_mel.device}')
+        if not bool(reflow_mask.any()):
+            return ddsp_mel.new_zeros(())
+        return self.reflow_model(
+            ddsp_mel[reflow_mask],
+            gt_spec=gt_spec[reflow_mask],
+            t_start=t_start,
+            infer=False)
 
     def forward(self, units, f0, volume, spk_id=None, spk_mix_dict=None, aug_shift=None, vocoder=None,
                 gt_spec=None, infer=True, return_wav=False, infer_step=10, method='euler', t_start=0.0, 
-                silence_front=0, use_tqdm=True):
+                silence_front=0, use_tqdm=True, reflow_mask=None):
         
         '''
         input: 
             B x n_frames x n_unit
         return: 
             dict of B x n_frames x feat
+
+        reflow_mask (training path only): optional [B] bool tensor selecting
+        which samples participate in the reflow loss. None = legacy behavior,
+        bit-for-bit unchanged.
         '''
         ddsp_wav, hidden = self.ddsp_model(units, f0, volume, spk_id=spk_id, spk_mix_dict=spk_mix_dict, aug_shift=aug_shift, infer=infer)
         start_frame = int(silence_front * self.sampling_rate / self.block_size)
@@ -201,10 +245,12 @@ class Unit2Wav(nn.Module):
             
         if not infer:
             ddsp_loss = F.mse_loss(ddsp_mel, gt_spec)
-            if t_start < 1.0:
+            if t_start >= 1.0:
+                reflow_loss = torch.tensor(0)
+            elif reflow_mask is None:
                 reflow_loss = self.reflow_model(ddsp_mel, gt_spec=gt_spec, t_start=t_start, infer=False)
             else:
-                reflow_loss = torch.tensor(0)
+                reflow_loss = self.masked_reflow_loss(ddsp_mel, gt_spec, t_start, reflow_mask)
             return ddsp_loss, reflow_loss
         else:
             if gt_spec is not None and ddsp_mel is None:

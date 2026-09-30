@@ -1,0 +1,100 @@
+{
+  "selected_recipe": "v040_t000",
+  "mix": {
+    "13": 0.4,
+    "4": 0.2,
+    "8": 0.2,
+    "11": 0.2
+  },
+  "checkpoint_structure": {
+    "source_md5": "733d9c6d44071d91a1c0b0f190db44db",
+    "full_sha256": "a3c67772fd1ea3bb768d053a398cb226abce965dff82591559d59cc5ceb58b0f",
+    "slim_sha256": "bd27da2a72080e9c19d114dd16f9900fd7f8d83de79240d22388c39e25a46490",
+    "source_speakers": 13,
+    "full_speakers": 14,
+    "slim_speakers": 1,
+    "all_non_embedding_tensors_bitwise_equal": true,
+    "old_thirteen_rows_preserved_in_full": true,
+    "slim_only_embedding_is_weighted_sum": true
+  },
+  "comparison": {
+    "inputs": 4,
+    "seed_rule": "Stage 2 SHA-256 input basename first 4 bytes; reset torch CPU/CUDA RNG after model and encoder initialization.",
+    "infer_step": 50,
+    "method": "euler",
+    "t_start": 0,
+    "vocoder_cudnn": false,
+    "relative_rmse_limit_exclusive": 0.001,
+    "correlation_min_exclusive": 0.99999,
+    "note": "The original 4-row additive mix and one baked row differ slightly due to float32 addition order / PCM quantization. Full baked vs one-row slim must be sample-exact."
+  },
+  "clips": [
+    {
+      "input": "29_月光_13.wav",
+      "role": "high_B4_plus",
+      "seed": 4099922862,
+      "output_sha256": {
+        "original_mix": "5e0f76a17e33616b71e31081f25057d34bd07944c19dcfeebb9a9709c1eaa1c2",
+        "full_baked": "858fcb403154500c7f42150c02c3fb84e658cfa835acca1eadcd2e896894e1de",
+        "slim_baked": "858fcb403154500c7f42150c02c3fb84e658cfa835acca1eadcd2e896894e1de"
+      },
+      "duration_seconds": 18.773333333333333,
+      "mix_vs_full_relative_rmse": 1.2369998997749485e-05,
+      "mix_vs_full_correlation": 0.999999999923494,
+      "mix_vs_full_max_abs_diff": 3.0517578125e-05,
+      "mix_vs_full_sample_exact": false,
+      "full_vs_slim_sample_exact": true
+    },
+    {
+      "input": "47_秋酿_15.wav",
+      "role": "breathy_candidate",
+      "seed": 3736869436,
+      "output_sha256": {
+        "original_mix": "31693fb2bf5b6ab4b0b2d31c9560402ccfadaccf576d132c20390a76b5f5360e",
+        "full_baked": "5ce14c7a92ab8e0cac87cf9aef71939bb44c17c0774b7a38daa7011dc21cbb4e",
+        "slim_baked": "5ce14c7a92ab8e0cac87cf9aef71939bb44c17c0774b7a38daa7011dc21cbb4e"
+      },
+      "duration_seconds": 6.931156462585034,
+      "mix_vs_full_relative_rmse": 1.777680941114629e-05,
+      "mix_vs_full_correlation": 0.9999999998419908,
+      "mix_vs_full_max_abs_diff": 3.0517578125e-05,
+      "mix_vs_full_sample_exact": false,
+      "full_vs_slim_sample_exact": true
+    },
+    {
+      "input": "47_秋酿_19.wav",
+      "role": "sustained_note_candidate",
+      "seed": 188948858,
+      "output_sha256": {
+        "original_mix": "97c71d203a3086391afa490ba4da603f352458a189e0568060675c773f8246ef",
+        "full_baked": "2dfec0b63833434c0d654b9e21dc12dcaa30f2a06e74b08aeeeed0e77cc8db98",
+        "slim_baked": "2dfec0b63833434c0d654b9e21dc12dcaa30f2a06e74b08aeeeed0e77cc8db98"
+      },
+      "duration_seconds": 11.064308390022676,
+      "mix_vs_full_relative_rmse": 1.8063013231518155e-05,
+      "mix_vs_full_correlation": 0.9999999998368619,
+      "mix_vs_full_max_abs_diff": 3.0517578125e-05,
+      "mix_vs_full_sample_exact": false,
+      "full_vs_slim_sample_exact": true
+    },
+    {
+      "input": "10_侧脸_2.wav",
+      "role": "ordinary_mid_register",
+      "seed": 3797662645,
+      "output_sha256": {
+        "original_mix": "b264614b39c27bb95ce0d102ef24d06a54ed47de7ec6c319222d7554910aba9a",
+        "full_baked": "6307f3d0a0c4c455854d863a455423c188ab36c9f9e9078920cc38d04d42efe4",
+        "slim_baked": "6307f3d0a0c4c455854d863a455423c188ab36c9f9e9078920cc38d04d42efe4"
+      },
+      "duration_seconds": 7.000816326530612,
+      "mix_vs_full_relative_rmse": 3.4604386119896076e-05,
+      "mix_vs_full_correlation": 0.9999999994012926,
+      "mix_vs_full_max_abs_diff": 3.0517578125e-05,
+      "mix_vs_full_sample_exact": false,
+      "full_vs_slim_sample_exact": true
+    }
+  ],
+  "all_full_and_slim_sample_exact": true,
+  "all_original_mix_near_baked": true,
+  "model_location": "WSL local exp/ paths only; no transfer or upload"
+}

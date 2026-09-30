@@ -1,0 +1,84 @@
+{
+  "root": "data/timbre_blend_stage2",
+  "splits": {
+    "train": {
+      "songs": 220,
+      "slices": 6590
+    },
+    "val": {
+      "songs": 21,
+      "slices": 592
+    }
+  },
+  "songs_shared_across_splits": 0,
+  "shared_song_detail": [],
+  "identical_slice_paths_in_both_splits": 0,
+  "per_speaker": {
+    "10_singer36": {
+      "songs_train": 26,
+      "songs_val": 1,
+      "leaked_songs": 0
+    },
+    "11_singer41": {
+      "songs_train": 16,
+      "songs_val": 2,
+      "leaked_songs": 0
+    },
+    "12_singer42": {
+      "songs_train": 16,
+      "songs_val": 2,
+      "leaked_songs": 0
+    },
+    "13_lingxi": {
+      "songs_train": 9,
+      "songs_val": 2,
+      "leaked_songs": 0
+    },
+    "1_singer09": {
+      "songs_train": 15,
+      "songs_val": 1,
+      "leaked_songs": 0
+    },
+    "2_singer14": {
+      "songs_train": 31,
+      "songs_val": 3,
+      "leaked_songs": 0
+    },
+    "3_singer19": {
+      "songs_train": 16,
+      "songs_val": 1,
+      "leaked_songs": 0
+    },
+    "4_singer21": {
+      "songs_train": 20,
+      "songs_val": 1,
+      "leaked_songs": 0
+    },
+    "5_singer27": {
+      "songs_train": 17,
+      "songs_val": 1,
+      "leaked_songs": 0
+    },
+    "6_singer28": {
+      "songs_train": 14,
+      "songs_val": 2,
+      "leaked_songs": 0
+    },
+    "7_singer30": {
+      "songs_train": 14,
+      "songs_val": 1,
+      "leaked_songs": 0
+    },
+    "8_singer32": {
+      "songs_train": 12,
+      "songs_val": 2,
+      "leaked_songs": 0
+    },
+    "9_singer33": {
+      "songs_train": 14,
+      "songs_val": 2,
+      "leaked_songs": 0
+    }
+  },
+  "verdict": "PASS"
+}

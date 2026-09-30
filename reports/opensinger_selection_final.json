@@ -1,0 +1,23 @@
+{
+  "gate": "人工关卡 1",
+  "approved_at": "2026-09-27",
+  "seed": 20260927,
+  "source_root": "/home/hands/datasets/opensinger-official/OpenSinger/WomanRaw",
+  "train_singers": [36, 14, 27, 28, 32, 42, 19, 41, 21, 33, 9, 30],
+  "holdout_test_singers": [29, 47, 10],
+  "manual_adjustments": [
+    {
+      "action": "replace",
+      "removed": 43,
+      "added": 30,
+      "reason": "spk 43 仅 10.6min/155 文件，训练数据量过小；spk 30 有 27.5min，虽综合评分略低(0.277 vs 0.295)，但更适合作为稳定的多说话人训练成员（用户关卡 1 决定）"
+    }
+  ],
+  "kept_with_review": [
+    {
+      "singer": 41,
+      "note": "f0 中位 202Hz 偏低；用户决定保留为低音域/女中音方向训练歌手；Stage 1c 预处理后必须单独复核其 F0 分布与 octave-error 特征，仅在实际证据证明系统性低八度时停下报告，不提前人为修正"
+    }
+  ],
+  "auto_thresholds_unchanged": true
+}

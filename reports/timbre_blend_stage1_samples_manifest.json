@@ -1,0 +1,221 @@
+{
+  "stage": "stage1_opensinger_multispeaker_pretrain",
+  "date": "2026-09-27",
+  "training": {
+    "start": "2026-09-27T15:12:05+08:00",
+    "end": "2026-09-27T16:40:39+08:00",
+    "duration": "1h28m34s",
+    "final_step": 40644,
+    "final_ckpt_step": 40000,
+    "best_ckpt": "exp/timbre_blend_stage1/model_20000.pt",
+    "best_ckpt_md5": "e026eb6e60b7e2e8ba4c579ad8a0ceff",
+    "best_ckpt_rationale": "lowest combined val loss (0.470); ddsp tie with 30k within noise (0.15%) while reflow clearly better; overfit onset beyond 20k",
+    "stop_reason": "overfitting confirmed at val@40k: ddsp rose +1.06%, reflow surged 0.0449->0.0711 (4-point monotonic rise), combined val 0.501 worse than 10k; pre-registered plateau rule escalated per pre-announced branch for val-rise case",
+    "val_trajectory": [
+      {
+        "step": 10000,
+        "val_ddsp": 0.43804,
+        "val_reflow": 0.04264,
+        "val_combined": 0.481
+      },
+      {
+        "step": 20000,
+        "val_ddsp": 0.42546,
+        "val_reflow": 0.04493,
+        "val_combined": 0.47
+      },
+      {
+        "step": 30000,
+        "val_ddsp": 0.42484,
+        "val_reflow": 0.05038,
+        "val_combined": 0.475
+      },
+      {
+        "step": 40000,
+        "val_ddsp": 0.42935,
+        "val_reflow": 0.07115,
+        "val_combined": 0.501
+      }
+    ],
+    "gpu": {
+      "peak_vram_MiB": 4542,
+      "vram_total_MiB": 16376,
+      "peak_temp_C": 84,
+      "clocks_MHz": "2175-2310, no throttling"
+    },
+    "nan_events": 0
+  },
+  "inference_defaults": {
+    "t_start": 0.0,
+    "infer_step": 50,
+    "method": "euler",
+    "key": 0,
+    "formant": 0,
+    "threshold": -60,
+    "f0_min": 50,
+    "f0_max": 1100,
+    "pitch_extractor": "rmvpe"
+  },
+  "samples": [
+    {
+      "input_file": "data/timbre_blend_stage1/val/audio/11_singer41/41_一次就好_14__s0.wav",
+      "spk_id": "11",
+      "t_start": "0.0",
+      "infer_step": "50",
+      "method": "euler",
+      "key": "0",
+      "formant": "0",
+      "threshold": "-60",
+      "f0_min": "50",
+      "f0_max": "1100",
+      "pitch_extractor": "rmvpe",
+      "checkpoint": "exp/timbre_blend_stage1/model_20000.pt",
+      "output_file": "samples/stage1/spk11__41_一次就好_14__s0.wav"
+    },
+    {
+      "input_file": "data/timbre_blend_stage1/val/audio/11_singer41/41_天黑黑_33__s0.wav",
+      "spk_id": "11",
+      "t_start": "0.0",
+      "infer_step": "50",
+      "method": "euler",
+      "key": "0",
+      "formant": "0",
+      "threshold": "-60",
+      "f0_min": "50",
+      "f0_max": "1100",
+      "pitch_extractor": "rmvpe",
+      "checkpoint": "exp/timbre_blend_stage1/model_20000.pt",
+      "output_file": "samples/stage1/spk11__41_天黑黑_33__s0.wav"
+    },
+    {
+      "input_file": "data/timbre_blend_stage1/val/audio/2_singer14/14_从前慢_22__s2.wav",
+      "spk_id": "2",
+      "t_start": "0.0",
+      "infer_step": "50",
+      "method": "euler",
+      "key": "0",
+      "formant": "0",
+      "threshold": "-60",
+      "f0_min": "50",
+      "f0_max": "1100",
+      "pitch_extractor": "rmvpe",
+      "checkpoint": "exp/timbre_blend_stage1/model_20000.pt",
+      "output_file": "samples/stage1/spk2__14_从前慢_22__s2.wav"
+    },
+    {
+      "input_file": "data/timbre_blend_stage1/val/audio/2_singer14/14_不为谁而作的歌_26__s0.wav",
+      "spk_id": "2",
+      "t_start": "0.0",
+      "infer_step": "50",
+      "method": "euler",
+      "key": "0",
+      "formant": "0",
+      "threshold": "-60",
+      "f0_min": "50",
+      "f0_max": "1100",
+      "pitch_extractor": "rmvpe",
+      "checkpoint": "exp/timbre_blend_stage1/model_20000.pt",
+      "output_file": "samples/stage1/spk2__14_不为谁而作的歌_26__s0.wav"
+    },
+    {
+      "input_file": "data/timbre_blend_stage1/val/audio/10_singer36/36_世间美好与你环环相扣_3__s0.wav",
+      "spk_id": "10",
+      "t_start": "0.0",
+      "infer_step": "50",
+      "method": "euler",
+      "key": "0",
+      "formant": "0",
+      "threshold": "-60",
+      "f0_min": "50",
+      "f0_max": "1100",
+      "pitch_extractor": "rmvpe",
+      "checkpoint": "exp/timbre_blend_stage1/model_20000.pt",
+      "output_file": "samples/stage1/spk10__36_世间美好与你环环相扣_3__s0.wav"
+    },
+    {
+      "input_file": "data/timbre_blend_stage1/val/audio/10_singer36/36_云烟成雨_18__s0.wav",
+      "spk_id": "10",
+      "t_start": "0.0",
+      "infer_step": "50",
+      "method": "euler",
+      "key": "0",
+      "formant": "0",
+      "threshold": "-60",
+      "f0_min": "50",
+      "f0_max": "1100",
+      "pitch_extractor": "rmvpe",
+      "checkpoint": "exp/timbre_blend_stage1/model_20000.pt",
+      "output_file": "samples/stage1/spk10__36_云烟成雨_18__s0.wav"
+    },
+    {
+      "input_file": "data/timbre_blend_stage1/val/audio/11_singer41/41_一次就好_14__s0.wav",
+      "spk_id": "2",
+      "t_start": "0.0",
+      "infer_step": "50",
+      "method": "euler",
+      "key": "0",
+      "formant": "0",
+      "threshold": "-60",
+      "f0_min": "50",
+      "f0_max": "1100",
+      "pitch_extractor": "rmvpe",
+      "checkpoint": "exp/timbre_blend_stage1/model_20000.pt",
+      "output_file": "samples/stage1/spk2__41_一次就好_14__s0.wav"
+    },
+    {
+      "input_file": "data/timbre_blend_stage1/val/audio/10_singer36/36_云烟成雨_18__s0.wav",
+      "spk_id": "2",
+      "t_start": "0.0",
+      "infer_step": "50",
+      "method": "euler",
+      "key": "0",
+      "formant": "0",
+      "threshold": "-60",
+      "f0_min": "50",
+      "f0_max": "1100",
+      "pitch_extractor": "rmvpe",
+      "checkpoint": "exp/timbre_blend_stage1/model_20000.pt",
+      "output_file": "samples/stage1/spk2__36_云烟成雨_18__s0.wav"
+    },
+    {
+      "input_file": "data/timbre_blend_stage1/val/audio/2_singer14/14_从前慢_22__s2.wav",
+      "spk_id": "11",
+      "t_start": "0.0",
+      "infer_step": "50",
+      "method": "euler",
+      "key": "0",
+      "formant": "0",
+      "threshold": "-60",
+      "f0_min": "50",
+      "f0_max": "1100",
+      "pitch_extractor": "rmvpe",
+      "checkpoint": "exp/timbre_blend_stage1/model_20000.pt",
+      "output_file": "samples/stage1/spk11__14_从前慢_22__s2.wav"
+    }
+  ],
+  "compare_40k": [
+    {
+      "checkpoint": "exp/timbre_blend_stage1/model_40000.pt",
+      "input_file": "data/timbre_blend_stage1/val/audio/11_singer41/41_一次就好_14__s0.wav",
+      "spk_id": "11",
+      "output": "samples/stage1/compare_40k/spk11__41_一次就好_14__s0.wav"
+    },
+    {
+      "checkpoint": "exp/timbre_blend_stage1/model_40000.pt",
+      "input_file": "data/timbre_blend_stage1/val/audio/2_singer14/14_从前慢_22__s2.wav",
+      "spk_id": "2",
+      "output": "samples/stage1/compare_40k/spk2__14_从前慢_22__s2.wav"
+    },
+    {
+      "checkpoint": "exp/timbre_blend_stage1/model_40000.pt",
+      "input_file": "data/timbre_blend_stage1/val/audio/10_singer36/36_世间美好与你环环相扣_3__s0.wav",
+      "spk_id": "10",
+      "output": "samples/stage1/compare_40k/spk10__36_世间美好与你环环相扣_3__s0.wav"
+    }
+  ],
+  "anomalies": [
+    "sample spk11__14_从前慢_22__s2 hit a transient SIGSEGV on first run; identical retry succeeded",
+    "40k-compare spk2 run hung once (main thread spinning 100% CPU, zero output, ~12 min); killed, retried detached with timeout guard, completed in 11s",
+    "both incidents match the documented WSL2 host-instability window of 2026-09-27; same binaries/inputs succeeded on retry -> environmental flake, no code change implicated"
+  ]
+}

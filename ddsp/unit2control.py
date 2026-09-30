@@ -74,7 +74,7 @@ class Unit2Control(nn.Module):
         exciter = torch.cat((source, noise), dim=-1).transpose(1,2)
         x = self.stack(units.transpose(1, 2)) + self.stack2(exciter)
         x = x.transpose(1, 2) + self.volume_embed(volume)
-        if self.n_spk is not None and self.n_spk > 1:
+        if hasattr(self, "spk_embed"):
             if spk_mix_dict is not None:
                 for k, v in spk_mix_dict.items():
                     spk_id_torch = torch.LongTensor(np.array([[k]])).to(units.device)

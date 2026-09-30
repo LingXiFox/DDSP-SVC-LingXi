@@ -1,0 +1,147 @@
+{
+  "source": "OpenSinger official WomanRaw; Stage-1 withheld singers 10/29/47",
+  "no_splicing_or_trimming": true,
+  "min_duration_seconds": 5,
+  "total_seconds": 113.593,
+  "pitch_method": "previously recorded RMVPE voiced F0 histograms; B4 threshold 493.883 Hz",
+  "breathiness_warning": "Low harmonic-to-noise ratio is only a screening proxy, not confirmed breathiness; if not confirmed by listening, report the gap.",
+  "inputs": [
+    {
+      "source_relative": "10_侧脸/10_侧脸_0.wav",
+      "singer": 10,
+      "seconds": 6.85,
+      "sha256": "3e70141d0ef2bf78ac71494b6e0709a158b2c8d2af890739402a1905afb634f9",
+      "rmvpe_b4_voiced_fraction": 0.0,
+      "praat_sustained_pitch_run_seconds": 0.74,
+      "praat_median_hnr_db": 25.1,
+      "tags": [
+        "ordinary_reference"
+      ]
+    },
+    {
+      "source_relative": "10_侧脸/10_侧脸_2.wav",
+      "singer": 10,
+      "seconds": 6.989,
+      "sha256": "c03396e434935b8162efc7f5b702b304f8873f8f3cb063785c296953a780d86c",
+      "rmvpe_b4_voiced_fraction": 0.0,
+      "praat_sustained_pitch_run_seconds": 0.48,
+      "praat_median_hnr_db": 24.9,
+      "tags": [
+        "ordinary_reference"
+      ]
+    },
+    {
+      "source_relative": "10_侧脸/10_侧脸_3.wav",
+      "singer": 10,
+      "seconds": 6.571,
+      "sha256": "4b3eb62393e9501a25f18d50063516383f7e5b3ba2ef7fff5ca3ed9bf32cabda",
+      "rmvpe_b4_voiced_fraction": 0.0089,
+      "praat_sustained_pitch_run_seconds": 0.92,
+      "praat_median_hnr_db": 25.2,
+      "tags": [
+        "sustained_pitch_candidate_Praat"
+      ]
+    },
+    {
+      "source_relative": "10_侧脸/10_侧脸_20.wav",
+      "singer": 10,
+      "seconds": 6.92,
+      "sha256": "324dac7a14d3370702f498a09df0f4688ed30ec2c558fe2c3fcbfff0fc0acb67",
+      "rmvpe_b4_voiced_fraction": 0.0,
+      "praat_sustained_pitch_run_seconds": 0.42,
+      "praat_median_hnr_db": 24.4,
+      "tags": [
+        "ordinary_reference"
+      ]
+    },
+    {
+      "source_relative": "29_月光/29_月光_5.wav",
+      "singer": 29,
+      "seconds": 18.065,
+      "sha256": "b3ebb3f6e54de7876677519251bc7e970b06dd71c95ffadbde06c4e48b12df5e",
+      "rmvpe_b4_voiced_fraction": 0.0552,
+      "praat_sustained_pitch_run_seconds": 1.48,
+      "praat_median_hnr_db": 30.1,
+      "tags": [
+        "B4_plus_RMVPE_confirmed_frames",
+        "sustained_pitch_candidate_Praat"
+      ]
+    },
+    {
+      "source_relative": "29_月光/29_月光_13.wav",
+      "singer": 29,
+      "seconds": 18.762,
+      "sha256": "a0c7483957a691af78db305972c6c64bbb3181696ad8654c8287b9aa869c600f",
+      "rmvpe_b4_voiced_fraction": 0.0588,
+      "praat_sustained_pitch_run_seconds": 1.92,
+      "praat_median_hnr_db": 30.2,
+      "tags": [
+        "B4_plus_RMVPE_confirmed_frames",
+        "sustained_pitch_candidate_Praat"
+      ]
+    },
+    {
+      "source_relative": "29_月光/29_月光_15.wav",
+      "singer": 29,
+      "seconds": 17.949,
+      "sha256": "468c373af0989df4c1cc67d838022028a68de09f8b65852b0a997f334dbcfe12",
+      "rmvpe_b4_voiced_fraction": 0.0522,
+      "praat_sustained_pitch_run_seconds": 1.76,
+      "praat_median_hnr_db": 30.0,
+      "tags": [
+        "B4_plus_RMVPE_confirmed_frames",
+        "sustained_pitch_candidate_Praat"
+      ]
+    },
+    {
+      "source_relative": "47_秋酿/47_秋酿_7.wav",
+      "singer": 47,
+      "seconds": 5.039,
+      "sha256": "b3916c52a4efc4fcebd0843a848ca881f7f627ff91658afa589e036334b42718",
+      "rmvpe_b4_voiced_fraction": 0.0,
+      "praat_sustained_pitch_run_seconds": 1.28,
+      "praat_median_hnr_db": 21.7,
+      "tags": [
+        "sustained_pitch_candidate_Praat"
+      ]
+    },
+    {
+      "source_relative": "47_秋酿/47_秋酿_15.wav",
+      "singer": 47,
+      "seconds": 6.92,
+      "sha256": "9911a810503e28e736ee1309e0b13dd745e97a9790516a4ef85f9553bc56db9d",
+      "rmvpe_b4_voiced_fraction": 0.0,
+      "praat_sustained_pitch_run_seconds": 1.42,
+      "praat_median_hnr_db": 18.8,
+      "tags": [
+        "sustained_pitch_candidate_Praat",
+        "breathy_candidate_low_HNR_unverified"
+      ]
+    },
+    {
+      "source_relative": "47_秋酿/47_秋酿_19.wav",
+      "singer": 47,
+      "seconds": 11.053,
+      "sha256": "5b8ef78a7cf31f06fc8b8e72e82990ddbd7ac25241317275646230836fe9d44c",
+      "rmvpe_b4_voiced_fraction": 0.0,
+      "praat_sustained_pitch_run_seconds": 1.78,
+      "praat_median_hnr_db": 21.2,
+      "tags": [
+        "sustained_pitch_candidate_Praat"
+      ]
+    },
+    {
+      "source_relative": "47_秋酿/47_秋酿_25.wav",
+      "singer": 47,
+      "seconds": 8.475,
+      "sha256": "770f9ebea67ccb2ddea8a7875419ebc81adbbb209b5bbbabf3900f060410da89",
+      "rmvpe_b4_voiced_fraction": 0.0,
+      "praat_sustained_pitch_run_seconds": 1.4,
+      "praat_median_hnr_db": 20.4,
+      "tags": [
+        "sustained_pitch_candidate_Praat",
+        "breathy_candidate_low_HNR_unverified"
+      ]
+    }
+  ]
+}

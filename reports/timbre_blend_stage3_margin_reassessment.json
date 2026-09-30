@@ -1,0 +1,137 @@
+{
+  "status": "THREE_CLIP_MARGIN_REASSESSMENT",
+  "required_safety_gap_inclusive": 0.01,
+  "reference_standard": "reports/timbre_blend_stage3_corrected_standard.json",
+  "rows": [
+    {
+      "recipe_id": "v100_t000",
+      "minimum_a_gap": 0.011445340574624763,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": true
+    },
+    {
+      "recipe_id": "v100_t025",
+      "minimum_a_gap": 0.011621593992752532,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": true
+    },
+    {
+      "recipe_id": "v100_t050",
+      "minimum_a_gap": 0.010412059288067321,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": true
+    },
+    {
+      "recipe_id": "v080_t000",
+      "minimum_a_gap": 0.005136422376675109,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [
+        10
+      ],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": false
+    },
+    {
+      "recipe_id": "v080_t025",
+      "minimum_a_gap": 0.005496799509567718,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [
+        10
+      ],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": false
+    },
+    {
+      "recipe_id": "v080_t050",
+      "minimum_a_gap": 0.004375266095839603,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [
+        10
+      ],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": false
+    },
+    {
+      "recipe_id": "v060_t000",
+      "minimum_a_gap": -0.0035682821662796904,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [
+        10
+      ],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": false
+    },
+    {
+      "recipe_id": "v060_t025",
+      "minimum_a_gap": -0.003676404991902249,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [
+        10
+      ],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": false
+    },
+    {
+      "recipe_id": "v060_t050",
+      "minimum_a_gap": -0.00428953810449173,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [
+        10
+      ],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": false
+    },
+    {
+      "recipe_id": "v040_t000",
+      "minimum_a_gap": 0.001229717891258697,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [
+        10
+      ],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": false
+    },
+    {
+      "recipe_id": "v040_t025",
+      "minimum_a_gap": -0.0004479119570626189,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [
+        10
+      ],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": false
+    },
+    {
+      "recipe_id": "v040_t050",
+      "minimum_a_gap": -0.0017236152680291106,
+      "limiting_public_spk_id": 10,
+      "condition_a_0_01_margin_failed_ids": [
+        10
+      ],
+      "condition_b_failed_ids": [],
+      "three_clip_stable_pass": false
+    }
+  ],
+  "stable_passing_recipe_ids": [
+    "v100_t000",
+    "v100_t025",
+    "v100_t050"
+  ],
+  "failed_recipe_ids": [
+    "v080_t000",
+    "v080_t025",
+    "v080_t050",
+    "v060_t000",
+    "v060_t025",
+    "v060_t050",
+    "v040_t000",
+    "v040_t025",
+    "v040_t050"
+  ]
+}
