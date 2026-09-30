@@ -15,6 +15,7 @@ class ConversionResult:
     module_devices: dict = field(default_factory=dict)
     realism_strength: float = 1.0
     transpose: float = 0.0
+    formant_shift: float = 0.0
     seed: int = 0
     feature_time: float = 0.0
     synthesis_time: float = 0.0

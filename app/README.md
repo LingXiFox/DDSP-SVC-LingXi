@@ -32,14 +32,23 @@ Convert:
 lingxi-svc vocal.wav
 lingxi-svc vocal.wav -o vocal_lingxi.wav
 lingxi-svc vocal.wav --realism 0.85 --transpose 0
+lingxi-svc vocal.wav --realism 0.3 --transpose 12 --formant-shift -1
 ```
 
 Full options: `lingxi-svc --help`. No `cd`, no `source activate` needed;
 both commands work from any directory.
 
 Defaults: output `<input>_lingxi.wav` next to the input; realism from
-`production.yaml` (1.0); transpose 0 semitones; device auto (MPS, else CPU);
-seed 1234. Existing outputs are never overwritten without `--force`.
+`production.yaml` (1.0); transpose 0 semitones; formant shift 0 semitones
+(allowed range ±5, the span the pitch-augmented backbone was trained on);
+device auto (MPS, else CPU); seed 1234. Existing outputs are never
+overwritten without `--force`.
+
+Two knobs, deliberately separate: `--transpose` moves the melody (F0) and
+leaves timbre alone; `--formant-shift` moves vocal tract colour only. The
+model carries a single target timbre trained on female material, so a male
+stem usually needs `--transpose 12` to reach its level, and `--formant-shift`
+in the negative range can pull back a too-bright result.
 
 ## Development / debugging
 

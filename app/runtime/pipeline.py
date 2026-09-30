@@ -69,6 +69,9 @@ _SLICER_DB = -40
 _SLICER_MIN_LEN = 5000
 _MASK_THRESHOLD_DB = -60.0
 _SPk_ID = 1
+# aug_shift was trained as keyshift ~ U(-5, 5) semitones (preprocess.py), so
+# the embedding has no support beyond that range.
+FORMANT_SHIFT_LIMIT = 5.0
 
 
 @contextlib.contextmanager
@@ -178,13 +181,19 @@ class LingXiSVCPipeline:
         return True
 
     def convert(self, input_path, output_path=None, realism_strength=None,
-                transpose=0.0, seed=1234):
+                transpose=0.0, formant_shift=0.0, seed=1234):
         total_start = time.perf_counter()
         if realism_strength is None:
             realism_strength = self.default_strength
         realism_strength = float(realism_strength)
         if not 0.0 <= realism_strength <= 1.0:
             raise ValueError("realism_strength must be within [0.0, 1.0].")
+        formant_shift = float(formant_shift)
+        if not -FORMANT_SHIFT_LIMIT <= formant_shift <= FORMANT_SHIFT_LIMIT:
+            raise ValueError(
+                "formant_shift must be within "
+                f"[{-FORMANT_SHIFT_LIMIT}, {FORMANT_SHIFT_LIMIT}]."
+            )
         input_path = Path(input_path)
         if output_path is None:
             output_path = input_path.with_name(input_path.stem + "_lingxi.wav")
@@ -229,7 +238,8 @@ class LingXiSVCPipeline:
         transposed_f0 = features.f0 * 2 ** (float(transpose) / 12)
         transposed_f0 = to_device_float32(transposed_f0, self.device)
         spk_id = torch.LongTensor(np.array([[_SPk_ID]])).to(self.device)
-        formant_shift = torch.zeros(1, 1, device=self.device)
+        aug_shift_t = torch.full(
+            (1, 1), formant_shift, dtype=torch.float32, device=self.device)
         self.model.ddsp_model.realism_strength = realism_strength
 
         torch.manual_seed(int(seed))
@@ -252,7 +262,7 @@ class LingXiSVCPipeline:
                 seg_volume = features.volume[:, start_frame: start_frame + width, :]
                 seg_mel = self.model(
                     seg_units, seg_f0, seg_volume, spk_id=spk_id,
-                    spk_mix_dict=None, aug_shift=formant_shift,
+                    spk_mix_dict=None, aug_shift=aug_shift_t,
                     vocoder=self.vocoder, infer=True,
                     infer_step=self.infer_step, method=self.method,
                     t_start=self.t_start, use_tqdm=False)
@@ -300,6 +310,7 @@ class LingXiSVCPipeline:
             module_devices=dict(self.module_devices),
             realism_strength=realism_strength,
             transpose=float(transpose),
+            formant_shift=formant_shift,
             seed=int(seed),
             feature_time=feature_time,
             synthesis_time=synthesis_time,

@@ -8,7 +8,7 @@ import traceback
 from pathlib import Path
 
 from .device import VALID_DEVICES
-from .pipeline import DEFAULT_BUNDLE_NAME, LingXiSVCPipeline
+from .pipeline import DEFAULT_BUNDLE_NAME, FORMANT_SHIFT_LIMIT, LingXiSVCPipeline
 
 DEFAULT_SEED = 1234
 SUPPORTED_SUFFIXES = (".wav", ".flac")
@@ -25,6 +25,7 @@ def build_parser():
             "examples:\n"
             "  lingxi-svc vocal.wav\n"
             "  lingxi-svc vocal.wav -o converted.wav --realism 0.85 --transpose 0\n"
+            "  lingxi-svc male_stem.wav --transpose 12 --formant-shift 1\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -36,6 +37,11 @@ def build_parser():
                              "(default: production.yaml value, currently 1.0)")
     parser.add_argument("--transpose", type=float, default=0.0,
                         help="pitch shift in semitones, F0 only (default: 0)")
+    parser.add_argument("--formant-shift", dest="formant_shift", type=float,
+                        default=0.0, metavar="SEMITONES",
+                        help="formant shift in semitones, within [-5, 5]; "
+                             "brightens/darkens timbre without moving the pitch "
+                             "(default: 0)")
     parser.add_argument("--device", default="auto", choices=list(VALID_DEVICES),
                         help="compute device (default: auto -> MPS if available, else CPU)")
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED,
@@ -79,6 +85,10 @@ def main(argv=None):
                       f"Use --force to overwrite.", verbose, code=2)
     if args.realism is not None and not 0.0 <= args.realism <= 1.0:
         return _fail("realism must be within [0.0, 1.0].", verbose, code=2)
+    if not -FORMANT_SHIFT_LIMIT <= args.formant_shift <= FORMANT_SHIFT_LIMIT:
+        return _fail(
+            f"formant-shift must be within [-{FORMANT_SHIFT_LIMIT:g}, "
+            f"{FORMANT_SHIFT_LIMIT:g}] semitones.", verbose, code=2)
 
     print("LingXi SVC Production v1")
     print("Loading model...")
@@ -100,6 +110,7 @@ def main(argv=None):
             str(input_path), str(output_path),
             realism_strength=strength,
             transpose=args.transpose,
+            formant_shift=args.formant_shift,
             seed=args.seed,
         )
     except FileExistsError as exc:
@@ -115,6 +126,7 @@ def main(argv=None):
     print(f"Duration: {result.duration:.2f}s")
     print(f"Realism: {result.realism_strength}")
     print(f"Transpose: {result.transpose}")
+    print(f"Formant shift: {result.formant_shift}")
     print(f"Seed: {result.seed}")
     print()
     print(f"Processing time: {result.total_time:.1f}s")
