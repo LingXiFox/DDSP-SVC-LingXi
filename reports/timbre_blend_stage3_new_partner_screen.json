@@ -1,0 +1,815 @@
+{
+  "stage": "3_new_partner_screen",
+  "checkpoint_md5": "733d9c6d44071d91a1c0b0f190db44db",
+  "selected_public_spk_ids": [
+    4,
+    8,
+    11
+  ],
+  "inputs": [
+    {
+      "band": "low",
+      "input": "10_侧脸_0.wav",
+      "duration_seconds": 6.849886621315193,
+      "source_sha256": "3e70141d0ef2bf78ac71494b6e0709a158b2c8d2af890739402a1905afb634f9",
+      "seed": 2518260682,
+      "interpolated_rmvpe_median_hz": 219.6,
+      "rmvpe_b4_voiced_fraction": 0.0
+    },
+    {
+      "band": "mid",
+      "input": "47_秋酿_19.wav",
+      "duration_seconds": 11.052698412698414,
+      "source_sha256": "5b8ef78a7cf31f06fc8b8e72e82990ddbd7ac25241317275646230836fe9d44c",
+      "seed": 188948858,
+      "interpolated_rmvpe_median_hz": 298.3,
+      "rmvpe_b4_voiced_fraction": 0.0
+    },
+    {
+      "band": "high",
+      "input": "29_月光_13.wav",
+      "duration_seconds": 18.76172335600907,
+      "source_sha256": "a0c7483957a691af78db305972c6c64bbb3181696ad8654c8287b9aa869c600f",
+      "seed": 4099922862,
+      "interpolated_rmvpe_median_hz": 361.0,
+      "rmvpe_b4_voiced_fraction": 0.0588
+    }
+  ],
+  "comparison_count_per_public_singer": 12,
+  "threshold": {
+    "floor": 0.4137,
+    "signed_model_inflation": 0.0409014028170136,
+    "condition_a_safety_margin_inclusive": 0.01,
+    "condition_b": "virtual mean strictly greater than each of all twelve public means"
+  },
+  "reference_protocol": "Same Stage-3 corrected reference choice, offline CPU ECAPA, four clips per singer. Every output clip gets equal weight.",
+  "reference_model_file_sha256": {
+    "hyperparams.yaml": "6f78854fa04ba59e761437b76a2575d3aba5e5016de3e9b69f0c9a5077fb1a41",
+    "embedding_model.ckpt": "0575cb64845e6b9a10db9bcb74d5ac32b326b8dc90352671d345e2ee3d0126a2",
+    "mean_var_norm_emb.ckpt": "cd70225b05b37be64fc5a95e24395d804231d43f74b2e1e5a513db7b69b34c33",
+    "classifier.ckpt": "fd9e3634fe68bd0a427c95e354c0c677374f62b3f434e45b78599950d860d535",
+    "label_encoder.txt": "e13c3a167bb4112685670ee896d20e2b565af16b3a4ceeaa8689fa4d22adb8b9"
+  },
+  "results": [
+    {
+      "recipe": {
+        "id": "v100_t000",
+        "virtual_weight": 1.0,
+        "public_weight_each": 0.0,
+        "mix": {
+          "13": 1.0
+        },
+        "t_start": 0.0
+      },
+      "output_sha256": {
+        "low.wav": "b2b5d63d28d044fb1e0cbb49ca2a4bba65354e3a9c3f608c9e167e3a9b2affd9",
+        "mid.wav": "b6078e2614a3cf2409b4306bf42ef12cd901496d865cbbe61cc378aed359e7b3",
+        "high.wav": "9f6edb69509ce44a0f6c209eca3c42fa868ce5b6eaf6f9aa6bb1cb7b31237ab6"
+      },
+      "virtual_mean": 0.6123917922377586,
+      "virtual_per_input": {
+        "10_侧脸_0.wav": 0.625596821308136,
+        "47_秋酿_19.wav": 0.6787492036819458,
+        "29_月光_13.wav": 0.5328293517231941
+      },
+      "by_public_spk": {
+        "1": {
+          "opensinger_singer": 9,
+          "mean": 0.397063026825587,
+          "per_input": {
+            "10_侧脸_0.wav": 0.377175897359848,
+            "47_秋酿_19.wav": 0.47647374123334885,
+            "29_月光_13.wav": 0.337539441883564
+          },
+          "a_ceiling_inclusive": 0.49083117662453923,
+          "a_gap": 0.09376814979895226,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "2": {
+          "opensinger_singer": 14,
+          "mean": 0.36704966177543,
+          "per_input": {
+            "10_侧脸_0.wav": 0.3004363253712654,
+            "47_秋酿_19.wav": 0.44005604088306427,
+            "29_月光_13.wav": 0.36065661907196045
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.08755174104158359,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "3": {
+          "opensinger_singer": 19,
+          "mean": 0.38638254006703693,
+          "per_input": {
+            "10_侧脸_0.wav": 0.2957899570465088,
+            "47_秋酿_19.wav": 0.4681192934513092,
+            "29_月光_13.wav": 0.39523836970329285
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.06821886274997668,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "4": {
+          "opensinger_singer": 21,
+          "mean": 0.38052478184302646,
+          "per_input": {
+            "10_侧脸_0.wav": 0.32256464660167694,
+            "47_秋酿_19.wav": 0.43736956268548965,
+            "29_月光_13.wav": 0.38164013624191284
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.07407662097398715,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "5": {
+          "opensinger_singer": 27,
+          "mean": 0.33495953927437466,
+          "per_input": {
+            "10_侧脸_0.wav": 0.32216140627861023,
+            "47_秋酿_19.wav": 0.3568495064973831,
+            "29_月光_13.wav": 0.3258677050471306
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.11964186354263895,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "6": {
+          "opensinger_singer": 28,
+          "mean": 0.2671213274200757,
+          "per_input": {
+            "10_侧脸_0.wav": 0.25865166261792183,
+            "47_秋酿_19.wav": 0.34644126147031784,
+            "29_月光_13.wav": 0.19627105817198753
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.1874800753969379,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "7": {
+          "opensinger_singer": 30,
+          "mean": 0.31530247007807094,
+          "per_input": {
+            "10_侧脸_0.wav": 0.28071150556206703,
+            "47_秋酿_19.wav": 0.3191085159778595,
+            "29_月光_13.wav": 0.34608738869428635
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.13929893273894267,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "8": {
+          "opensinger_singer": 32,
+          "mean": 0.20882179339726767,
+          "per_input": {
+            "10_侧脸_0.wav": 0.11862669512629509,
+            "47_秋酿_19.wav": 0.2587515339255333,
+            "29_月光_13.wav": 0.2490871511399746
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.24577960941974594,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "9": {
+          "opensinger_singer": 33,
+          "mean": 0.28376007700959843,
+          "per_input": {
+            "10_侧脸_0.wav": 0.230232585221529,
+            "47_秋酿_19.wav": 0.3653331696987152,
+            "29_月光_13.wav": 0.255714476108551
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.17084132580741518,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "10": {
+          "opensinger_singer": 36,
+          "mean": 0.5004935910304388,
+          "per_input": {
+            "10_侧脸_0.wav": 0.5370434075593948,
+            "47_秋酿_19.wav": 0.5648386031389236,
+            "29_月光_13.wav": 0.39959876239299774
+          },
+          "a_ceiling_inclusive": 0.5119389316050635,
+          "a_gap": 0.011445340574624763,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "11": {
+          "opensinger_singer": 41,
+          "mean": 0.17710665675501028,
+          "per_input": {
+            "10_侧脸_0.wav": 0.211373433470726,
+            "47_秋酿_19.wav": 0.21553608030080795,
+            "29_月光_13.wav": 0.1044104564934969
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.2774947460620033,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "12": {
+          "opensinger_singer": 42,
+          "mean": 0.4689008668065071,
+          "per_input": {
+            "10_侧脸_0.wav": 0.47545839101076126,
+            "47_秋酿_19.wav": 0.4459424167871475,
+            "29_月光_13.wav": 0.48530179262161255
+          },
+          "a_ceiling_inclusive": 0.5094334801642524,
+          "a_gap": 0.04053261335774527,
+          "a_passes": true,
+          "b_passes": true
+        }
+      },
+      "minimum_a_gap": 0.011445340574624763,
+      "maximum_public_mean": 0.5004935910304388,
+      "a_failed_ids": [],
+      "b_failed_ids": [],
+      "passes": true
+    },
+    {
+      "recipe": {
+        "id": "v080_t000",
+        "virtual_weight": 0.8,
+        "public_weight_each": 0.066666666667,
+        "mix": {
+          "13": 0.8,
+          "4": 0.066666666667,
+          "8": 0.066666666667,
+          "11": 0.066666666667
+        },
+        "t_start": 0.0
+      },
+      "output_sha256": {
+        "low.wav": "c47995b09bc279de390a4c8045db26f2e5baaf04876b0f10d0812a0c3226abf8",
+        "mid.wav": "9799d3eadaf658631d34a45d84c07fe1ef663696a5559e1dbeb3ae6df9a0bb8d",
+        "high.wav": "72262564ef4a8d240fc7ee6eb0387436922075e52df5734ebcd449e000e258aa"
+      },
+      "virtual_mean": 0.5960596650838852,
+      "virtual_per_input": {
+        "10_侧脸_0.wav": 0.5942883044481277,
+        "47_秋酿_19.wav": 0.6520206481218338,
+        "29_月光_13.wav": 0.541870042681694
+      },
+      "by_public_spk": {
+        "1": {
+          "opensinger_singer": 9,
+          "mean": 0.38523780057827633,
+          "per_input": {
+            "10_侧脸_0.wav": 0.3456464037299156,
+            "47_秋酿_19.wav": 0.4711449071764946,
+            "29_月光_13.wav": 0.33892209082841873
+          },
+          "a_ceiling_inclusive": 0.49083117662453923,
+          "a_gap": 0.1055933760462629,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "2": {
+          "opensinger_singer": 14,
+          "mean": 0.3689388098816077,
+          "per_input": {
+            "10_侧脸_0.wav": 0.2987668253481388,
+            "47_秋酿_19.wav": 0.44256996363401413,
+            "29_月光_13.wav": 0.36547964066267014
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.0856625929354059,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "3": {
+          "opensinger_singer": 19,
+          "mean": 0.38806546727816266,
+          "per_input": {
+            "10_侧脸_0.wav": 0.29121458530426025,
+            "47_秋酿_19.wav": 0.4812563732266426,
+            "29_月光_13.wav": 0.39172544330358505
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.06653593553885095,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "4": {
+          "opensinger_singer": 21,
+          "mean": 0.3976854744056861,
+          "per_input": {
+            "10_侧脸_0.wav": 0.334198247641325,
+            "47_秋酿_19.wav": 0.4699801653623581,
+            "29_月光_13.wav": 0.3888780102133751
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.05691592841132753,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "5": {
+          "opensinger_singer": 27,
+          "mean": 0.346980815132459,
+          "per_input": {
+            "10_侧脸_0.wav": 0.31380365043878555,
+            "47_秋酿_19.wav": 0.377813458442688,
+            "29_月光_13.wav": 0.3493253365159035
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.10762058768455462,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "6": {
+          "opensinger_singer": 28,
+          "mean": 0.2939464704444011,
+          "per_input": {
+            "10_侧脸_0.wav": 0.28850221261382103,
+            "47_秋酿_19.wav": 0.38832930848002434,
+            "29_月光_13.wav": 0.20500789023935795
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.16065493237261252,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "7": {
+          "opensinger_singer": 30,
+          "mean": 0.33120815455913544,
+          "per_input": {
+            "10_侧脸_0.wav": 0.2903813198208809,
+            "47_秋酿_19.wav": 0.34071940928697586,
+            "29_月光_13.wav": 0.36252373456954956
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.12339324825787817,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "8": {
+          "opensinger_singer": 32,
+          "mean": 0.22266223592062792,
+          "per_input": {
+            "10_侧脸_0.wav": 0.13922702334821224,
+            "47_秋酿_19.wav": 0.2802868224680424,
+            "29_月光_13.wav": 0.24847286194562912
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.2319391668963857,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "9": {
+          "opensinger_singer": 33,
+          "mean": 0.292141605168581,
+          "per_input": {
+            "10_侧脸_0.wav": 0.23550500720739365,
+            "47_秋酿_19.wav": 0.38411860913038254,
+            "29_月光_13.wav": 0.25680119916796684
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.1624597976484326,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "10": {
+          "opensinger_singer": 36,
+          "mean": 0.5028268148501714,
+          "per_input": {
+            "10_侧脸_0.wav": 0.5312712118029594,
+            "47_秋酿_19.wav": 0.5681782513856888,
+            "29_月光_13.wav": 0.409030981361866
+          },
+          "a_ceiling_inclusive": 0.5119389316050635,
+          "a_gap": 0.009112116754892097,
+          "a_passes": false,
+          "b_passes": true
+        },
+        "11": {
+          "opensinger_singer": 41,
+          "mean": 0.1922664133210977,
+          "per_input": {
+            "10_侧脸_0.wav": 0.22685573250055313,
+            "47_秋酿_19.wav": 0.23791248351335526,
+            "29_月光_13.wav": 0.11203102394938469
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.26233498949591594,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "12": {
+          "opensinger_singer": 42,
+          "mean": 0.46208570649226505,
+          "per_input": {
+            "10_侧脸_0.wav": 0.47280341386795044,
+            "47_秋酿_19.wav": 0.43088778853416443,
+            "29_月光_13.wav": 0.48256591707468033
+          },
+          "a_ceiling_inclusive": 0.5094334801642524,
+          "a_gap": 0.04734777367198734,
+          "a_passes": true,
+          "b_passes": true
+        }
+      },
+      "minimum_a_gap": 0.009112116754892097,
+      "maximum_public_mean": 0.5028268148501714,
+      "a_failed_ids": [
+        10
+      ],
+      "b_failed_ids": [],
+      "passes": false
+    },
+    {
+      "recipe": {
+        "id": "v060_t000",
+        "virtual_weight": 0.6,
+        "public_weight_each": 0.133333333333,
+        "mix": {
+          "13": 0.6,
+          "4": 0.133333333333,
+          "8": 0.133333333333,
+          "11": 0.133333333333
+        },
+        "t_start": 0.0
+      },
+      "output_sha256": {
+        "low.wav": "5088fe776266db92ff655aa21a2909909746b3e46ec1433d55fef4305d1fd731",
+        "mid.wav": "4a34561591df3103cc06a288f57b92a0c0444a4731dcea71a228d392e9561c66",
+        "high.wav": "654b639920d3651cc0779d0139a8bc5f30b85073467c71bd9c31b638b9f34a57"
+      },
+      "virtual_mean": 0.5656425580382347,
+      "virtual_per_input": {
+        "10_侧脸_0.wav": 0.5608965307474136,
+        "47_秋酿_19.wav": 0.5957408100366592,
+        "29_月光_13.wav": 0.5402903333306313
+      },
+      "by_public_spk": {
+        "1": {
+          "opensinger_singer": 9,
+          "mean": 0.3828134412566821,
+          "per_input": {
+            "10_侧脸_0.wav": 0.34662750363349915,
+            "47_秋酿_19.wav": 0.459886871278286,
+            "29_月光_13.wav": 0.3419259488582611
+          },
+          "a_ceiling_inclusive": 0.49083117662453923,
+          "a_gap": 0.10801773536785714,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "2": {
+          "opensinger_singer": 14,
+          "mean": 0.3579947141309579,
+          "per_input": {
+            "10_侧脸_0.wav": 0.29891199991106987,
+            "47_秋酿_19.wav": 0.4143804684281349,
+            "29_月光_13.wav": 0.360691674053669
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.09660668868605571,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "3": {
+          "opensinger_singer": 19,
+          "mean": 0.3902643968661626,
+          "per_input": {
+            "10_侧脸_0.wav": 0.2942628860473633,
+            "47_秋酿_19.wav": 0.48182132840156555,
+            "29_月光_13.wav": 0.394708976149559
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.06433700595085101,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "4": {
+          "opensinger_singer": 21,
+          "mean": 0.4142461170752843,
+          "per_input": {
+            "10_侧脸_0.wav": 0.35729004442691803,
+            "47_秋酿_19.wav": 0.48678892850875854,
+            "29_月光_13.wav": 0.3986593782901764
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.04035528574172931,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "5": {
+          "opensinger_singer": 27,
+          "mean": 0.36131269733111065,
+          "per_input": {
+            "10_侧脸_0.wav": 0.32820262759923935,
+            "47_秋酿_19.wav": 0.39477771520614624,
+            "29_月光_13.wav": 0.3609577491879463
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.09328870548590296,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "6": {
+          "opensinger_singer": 28,
+          "mean": 0.317683320492506,
+          "per_input": {
+            "10_侧脸_0.wav": 0.3118588477373123,
+            "47_秋酿_19.wav": 0.41328980028629303,
+            "29_月光_13.wav": 0.22790131345391273
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.13691808232450758,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "7": {
+          "opensinger_singer": 30,
+          "mean": 0.3450475682814916,
+          "per_input": {
+            "10_侧脸_0.wav": 0.30202945321798325,
+            "47_秋酿_19.wav": 0.34027206152677536,
+            "29_月光_13.wav": 0.3928411900997162
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.10955383453552203,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "8": {
+          "opensinger_singer": 32,
+          "mean": 0.2337365485727787,
+          "per_input": {
+            "10_侧脸_0.wav": 0.15778150036931038,
+            "47_秋酿_19.wav": 0.29693516343832016,
+            "29_月光_13.wav": 0.24649298191070557
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.2208648542442349,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "9": {
+          "opensinger_singer": 33,
+          "mean": 0.29267508039871853,
+          "per_input": {
+            "10_侧脸_0.wav": 0.23433256894350052,
+            "47_秋酿_19.wav": 0.390464723110199,
+            "29_月光_13.wav": 0.25322794914245605
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.16192632241829508,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "10": {
+          "opensinger_singer": 36,
+          "mean": 0.49857332557439804,
+          "per_input": {
+            "10_侧脸_0.wav": 0.5283747985959053,
+            "47_秋酿_19.wav": 0.559495136141777,
+            "29_月光_13.wav": 0.4078500419855118
+          },
+          "a_ceiling_inclusive": 0.5119389316050635,
+          "a_gap": 0.0133656060306655,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "11": {
+          "opensinger_singer": 41,
+          "mean": 0.2116346483429273,
+          "per_input": {
+            "10_侧脸_0.wav": 0.24623998254537582,
+            "47_秋酿_19.wav": 0.2616291120648384,
+            "29_月光_13.wav": 0.12703485041856766
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.2429667544740863,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "12": {
+          "opensinger_singer": 42,
+          "mean": 0.45207501699527103,
+          "per_input": {
+            "10_侧脸_0.wav": 0.4671657383441925,
+            "47_秋酿_19.wav": 0.4122718498110771,
+            "29_月光_13.wav": 0.4767874628305435
+          },
+          "a_ceiling_inclusive": 0.5094334801642524,
+          "a_gap": 0.057358463168981355,
+          "a_passes": true,
+          "b_passes": true
+        }
+      },
+      "minimum_a_gap": 0.0133656060306655,
+      "maximum_public_mean": 0.49857332557439804,
+      "a_failed_ids": [],
+      "b_failed_ids": [],
+      "passes": true
+    },
+    {
+      "recipe": {
+        "id": "v040_t000",
+        "virtual_weight": 0.4,
+        "public_weight_each": 0.2,
+        "mix": {
+          "13": 0.4,
+          "4": 0.2,
+          "8": 0.2,
+          "11": 0.2
+        },
+        "t_start": 0.0
+      },
+      "output_sha256": {
+        "low.wav": "2bb536a8003ee20403822fe28725e2a6207a3ab403921721695cf1f64f8962f9",
+        "mid.wav": "97c71d203a3086391afa490ba4da603f352458a189e0568060675c773f8246ef",
+        "high.wav": "5e0f76a17e33616b71e31081f25057d34bd07944c19dcfeebb9a9709c1eaa1c2"
+      },
+      "virtual_mean": 0.49856027215719223,
+      "virtual_per_input": {
+        "10_侧脸_0.wav": 0.4913916066288948,
+        "47_秋酿_19.wav": 0.5093104392290115,
+        "29_月光_13.wav": 0.49497877061367035
+      },
+      "by_public_spk": {
+        "1": {
+          "opensinger_singer": 9,
+          "mean": 0.3543975154558818,
+          "per_input": {
+            "10_侧脸_0.wav": 0.3248826190829277,
+            "47_秋酿_19.wav": 0.4235212132334709,
+            "29_月光_13.wav": 0.31478871405124664
+          },
+          "a_ceiling_inclusive": 0.49083117662453923,
+          "a_gap": 0.13643366116865746,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "2": {
+          "opensinger_singer": 14,
+          "mean": 0.33670581753055256,
+          "per_input": {
+            "10_侧脸_0.wav": 0.2980826608836651,
+            "47_秋酿_19.wav": 0.38793158531188965,
+            "29_月光_13.wav": 0.3241032063961029
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.11789558528646105,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "3": {
+          "opensinger_singer": 19,
+          "mean": 0.38754797478516895,
+          "per_input": {
+            "10_侧脸_0.wav": 0.3213660791516304,
+            "47_秋酿_19.wav": 0.46591947227716446,
+            "29_月光_13.wav": 0.37535837292671204
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.06705342803184466,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "4": {
+          "opensinger_singer": 21,
+          "mean": 0.4192606508731842,
+          "per_input": {
+            "10_侧脸_0.wav": 0.38077612966299057,
+            "47_秋酿_19.wav": 0.4750452861189842,
+            "29_月光_13.wav": 0.4019605368375778
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.03534075194382941,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "5": {
+          "opensinger_singer": 27,
+          "mean": 0.3626181607445081,
+          "per_input": {
+            "10_侧脸_0.wav": 0.35142597556114197,
+            "47_秋酿_19.wav": 0.3889627829194069,
+            "29_月光_13.wav": 0.34746572375297546
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.09198324207250552,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "6": {
+          "opensinger_singer": 28,
+          "mean": 0.3362862976888816,
+          "per_input": {
+            "10_侧脸_0.wav": 0.3461426645517349,
+            "47_秋酿_19.wav": 0.4267090857028961,
+            "29_月光_13.wav": 0.23600714281201363
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.11831510512813204,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "7": {
+          "opensinger_singer": 30,
+          "mean": 0.3576504699885845,
+          "per_input": {
+            "10_侧脸_0.wav": 0.3443905785679817,
+            "47_秋酿_19.wav": 0.31510982289910316,
+            "29_月光_13.wav": 0.41345100849866867
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.09695093282842909,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "8": {
+          "opensinger_singer": 32,
+          "mean": 0.24239645401636759,
+          "per_input": {
+            "10_侧脸_0.wav": 0.1477946974337101,
+            "47_秋酿_19.wav": 0.3227456957101822,
+            "29_月光_13.wav": 0.2566489689052105
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.21220494880064603,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "9": {
+          "opensinger_singer": 33,
+          "mean": 0.286206666380167,
+          "per_input": {
+            "10_侧脸_0.wav": 0.233897365629673,
+            "47_秋酿_19.wav": 0.3837381452322006,
+            "29_月光_13.wav": 0.2409844882786274
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.1683947364368466,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "10": {
+          "opensinger_singer": 36,
+          "mean": 0.4718584467967351,
+          "per_input": {
+            "10_侧脸_0.wav": 0.50845567882061,
+            "47_秋酿_19.wav": 0.5271251946687698,
+            "29_月光_13.wav": 0.3799944669008255
+          },
+          "a_ceiling_inclusive": 0.5119389316050635,
+          "a_gap": 0.04008048480832843,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "11": {
+          "opensinger_singer": 41,
+          "mean": 0.22824845276772976,
+          "per_input": {
+            "10_侧脸_0.wav": 0.2674083337187767,
+            "47_秋酿_19.wav": 0.27947696298360825,
+            "29_月光_13.wav": 0.13786006160080433
+          },
+          "a_ceiling_inclusive": 0.4546014028170136,
+          "a_gap": 0.22635295004928385,
+          "a_passes": true,
+          "b_passes": true
+        },
+        "12": {
+          "opensinger_singer": 42,
+          "mean": 0.4205607436597347,
+          "per_input": {
+            "10_侧脸_0.wav": 0.4384923726320267,
+            "47_秋酿_19.wav": 0.36583975329995155,
+            "29_月光_13.wav": 0.45735010504722595
+          },
+          "a_ceiling_inclusive": 0.5094334801642524,
+          "a_gap": 0.08887273650451766,
+          "a_passes": true,
+          "b_passes": true
+        }
+      },
+      "minimum_a_gap": 0.03534075194382941,
+      "maximum_public_mean": 0.4718584467967351,
+      "a_failed_ids": [],
+      "b_failed_ids": [],
+      "passes": true
+    }
+  ],
+  "passing_recipe_ids": [
+    "v100_t000",
+    "v060_t000",
+    "v040_t000"
+  ],
+  "failed_recipe_ids": [
+    "v080_t000"
+  ],
+  "caveat": "Speech-trained ECAPA on singing is a similarity proxy, not a listening or identity guarantee."
+}
